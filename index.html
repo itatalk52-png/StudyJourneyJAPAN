@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Study Journey JAPAN</title>
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#F8F7F2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Study Journey">
+</head>
+<body>
+<div class="app-shell">
+  <header class="app-header">
+    <div>
+      <div class="brand">STUDY JOURNEY JAPAN</div>
+      <div class="page-title" id="pageTitle">Home</div>
+    </div>
+    <button class="profile-btn" id="profileBtn" aria-label="プロフィール">--</button>
+  </header>
+
+  <main>
+    <section class="screen active" data-screen="home">
+      <div class="hero-card">
+        <div class="current-chip" id="currentChip">現在地：沖縄県</div>
+        <div class="timer-large" id="homeTimer">00:00:00</div>
+        <button class="primary-btn" id="homeStart">START</button>
+        <div class="hero-grid">
+          <div><span>Today</span><strong id="todayMinutes">0 min</strong></div>
+          <div><span>This Week</span><strong id="weekMinutes">0 min</strong></div>
+          <div><span>Next Badge</span><strong id="nextBadgeText">あと10分</strong></div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <h2>Journey Progress</h2>
+        <span id="homeProgressText">0 / 470 Memories</span>
+      </div>
+      <div class="progress-track"><div id="homeProgressFill"></div></div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-kicker">NEXT DESTINATION</div>
+          <h3 id="nextDestination">首里城</h3>
+          <p>10分学ぶごとに、旅の思い出が1つ増えます。</p>
+          <button class="ghost-btn" data-nav="collection">Collectionを見る</button>
+        </div>
+        <div class="panel">
+          <div class="panel-kicker">JOURNEY MAP</div>
+          <div class="mini-map-wrap">
+            <img src="../Assets/maps/japan_map_gray.png" alt="日本地図">
+          </div>
+          <button class="ghost-btn" data-nav="map">Mapを見る</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" data-screen="timer">
+      <div class="timer-screen-card">
+        <div class="timer-label">FOCUS TIMER</div>
+        <div class="timer-display" id="timerDisplay">00:00:00</div>
+        <div class="timer-controls">
+          <button class="secondary-btn" id="resetBtn">RESET</button>
+          <button class="primary-btn wide" id="timerStart">START</button>
+        </div>
+        <div class="timer-note">1分 = 1ポイント / 10分 = 1バッジ</div>
+      </div>
+    </section>
+
+    <section class="screen" data-screen="collection">
+      <div class="section-head collection-head">
+        <div>
+          <div class="panel-kicker">JOURNEY COLLECTION</div>
+          <h2>学びの思い出</h2>
+        </div>
+        <div class="progress-pill" id="collectionProgress">0 / 20</div>
+      </div>
+
+      <div class="pref-tabs" id="prefTabs"></div>
+      <div class="pref-title-row">
+        <div>
+          <div class="reading" id="prefReading"></div>
+          <h3 id="prefTitle"></h3>
+        </div>
+        <div class="count" id="prefCount">0 / 10</div>
+      </div>
+      <div class="badge-grid" id="badgeGrid"></div>
+    </section>
+
+    <section class="screen" data-screen="map">
+      <div class="section-head">
+        <div>
+          <div class="panel-kicker">JOURNEY MAP</div>
+          <h2>日本一周の旅</h2>
+        </div>
+        <span id="mapProgress">0 / 470 Memories</span>
+      </div>
+
+      <div class="map-layout">
+        <div class="map-card">
+          <div class="map-stage" id="mapStage">
+            <img class="map-layer base" src="../Assets/maps/japan_map_gray.png" alt="日本地図">
+            <img class="map-layer overlay" id="okinawaOverlay" src="../Assets/maps/overlay_okinawa.png" alt="沖縄県">
+            <img class="map-layer overlay" id="kagoshimaOverlay" src="../Assets/maps/overlay_kagoshima.png" alt="鹿児島県">
+          </div>
+          <div class="map-caption">県の10バッジを集めると、正しい都道府県の位置がカラーに変わります。</div>
+        </div>
+
+        <aside class="map-status-panel">
+          <div class="panel-kicker">CURRENT JOURNEY</div>
+          <h3 id="mapCurrentPref">沖縄県</h3>
+          <p id="mapCurrentText">沖縄県の10個の思い出を集めましょう。</p>
+          <div class="map-stat"><span>沖縄県</span><strong id="okinawaMapStatus">0 / 10</strong></div>
+          <div class="map-stat"><span>鹿児島県</span><strong id="kagoshimaMapStatus">0 / 10</strong></div>
+
+          <div class="preview-box">
+            <div class="panel-kicker">MAP PREVIEW</div>
+            <p>色づき方をすぐ確認できます。</p>
+            <div class="preview-buttons">
+              <button data-map-preview="0">未クリア</button>
+              <button data-map-preview="1">沖縄クリア</button>
+              <button data-map-preview="2">鹿児島クリア</button>
+              <button data-map-preview="auto" class="active">実際の進捗</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="screen" data-screen="friends">
+      <div class="section-head">
+        <div>
+          <div class="panel-kicker">JOURNEY FRIENDS</div>
+          <h2>一緒に旅する仲間</h2>
+        </div>
+        <span>Weekly</span>
+      </div>
+      <div class="my-rank-card">
+        <div class="avatar big">JI</div>
+        <div>
+          <div class="rank-label">あなたの今週の旅</div>
+          <h3 id="myJourneyText">沖縄県・0 Memories</h3>
+        </div>
+        <div class="rank-score" id="myJourneyMinutes">0 min</div>
+      </div>
+      <div class="ranking-toolbar"><span id="rankingStatus">ランキングを読み込みます</span><button id="refreshRanking" class="ghost-btn">更新</button></div>
+      <div class="friends-list" id="friendsList"></div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="active" data-target="home"><span>⌂</span>Home</button>
+    <button data-target="timer"><span>◷</span>Timer</button>
+    <button data-target="collection"><span>◉</span>Collection</button>
+    <button data-target="map"><span>⌖</span>Map</button>
+    <button data-target="friends"><span>◎</span>Friends</button>
+  </nav>
+</div>
+
+<dialog id="badgeDialog">
+  <button class="dialog-close" aria-label="閉じる">×</button>
+  <img id="dialogImage" alt="">
+  <div class="dialog-pref" id="dialogPref"></div>
+  <h3 id="dialogName"></h3>
+  <div class="memory-label">MEMORY ACQUIRED</div>
+</dialog>
+
+
+<dialog id="registerDialog" class="register-dialog">
+  <div class="register-mark">SJ</div>
+  <div class="panel-kicker">WELCOME TO THE JOURNEY</div>
+  <h2>参加者登録</h2>
+  <p>ランキングに参加するため、最初にプロフィールを登録してください。</p>
+  <form id="registerForm">
+    <label>ニックネーム<span>必須</span><input id="nicknameInput" maxlength="30" required placeholder="例：さくら"></label>
+    <label>学部<input id="facultyInput" maxlength="50" placeholder="例：経済学部"></label>
+    <label>学科<input id="departmentInput" maxlength="50" placeholder="例：経済学科"></label>
+    <label>先生のメールアドレス<input id="teacherEmailInput" maxlength="100" type="email" placeholder="例：teacher@example.jp"></label>
+    <div class="form-message" id="registerMessage"></div>
+    <button class="primary-btn register-submit" id="registerSubmit" type="submit">旅をはじめる</button>
+  </form>
+</dialog>
+<div class="sync-toast" id="syncToast" role="status"></div>
+
+<script src="app.js"></script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(()=>{}));}</script>
+</body>
+</html>

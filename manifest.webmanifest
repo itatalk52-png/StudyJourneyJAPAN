@@ -1,0 +1,10 @@
+{
+  "name": "Study Journey JAPAN",
+  "short_name": "Study Journey",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F8F7F2",
+  "theme_color": "#F8F7F2",
+  "lang": "ja",
+  "orientation": "portrait-primary"
+}
