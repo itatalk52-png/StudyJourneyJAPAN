@@ -18,11 +18,21 @@
       <div class="brand">STUDY JOURNEY JAPAN</div>
       <div class="page-title" id="pageTitle">Home</div>
     </div>
-    <button class="profile-btn" id="profileBtn" aria-label="プロフィール">--</button>
+    <div class="header-actions">
+      <button class="calendar-btn" id="calendarBtn" aria-label="学習カレンダー" title="学習カレンダー">
+        <svg class="calendar-icon" viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M13 12h38a5 5 0 0 1 5 5v37H8V17a5 5 0 0 1 5-5Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+          <path d="M8 25h48M22 7v12M42 7v12" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <button class="profile-btn" id="profileBtn" aria-label="プロフィール">--</button>
+    </div>
   </header>
 
   <main>
     <section class="screen active" data-screen="home">
+      <div class="cheer-inbox" id="cheerInbox" hidden></div>
+      <div class="streak-banner" id="streakBanner">10分で連続学習1日目</div>
       <div class="hero-card">
         <div class="current-chip" id="currentChip">現在地：沖縄県</div>
         <div class="timer-large" id="homeTimer">00:00:00</div>
@@ -31,6 +41,7 @@
           <div><span>Today</span><strong id="todayMinutes">0 min</strong></div>
           <div><span>This Week</span><strong id="weekMinutes">0 min</strong></div>
           <div><span>Next Badge</span><strong id="nextBadgeText">あと10分</strong></div>
+          <div class="points-stat"><span>Total Points</span><strong id="totalPoints">0 pt</strong></div>
         </div>
       </div>
 
@@ -65,7 +76,11 @@
           <button class="secondary-btn" id="resetBtn">RESET</button>
           <button class="primary-btn wide" id="timerStart">START</button>
         </div>
-        <div class="timer-note">1分 = 1ポイント / 10分 = 1バッジ</div>
+        <div class="timer-points-grid">
+          <div><span>今回の学習ポイント</span><strong id="sessionPoints">0 pt</strong></div>
+          <div><span>累計ポイント</span><strong id="timerTotalPoints">0 pt</strong></div>
+        </div>
+        <div class="timer-note">1分 = 1ポイント / 10分 = 1バッジ</div><div class="sync-state" id="pendingSync">同期済み</div>
       </div>
     </section>
 
@@ -143,7 +158,7 @@
           <div class="rank-label">あなたの今週の旅</div>
           <h3 id="myJourneyText">沖縄県・0 Memories</h3>
         </div>
-        <div class="rank-score" id="myJourneyMinutes">0 min</div>
+        <div class="rank-score"><strong id="myJourneyMinutes">0 min</strong><small id="myJourneyPoints">0 pt</small></div>
       </div>
       <div class="ranking-toolbar"><span id="rankingStatus">ランキングを読み込みます</span><button id="refreshRanking" class="ghost-btn">更新</button></div>
       <div class="friends-list" id="friendsList"></div>
@@ -168,12 +183,41 @@
 </dialog>
 
 
+
+<dialog id="calendarDialog" class="calendar-dialog">
+  <button class="dialog-close calendar-close" aria-label="閉じる">×</button>
+  <div class="calendar-topline">
+    <button id="calendarPrev" class="calendar-arrow" aria-label="前の月">‹</button>
+    <div>
+      <div class="panel-kicker">DAILY STUDY CALENDAR</div>
+      <h2 id="calendarTitle">学習カレンダー</h2>
+    </div>
+    <button id="calendarNext" class="calendar-arrow" aria-label="次の月">›</button>
+  </div>
+  <div class="calendar-streak" id="calendarStreak">10分で連続学習1日目</div>
+  <div class="calendar-weekdays"><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span><span>SUN</span></div>
+  <div class="calendar-grid" id="calendarGrid"></div>
+  <div class="calendar-today-goal" id="calendarTodayGoal"></div>
+  <div class="calendar-summary" id="calendarSummary"></div>
+  <div class="calendar-complete" id="calendarComplete" hidden></div>
+  <div class="calendar-rule">
+    <span><img src="Assets/medals/bronze.png" alt="銅メダル">10分・+10pt</span>
+    <span><img src="Assets/medals/silver.png" alt="銀メダル">60分・+30pt</span>
+    <span><img src="Assets/medals/gold.png" alt="金メダル">120分・+50pt</span>
+  </div>
+</dialog>
+
 <dialog id="registerDialog" class="register-dialog">
   <div class="register-mark">SJ</div>
   <div class="panel-kicker">WELCOME TO THE JOURNEY</div>
   <h2>参加者登録</h2>
   <p>ランキングに参加するため、最初にプロフィールを登録してください。</p>
   <form id="registerForm">
+    <div class="avatar-upload-row">
+      <div class="avatar avatar-preview" id="avatarPreview">SJ</div>
+      <label class="avatar-upload-button">好きなアイコンを選ぶ<input id="avatarInput" type="file" accept="image/*"></label>
+    </div>
+    <div class="avatar-help">写真やイラストを正方形に整えて登録します（8MB以下）。</div>
     <label>ニックネーム<span>必須</span><input id="nicknameInput" maxlength="30" required placeholder="例：さくら"></label>
     <label>学部<input id="facultyInput" maxlength="50" placeholder="例：経済学部"></label>
     <label>学科<input id="departmentInput" maxlength="50" placeholder="例：経済学科"></label>

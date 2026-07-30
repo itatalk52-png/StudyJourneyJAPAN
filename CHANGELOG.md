@@ -1,11 +1,10 @@
-# Changelog
+# CHANGELOG
 
-## Ver.1.3 Official — 2026-07-30
+## Ver.1.7.4
 
-- GitHubおよびCloudflare Pages向けに公開階層を整理
-- `index.html`と`Assets`を同一階層へ配置
-- 画像参照パスをPages公開用に修正
-- Google Apps Scriptランキング連携を搭載
-- 参加者登録、週間ランキング、自分の順位表示を追加
-- PWA用manifestとservice workerを追加
-- 日本地図の余白を調整し、中央寄せ・大型表示へ改善
+- 正式リリース版として統合
+- 固定スプレッドシートIDを廃止
+- `setupSheet`実行時に対象スプレッドシートを自動登録
+- `Illegal spreadsheet id or key`対策
+- APIヘルス表示とキャッシュ名をVer.1.7.4へ更新
+- Ver.1.7.3までのカレンダー、メダル、連続学習、エール、ポイント機能を継承
