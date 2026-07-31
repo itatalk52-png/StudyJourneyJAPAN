@@ -1,3 +1,12 @@
+# Ver.1.8.5
+
+- Rebuilt the map feature using dedicated current-location images.
+- Separated national-map display from current-location display.
+- Removed visited-prefecture coloring.
+- Added user-created map images for Okinawa and the seven Kyushu prefectures.
+- Added profile-avatar markers to both Home and Map screens.
+- Updated the service-worker cache version.
+
 # Ver.1.8.4
 
 - Rebuilt all 47 prefecture coordinates using prefecture-label centers from the supplied reference map.

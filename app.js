@@ -3,55 +3,17 @@ const DATA={"prefectures":[{"id":"01_okinawa","key":"okinawa","name":"沖縄県"
 
 // Japan map coordinates (percent of the complete map image).
 // Route order and badge availability are independent from this table.
-const PREFECTURE_POSITIONS={
-  "北海道":{x:74.0,y:8.5,zoom:2.15},
-  "青森県":{x:61.0,y:21.0,zoom:3.2},
-  "岩手県":{x:64.0,y:27.5,zoom:3.35},
-  "宮城県":{x:60.8,y:33.0,zoom:3.45},
-  "秋田県":{x:56.5,y:25.5,zoom:3.35},
-  "山形県":{x:54.5,y:32.5,zoom:3.45},
-  "福島県":{x:58.5,y:37.5,zoom:3.55},
-  "茨城県":{x:62.5,y:43.5,zoom:3.85},
-  "栃木県":{x:59.5,y:42.0,zoom:3.85},
-  "群馬県":{x:55.5,y:41.0,zoom:3.9},
-  "埼玉県":{x:58.0,y:47.0,zoom:4.0},
-  "千葉県":{x:63.0,y:48.5,zoom:4.05},
-  "東京都":{x:58.0,y:49.5,zoom:4.2},
-  "神奈川県":{x:56.5,y:51.5,zoom:4.15},
-  "新潟県":{x:51.0,y:35.5,zoom:3.55},
-  "富山県":{x:46.5,y:39.5,zoom:3.8},
-  "石川県":{x:43.0,y:40.5,zoom:3.85},
-  "福井県":{x:41.5,y:43.5,zoom:3.95},
-  "山梨県":{x:54.5,y:47.0,zoom:4.05},
-  "長野県":{x:50.5,y:41.5,zoom:3.85},
-  "岐阜県":{x:45.5,y:47.0,zoom:3.95},
-  "静岡県":{x:53.0,y:53.0,zoom:4.0},
-  "愛知県":{x:48.0,y:52.0,zoom:4.05},
-  "三重県":{x:51.5,y:55.0,zoom:4.05},
-  "滋賀県":{x:45.5,y:47.5,zoom:4.1},
-  "京都府":{x:43.0,y:48.5,zoom:4.1},
-  "大阪府":{x:42.0,y:51.0,zoom:4.2},
-  "兵庫県":{x:38.5,y:48.5,zoom:4.0},
-  "奈良県":{x:44.0,y:52.5,zoom:4.15},
-  "和歌山県":{x:45.0,y:55.5,zoom:4.1},
-  "鳥取県":{x:33.5,y:44.5,zoom:3.95},
-  "島根県":{x:28.5,y:43.0,zoom:3.85},
-  "岡山県":{x:35.5,y:47.5,zoom:4.0},
-  "広島県":{x:30.5,y:48.5,zoom:3.95},
-  "山口県":{x:23.5,y:48.0,zoom:3.9},
-  "徳島県":{x:42.0,y:59.0,zoom:4.15},
-  "香川県":{x:40.0,y:56.5,zoom:4.15},
-  "愛媛県":{x:37.5,y:60.0,zoom:4.0},
-  "高知県":{x:40.5,y:62.5,zoom:4.0},
-  "福岡県":{x:26.0,y:52.0,zoom:4.15},
-  "佐賀県":{x:22.5,y:53.5,zoom:4.2},
-  "長崎県":{x:18.5,y:55.0,zoom:4.05},
-  "熊本県":{x:22.5,y:57.5,zoom:4.1},
-  "大分県":{x:26.5,y:56.5,zoom:4.1},
-  "宮崎県":{x:27.0,y:61.0,zoom:4.1},
-  "鹿児島県":{x:21.5,y:63.5,zoom:4.0},
-  "沖縄県":{x:6.5,y:90.5,zoom:5.0}
+const CURRENT_MAPS={
+  "沖縄県":   {file:"okinawa.png",   pin:{x:50.0,y:55.0}, national:{x:19.0,y:92.0}},
+  "鹿児島県": {file:"kagoshima.png", pin:{x:32.0,y:50.0}, national:{x:29.0,y:73.0}},
+  "宮崎県":   {file:"miyazaki.png",   pin:{x:62.0,y:50.0}, national:{x:32.5,y:67.0}},
+  "大分県":   {file:"oita.png",       pin:{x:64.0,y:17.0}, national:{x:33.5,y:61.5}},
+  "熊本県":   {file:"kumamoto.png",   pin:{x:40.0,y:30.0}, national:{x:28.5,y:64.5}},
+  "長崎県":   {file:"nagasaki.png",   pin:{x:15.0,y:24.0}, national:{x:23.0,y:66.0}},
+  "佐賀県":   {file:"saga.png",       pin:{x:22.0,y:12.0}, national:{x:26.0,y:61.5}},
+  "福岡県":   {file:"fukuoka.png",    pin:{x:35.0,y:8.0},  national:{x:29.5,y:58.5}}
 };
+const CURRENT_MAP_BASE="Assets/maps/current/";
 
 const STORAGE_KEY='sjj_state_v8_1_timer';
 const OLD_STORAGE_KEYS=['sjj_state_v8_calendar','sjj_state_v7_cheers','sjj_state_v6_multi','sjj_state_v5_multi'];
@@ -156,12 +118,6 @@ function renderInbox(items){const box=document.getElementById('cheerInbox');box.
 let collectionRenderKey='';
 function renderCollection(force=false){const unlocked=unlockedCount(),key=`${selectedPref}:${unlocked}`;if(!force&&key===collectionRenderKey)return;collectionRenderKey=key;const p=DATA.prefectures[selectedPref];[...document.getElementById('prefTabs').children].forEach((b,i)=>b.classList.toggle('active',i===selectedPref));document.getElementById('prefReading').textContent=p.reading;document.getElementById('prefTitle').textContent=p.name;const prefUnlocked=Math.max(0,Math.min(10,unlocked-selectedPref*10));document.getElementById('prefCount').textContent=`${prefUnlocked} / 10`;document.getElementById('collectionProgress').textContent=`${unlocked} / ${DATA.prefectures.reduce((n,x)=>n+x.badges.length,0)}`;const grid=document.getElementById('badgeGrid');grid.innerHTML='';p.badges.forEach((badge,i)=>{const globalIndex=selectedPref*10+i,isUnlocked=globalIndex<unlocked,btn=document.createElement('button');btn.className='badge-card'+(isUnlocked?'':' locked');const path=`Assets/badges/${p.id}/${badge.file}`;btn.innerHTML=`<div class="badge-wrap"><img src="${path}" alt="${isUnlocked?badge.name:'未取得バッジ'}"><div class="lock-icon">?</div></div><small>${String(i+1).padStart(2,'0')}</small><strong>${isUnlocked?badge.name:'未取得'}</strong>`;if(isUnlocked)btn.onclick=()=>openBadge(path,p.name,badge.name);grid.appendChild(btn);});}
 const dialog=document.getElementById('badgeDialog');function openBadge(path,pref,name){document.getElementById('dialogImage').src=path;document.getElementById('dialogPref').textContent=pref;document.getElementById('dialogName').textContent=name;dialog.showModal();}
-function setOverlayState(element,completed,current){
-  if(!element)return;
-  element.className='journey-map-layer overlay';
-  if(completed)element.classList.add('complete');
-  else if(current)element.classList.add('current');
-}
 function updateCurrentLocationMarker(pin,prefName){
   if(!pin)return;
   const avatarUrl=profile?.avatarLocal||profile?.avatarUrl||'';
@@ -185,45 +141,49 @@ function updateCurrentLocationMarker(pin,prefName){
   pin.setAttribute('title',`現在地：${prefName}`);
   pin.setAttribute('aria-label',`現在地：${prefName}`);
 }
-function applyMapPosition(viewport,prefName,isNational){
-  if(!viewport)return;
-  const pos=PREFECTURE_POSITIONS[prefName]||PREFECTURE_POSITIONS["沖縄県"];
-  const canvas=viewport.querySelector('.journey-map-canvas');
-  const pin=viewport.querySelector('.current-location-pin');
-  const zoom=isNational?1:(pos.zoom||4);
-
-  if(pin){
-    pin.style.left=`${pos.x}%`;
-    pin.style.top=`${pos.y}%`;
-    updateCurrentLocationMarker(pin,prefName);
+function setMapImage(image,pin,prefName,isNational){
+  if(!image||!pin)return;
+  const config=CURRENT_MAPS[prefName]||CURRENT_MAPS["沖縄県"];
+  if(isNational){
+    image.src=`${CURRENT_MAP_BASE}japan.png`;
+    image.alt=`日本全体の地図。現在地は${prefName}`;
+    pin.style.left=`${config.national.x}%`;
+    pin.style.top=`${config.national.y}%`;
+  }else{
+    image.src=`${CURRENT_MAP_BASE}${config.file}`;
+    image.alt=`${prefName}周辺の地図`;
+    pin.style.left=`${config.pin.x}%`;
+    pin.style.top=`${config.pin.y}%`;
   }
-  if(canvas){
-    // The marker is inside the canvas, so the map and marker always transform together.
-    canvas.style.transform=`translate(${50-zoom*pos.x}%,${50-zoom*pos.y}%) scale(${zoom})`;
-  }
-  viewport.classList.toggle('national',isNational);
+  updateCurrentLocationMarker(pin,prefName);
 }
 function updateMap(){
   const unlocked=unlockedCount();
   const prefIndex=Math.min(Math.floor(unlocked/10),Math.max(0,DATA.prefectures.length-1));
   const currentPref=DATA.prefectures[prefIndex]?.name||'沖縄県';
   const prefProgress=Math.max(0,Math.min(10,unlocked-prefIndex*10));
-  const completed=Math.floor(unlocked/10);
   const isNational=mapViewMode==='national';
 
-  setOverlayState(document.getElementById('okinawaOverlay'),completed>=1,completed<1);
-  setOverlayState(document.getElementById('kagoshimaOverlay'),completed>=2,completed===1);
-  setOverlayState(document.getElementById('homeOkinawaOverlay'),completed>=1,completed<1);
-  setOverlayState(document.getElementById('homeKagoshimaOverlay'),completed>=2,completed===1);
+  setMapImage(
+    document.getElementById('mainMapImage'),
+    document.getElementById('mainCurrentLocationPin'),
+    currentPref,
+    isNational
+  );
+  setMapImage(
+    document.getElementById('homeCurrentMapImage'),
+    document.getElementById('homeCurrentLocationPin'),
+    currentPref,
+    false
+  );
 
-  applyMapPosition(document.getElementById('mapViewport'),currentPref,isNational);
-  applyMapPosition(document.getElementById('homeMapViewport'),currentPref,false);
-
+  document.getElementById('mapViewport').classList.toggle('national',isNational);
   document.getElementById('mapViewTitle').textContent=isNational?'日本全体':'現在地周辺';
   document.getElementById('mapViewToggle').textContent=isNational?'📍 現在地へ戻る':'🗾 日本全体を見る';
   document.getElementById('mapCaption').textContent=isNational
-    ?'日本一周全体の位置を表示しています。'
-    :`${currentPref}を中心に拡大表示しています。`;
+    ?`日本全体の地図に${currentPref}の現在位置を表示しています。`
+    :`${currentPref}周辺の専用地図を表示しています。`;
+
   document.getElementById('mapCurrentPref').textContent=currentPref;
   document.getElementById('mapCurrentText').textContent=`${currentPref}の10個の思い出を集めましょう。`;
   document.getElementById('mapCurrentProgressLabel').textContent=`${currentPref}の進捗`;

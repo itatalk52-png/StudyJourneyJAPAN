@@ -413,3 +413,92 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
 .journey-map-viewport > .current-location-pin{
   display:none !important;
 }
+
+/* ============================================================
+   Ver.1.8.5 — image-based current-location map
+   ============================================================ */
+.current-image-map{
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#fff;
+  isolation:isolate;
+}
+.current-image-map .current-map-image{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:contain;
+  object-position:center;
+  transform:none !important;
+}
+.current-image-map .current-location-pin{
+  position:absolute;
+  z-index:10;
+  width:42px !important;
+  height:42px !important;
+  border:4px solid #fff !important;
+  border-radius:50% !important;
+  overflow:hidden;
+  display:grid !important;
+  place-items:center;
+  background:#16372b;
+  color:#fff;
+  box-shadow:0 4px 14px rgba(22,55,43,.42);
+  transform:translate(-50%,-50%) !important;
+  font-size:12px;
+  font-weight:900;
+  line-height:1;
+}
+.current-image-map .current-location-pin img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  aspect-ratio:1/1;
+  border-radius:50%;
+}
+.current-image-map .current-location-pin span{
+  width:100%;
+  height:100%;
+  display:grid;
+  place-items:center;
+}
+.current-image-map.national .current-location-pin{
+  width:34px !important;
+  height:34px !important;
+  border-width:3px !important;
+}
+.journey-map-viewport.compact.current-image-map{
+  height:300px;
+}
+.journey-map-viewport.large.current-image-map{
+  height:min(72vh,720px);
+  min-height:540px;
+}
+.journey-map-canvas,
+.journey-map-layer,
+.journey-map-layer.overlay{
+  /* old map engine is no longer used in Ver.1.8.5 */
+}
+@media(max-width:560px){
+  .journey-map-viewport.compact.current-image-map{
+    height:260px;
+  }
+  .journey-map-viewport.large.current-image-map{
+    height:500px;
+    min-height:420px;
+  }
+  .current-image-map .current-location-pin{
+    width:38px !important;
+    height:38px !important;
+  }
+  .current-image-map.national .current-location-pin{
+    width:30px !important;
+    height:30px !important;
+  }
+}
