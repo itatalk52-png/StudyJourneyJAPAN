@@ -1,3 +1,13 @@
+# Ver.1.9.0
+
+- Added server-generated random Study Journey IDs.
+- Added passwordless ID login.
+- Added multi-device cloud state loading.
+- Added badge acquisition history sheet and migration from accumulated minutes.
+- Synced study totals, daily calendar records, streaks, points, location and badges.
+- Kept profile images device-local.
+- Bumped service-worker cache to Ver.1.9.0.
+
 # Ver.1.8.5 R3
 
 - Added an in-app update notification dialog.
