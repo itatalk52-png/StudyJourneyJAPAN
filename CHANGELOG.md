@@ -1,10 +1,10 @@
-# CHANGELOG
+# Ver.1.8.0
 
-## Ver.1.7.4
-
-- 正式リリース版として統合
-- 固定スプレッドシートIDを廃止
-- `setupSheet`実行時に対象スプレッドシートを自動登録
-- `Illegal spreadsheet id or key`対策
-- APIヘルス表示とキャッシュ名をVer.1.7.4へ更新
-- Ver.1.7.3までのカレンダー、メダル、連続学習、エール、ポイント機能を継承
+- Registration form wording and placeholder updated.
+- Circular profile images standardized.
+- Added avatar clear action and avatar-free registration.
+- Registration now succeeds even where Google Drive public sharing is restricted.
+- Added 60 badges across six prefectures.
+- Expanded collection from 20 to 80 available badges.
+- Reorganized badges by numbered prefecture folders.
+- Dynamic badge totals prepare the app for 470 badges.

@@ -90,7 +90,7 @@
           <div class="panel-kicker">JOURNEY COLLECTION</div>
           <h2>学びの思い出</h2>
         </div>
-        <div class="progress-pill" id="collectionProgress">0 / 20</div>
+        <div class="progress-pill" id="collectionProgress">0 / 80</div>
       </div>
 
       <div class="pref-tabs" id="prefTabs"></div>
@@ -215,13 +215,13 @@
   <form id="registerForm">
     <div class="avatar-upload-row">
       <div class="avatar avatar-preview" id="avatarPreview">SJ</div>
-      <label class="avatar-upload-button">好きなアイコンを選ぶ<input id="avatarInput" type="file" accept="image/*"></label>
+      <div class="avatar-upload-actions"><label class="avatar-upload-button">好きなアイコンを選ぶ<input id="avatarInput" type="file" accept="image/*"></label><button class="avatar-clear-button" id="avatarClearButton" type="button">選択を解除</button></div>
     </div>
-    <div class="avatar-help">写真やイラストを正方形に整えて登録します（8MB以下）。</div>
+    <div class="avatar-help">写真やイラストを正方形に整えて登録します（8MB以下）。画像なしでも登録できます。</div>
     <label>ニックネーム<span>必須</span><input id="nicknameInput" maxlength="30" required placeholder="例：さくら"></label>
     <label>学部<input id="facultyInput" maxlength="50" placeholder="例：経済学部"></label>
     <label>学科<input id="departmentInput" maxlength="50" placeholder="例：経済学科"></label>
-    <label>先生のメールアドレス<input id="teacherEmailInput" maxlength="100" type="email" placeholder="例：teacher@example.jp"></label>
+    <label>メールアドレス<input id="teacherEmailInput" maxlength="100" type="email" placeholder="例：student@example.jp"></label>
     <div class="form-message" id="registerMessage"></div>
     <button class="primary-btn register-submit" id="registerSubmit" type="submit">旅をはじめる</button>
   </form>

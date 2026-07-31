@@ -8,7 +8,7 @@ const DORMANT_HOURS = 72;
 const RESTART_BONUS_HOURS = 24;
 
 const HEADERS = [
-  'ユーザーID','ニックネーム','学部','学科','先生メール',
+  'ユーザーID','ニックネーム','学部','学科','メールアドレス',
   '今週の学習分数','累計学習分数','現在地','更新日時','週ID','アイコンURL',
   'エールポイント','最終学習日時','登録日時','メダルポイント','連続学習ポイント','連続ボーナス到達日数'
 ];
@@ -22,7 +22,7 @@ function doGet(e) {
     const action = String(p.action || 'ranking');
     if (action === 'ranking') return jsonResponse({success:true, ranking:getRanking(cleanText(p.userId)), inbox:getInbox(cleanText(p.userId))});
     if (action === 'calendar') return jsonResponse(getCalendar(cleanText(p.userId), cleanText(p.month)));
-    if (action === 'health') return jsonResponse({success:true, message:'Study Journey JAPAN API Ver.1.7.4 is working.'});
+    if (action === 'health') return jsonResponse({success:true, message:'Study Journey JAPAN API Ver.1.8.0 is working.'});
     return jsonResponse({success:false, message:'指定された処理が見つかりません。'});
   } catch (error) { return errorResponse(error); }
 }
@@ -70,10 +70,10 @@ function registerUser(params) {
   const userId=cleanText(params.userId), nickname=cleanText(params.nickname), faculty=cleanText(params.faculty), department=cleanText(params.department), teacherEmail=cleanText(params.teacherEmail);
   if(!userId)throw new Error('ユーザーIDがありません。'); if(!nickname)throw new Error('ニックネームを入力してください。');
   const sheet=getUserSheet(), rowNumber=findUserRow(sheet,userId), now=new Date(); let avatarUrl=rowNumber?String(sheet.getRange(rowNumber,11).getValue()||''):'';
-  if(params.avatarData)avatarUrl=saveAvatar(params.avatarData,userId);
-  if(rowNumber){sheet.getRange(rowNumber,2,1,4).setValues([[nickname,faculty,department,teacherEmail]]);sheet.getRange(rowNumber,9).setValue(now);sheet.getRange(rowNumber,11).setValue(avatarUrl);return{success:true,isNewUser:false,userId,avatarUrl};}
+  let avatarWarning='';if(String(params.removeAvatar)==='true')avatarUrl='';else if(params.avatarData){const saved=saveAvatar(params.avatarData,userId);avatarUrl=saved.avatarUrl;avatarWarning=saved.warning||'';}
+  if(rowNumber){sheet.getRange(rowNumber,2,1,4).setValues([[nickname,faculty,department,teacherEmail]]);sheet.getRange(rowNumber,9).setValue(now);sheet.getRange(rowNumber,11).setValue(avatarUrl);return{success:true,isNewUser:false,userId,avatarUrl,avatarWarning};}
   sheet.appendRow([userId,nickname,faculty,department,teacherEmail,0,0,'沖縄県',now,getCurrentWeekId(),avatarUrl,0,'',now,0,0,0]);
-  return{success:true,isNewUser:true,userId,avatarUrl};
+  return{success:true,isNewUser:true,userId,avatarUrl,avatarWarning};
 }
 
 function addStudyTime(params) {
@@ -150,7 +150,7 @@ function getDailyRecord(userId,date){const sheet=getDailySheet(),row=findDailyRo
 
 function isDormantRow(row,now){const basis=row[12] instanceof Date?row[12]:(row[13] instanceof Date?row[13]:null);return!!basis&&now.getTime()-basis.getTime()>=DORMANT_HOURS*3600000;}
 function hasCheeredToday(senderId,recipientId){if(!senderId||!recipientId||senderId===recipientId)return false;const sheet=getCheerSheet(),lastRow=sheet.getLastRow();if(lastRow<2)return false;const today=todayString(),rows=sheet.getRange(2,1,lastRow-1,CHEER_HEADERS.length).getValues();return rows.some(r=>String(r[1])===senderId&&String(r[2])===recipientId&&r[3] instanceof Date&&Utilities.formatDate(r[3],TIMEZONE,'yyyy-MM-dd')===today);}
-function saveAvatar(dataUrl,userId){const match=String(dataUrl).match(/^data:(image\/(?:jpeg|png|webp));base64,(.+)$/);if(!match)throw new Error('アイコン画像の形式が正しくありません。');const bytes=Utilities.base64Decode(match[2]);if(bytes.length>500000)throw new Error('アイコン画像が大きすぎます。');const mimeType=match[1],extension=mimeType==='image/png'?'png':mimeType==='image/webp'?'webp':'jpg',folder=getAvatarFolder(),safeId=userId.replace(/[^a-zA-Z0-9_-]/g,'_'),existing=folder.getFiles();while(existing.hasNext()){const f=existing.next();if(f.getName().indexOf(safeId+'.')===0)f.setTrashed(true);}const file=folder.createFile(Utilities.newBlob(bytes,mimeType,safeId+'.'+extension));try{file.setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);}catch(e){throw new Error('Googleドライブの共有設定をご確認ください。');}return'https://drive.google.com/thumbnail?id='+file.getId()+'&sz=w256';}
+function saveAvatar(dataUrl,userId){const match=String(dataUrl).match(/^data:(image\/(?:jpeg|png|webp));base64,(.+)$/);if(!match)throw new Error('アイコン画像の形式が正しくありません。');const bytes=Utilities.base64Decode(match[2]);if(bytes.length>500000)throw new Error('アイコン画像が大きすぎます。');const mimeType=match[1],extension=mimeType==='image/png'?'png':mimeType==='image/webp'?'webp':'jpg',folder=getAvatarFolder(),safeId=userId.replace(/[^a-zA-Z0-9_-]/g,'_'),existing=folder.getFiles();while(existing.hasNext()){const f=existing.next();if(f.getName().indexOf(safeId+'.')===0)f.setTrashed(true);}const file=folder.createFile(Utilities.newBlob(bytes,mimeType,safeId+'.'+extension));try{file.setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);return{avatarUrl:'https://drive.google.com/thumbnail?id='+file.getId()+'&sz=w256',warning:''};}catch(e){return{avatarUrl:'',warning:'Google Driveの共有制限により、アイコンはこの端末内だけに保存されました。'};}}
 function getAvatarFolder(){const folders=DriveApp.getFoldersByName(AVATAR_FOLDER_NAME);return folders.hasNext()?folders.next():DriveApp.createFolder(AVATAR_FOLDER_NAME);}
 function findUserRow(sheet,userId){const lastRow=sheet.getLastRow();if(lastRow<2)return null;const ids=sheet.getRange(2,1,lastRow-1,1).getDisplayValues();for(let i=0;i<ids.length;i++)if(String(ids[i][0])===userId)return i+2;return null;}
 function findCheerRow(sheet,cheerId){const lastRow=sheet.getLastRow();if(lastRow<2)return null;const ids=sheet.getRange(2,1,lastRow-1,1).getDisplayValues();for(let i=0;i<ids.length;i++)if(String(ids[i][0])===cheerId)return i+2;return null;}

@@ -95,6 +95,297 @@
           "file": "10_imo_shochu.png"
         }
       ]
+    },
+    {
+      "id": "03_miyazaki",
+      "key": "miyazaki",
+      "name": "宮崎県",
+      "reading": "みやざきけん",
+      "badges": [
+        {
+          "name": "サンメッセ日南",
+          "file": "01_badge.png"
+        },
+        {
+          "name": "高千穂峡",
+          "file": "02_badge.png"
+        },
+        {
+          "name": "チキン南蛮",
+          "file": "03_badge.png"
+        },
+        {
+          "name": "青島",
+          "file": "04_badge.png"
+        },
+        {
+          "name": "宮崎マンゴー",
+          "file": "05_badge.png"
+        },
+        {
+          "name": "鵜戸神宮",
+          "file": "06_badge.png"
+        },
+        {
+          "name": "地鶏の炭焼き",
+          "file": "07_badge.png"
+        },
+        {
+          "name": "霧島連山",
+          "file": "08_badge.png"
+        },
+        {
+          "name": "都井岬の野生馬",
+          "file": "09_badge.png"
+        },
+        {
+          "name": "冷し汁",
+          "file": "10_badge.png"
+        }
+      ]
+    },
+    {
+      "id": "04_oita",
+      "key": "oita",
+      "name": "大分県",
+      "reading": "おおいたけん",
+      "badges": [
+        {
+          "name": "別府地獄めぐり",
+          "file": "01_badge.png"
+        },
+        {
+          "name": "別府温泉街",
+          "file": "02_badge.png"
+        },
+        {
+          "name": "とり天",
+          "file": "03_badge.png"
+        },
+        {
+          "name": "地獄蒸し",
+          "file": "04_badge.png"
+        },
+        {
+          "name": "りゅうきゅう丼",
+          "file": "05_badge.png"
+        },
+        {
+          "name": "かぼす",
+          "file": "06_badge.png"
+        },
+        {
+          "name": "高崎山のさる",
+          "file": "07_badge.png"
+        },
+        {
+          "name": "豊後二見ヶ浦",
+          "file": "08_badge.png"
+        },
+        {
+          "name": "杵臼城跡",
+          "file": "09_badge.png"
+        },
+        {
+          "name": "ざびえる",
+          "file": "10_badge.png"
+        }
+      ]
+    },
+    {
+      "id": "05_kumamoto",
+      "key": "kumamoto",
+      "name": "熊本県",
+      "reading": "くまもとけん",
+      "badges": [
+        {
+          "name": "熊本城",
+          "file": "01_badge.png"
+        },
+        {
+          "name": "阿蘇山",
+          "file": "02_badge.png"
+        },
+        {
+          "name": "馬肉",
+          "file": "03_badge.png"
+        },
+        {
+          "name": "からし蓮根",
+          "file": "04_badge.png"
+        },
+        {
+          "name": "黒川温泉",
+          "file": "05_badge.png"
+        },
+        {
+          "name": "天草のイルカ",
+          "file": "06_badge.png"
+        },
+        {
+          "name": "あか牛のステーキ",
+          "file": "07_badge.png"
+        },
+        {
+          "name": "水天寺成趣園",
+          "file": "08_badge.png"
+        },
+        {
+          "name": "通潤橋",
+          "file": "09_badge.png"
+        },
+        {
+          "name": "熊本ラーメン",
+          "file": "10_badge.png"
+        }
+      ]
+    },
+    {
+      "id": "06_nagasaki",
+      "key": "nagasaki",
+      "name": "長崎県",
+      "reading": "ながさきけん",
+      "badges": [
+        {
+          "name": "稲佐山の夜景",
+          "file": "01_badge.png"
+        },
+        {
+          "name": "大浦天主堂",
+          "file": "02_badge.png"
+        },
+        {
+          "name": "長崎ちゃんぽん",
+          "file": "03_badge.png"
+        },
+        {
+          "name": "カステラ",
+          "file": "04_badge.png"
+        },
+        {
+          "name": "出島",
+          "file": "05_badge.png"
+        },
+        {
+          "name": "グラバー園",
+          "file": "06_badge.png"
+        },
+        {
+          "name": "ハウステンボス",
+          "file": "07_badge.png"
+        },
+        {
+          "name": "長崎くんち",
+          "file": "08_badge.png"
+        },
+        {
+          "name": "軍艦島",
+          "file": "09_badge.png"
+        },
+        {
+          "name": "長崎のびわ",
+          "file": "10_badge.png"
+        }
+      ]
+    },
+    {
+      "id": "07_saga",
+      "key": "saga",
+      "name": "佐賀県",
+      "reading": "さがけん",
+      "badges": [
+        {
+          "name": "唐津城",
+          "file": "01_badge.png"
+        },
+        {
+          "name": "虹の松原",
+          "file": "02_badge.png"
+        },
+        {
+          "name": "佐賀牛",
+          "file": "03_badge.png"
+        },
+        {
+          "name": "有田焼",
+          "file": "04_badge.png"
+        },
+        {
+          "name": "嬉野温泉",
+          "file": "05_badge.png"
+        },
+        {
+          "name": "有明海のり",
+          "file": "06_badge.png"
+        },
+        {
+          "name": "呼子のいか",
+          "file": "07_badge.png"
+        },
+        {
+          "name": "唐津くんち",
+          "file": "08_badge.png"
+        },
+        {
+          "name": "嬉野茶",
+          "file": "09_badge.png"
+        },
+        {
+          "name": "村岡屋の丸ぼうろ",
+          "file": "10_badge.png"
+        }
+      ]
+    },
+    {
+      "id": "08_fukuoka",
+      "key": "fukuoka",
+      "name": "福岡県",
+      "reading": "ふくおかけん",
+      "badges": [
+        {
+          "name": "太宰府天満宮",
+          "file": "01_badge.png"
+        },
+        {
+          "name": "福岡タワー",
+          "file": "02_badge.png"
+        },
+        {
+          "name": "博多ラーメン",
+          "file": "03_badge.png"
+        },
+        {
+          "name": "明太子",
+          "file": "04_badge.png"
+        },
+        {
+          "name": "中洲屋台",
+          "file": "05_badge.png"
+        },
+        {
+          "name": "もつ鍋",
+          "file": "06_badge.png"
+        },
+        {
+          "name": "福岡城跡",
+          "file": "07_badge.png"
+        },
+        {
+          "name": "柳川の川下り",
+          "file": "08_badge.png"
+        },
+        {
+          "name": "桜井二見ヶ浦 夫婦岩",
+          "file": "09_badge.png"
+        },
+        {
+          "name": "ごぼう天うどん",
+          "file": "10_badge.png"
+        }
+      ]
     }
-  ]
+  ],
+  "version": "1.8.0",
+  "availableBadgeCount": 80,
+  "targetBadgeCount": 470
 }

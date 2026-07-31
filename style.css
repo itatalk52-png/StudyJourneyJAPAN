@@ -108,3 +108,9 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
 
 /* Ver.1.7.4 — official release calendar icon */
 .calendar-btn .calendar-icon{color:#16372b}
+
+/* Ver.1.8.0 avatar controls */
+.profile-btn,.avatar,.avatar img,.profile-btn img{border-radius:50%}
+.avatar-upload-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.avatar-clear-button{border:1px solid var(--line);border-radius:999px;padding:11px 16px;background:transparent;color:var(--muted);font:inherit;font-weight:700;cursor:pointer}
+.avatar-clear-button:hover{background:#f1f0eb;color:var(--forest)}
