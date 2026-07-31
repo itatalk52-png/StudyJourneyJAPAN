@@ -124,8 +124,16 @@ function updateMap(){
 
   const mapViewport=document.getElementById('mapViewport');
   const homeViewport=document.getElementById('homeMapViewport');
-  if(mapViewport)mapViewport.classList.toggle('national',isNational);
-  if(homeViewport)homeViewport.classList.remove('national');
+  if(mapViewport){
+    mapViewport.classList.toggle('national',isNational);
+    mapViewport.classList.toggle('pref-okinawa',prefIndex===0);
+    mapViewport.classList.toggle('pref-kagoshima',prefIndex===1);
+  }
+  if(homeViewport){
+    homeViewport.classList.remove('national');
+    homeViewport.classList.toggle('pref-okinawa',prefIndex===0);
+    homeViewport.classList.toggle('pref-kagoshima',prefIndex===1);
+  }
 
   document.getElementById('mapViewTitle').textContent=isNational?'日本全体':'現在地周辺';
   document.getElementById('mapViewToggle').textContent=isNational?'📍 現在地へ戻る':'🗾 日本全体を見る';

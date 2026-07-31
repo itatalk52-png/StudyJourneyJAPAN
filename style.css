@@ -332,3 +332,21 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
     height: 48px;
   }
 }
+
+/* Ver.1.8.2 R2 — prefecture-accurate current-location marker */
+.journey-map-viewport.pref-okinawa:not(.national) .current-location-pin {
+  left: 15%;
+  top: 88%;
+}
+.journey-map-viewport.pref-kagoshima:not(.national) .current-location-pin {
+  left: 43%;
+  top: 58%;
+}
+.journey-map-viewport.national.pref-okinawa .current-location-pin {
+  left: 4.5%;
+  top: 92%;
+}
+.journey-map-viewport.national.pref-kagoshima .current-location-pin {
+  left: 13%;
+  top: 73%;
+}
