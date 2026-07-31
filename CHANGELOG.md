@@ -1,3 +1,10 @@
+# Ver.1.8.5 R2
+
+- Fixed the top-right Home profile icon to render as a true circle.
+- Removed browser button padding and locked equal width and height.
+- Enforced centered `object-fit: cover` cropping for uploaded profile images.
+- Updated the service-worker cache version.
+
 # Ver.1.8.5
 
 - Rebuilt the map feature using dedicated current-location images.
