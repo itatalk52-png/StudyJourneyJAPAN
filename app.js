@@ -1,15 +1,15 @@
 const API_URL='https://script.google.com/macros/s/AKfycby2SNa8Fx258tUi3UUDVHNGAqOWg80VYx3I5dSavJnhpMbJaNV-TidNYUh9PxhNnr-fNw/exec';
 const DATA={"prefectures":[{"id":"01_okinawa","key":"okinawa","name":"沖縄県","reading":"おきなわけん","badges":[{"name":"首里城","file":"01_shurijo.png"},{"name":"美ら海水族館","file":"02_churaumi_aquarium.png"},{"name":"沖縄そば","file":"03_okinawa_soba.png"},{"name":"紅いもタルト","file":"04_beniimo_tart.png"},{"name":"タコライス","file":"05_taco_rice.png"},{"name":"南国フルーツ","file":"06_tropical_fruits.png"},{"name":"琉球ガラス","file":"07_ryukyu_glass.png"},{"name":"もずく","file":"08_mozuku.png"},{"name":"古宇利大橋","file":"09_kouri_bridge.png"},{"name":"竹富島","file":"10_taketomi_island.png"}]},{"id":"02_kagoshima","key":"kagoshima","name":"鹿児島県","reading":"かごしまけん","badges":[{"name":"桜島","file":"01_sakurajima.png"},{"name":"鹿児島城跡","file":"02_kagoshima_castle.png"},{"name":"黒豚しゃぶしゃぶ","file":"03_kurobuta_shabushabu.png"},{"name":"知覧武家屋敷庭園","file":"04_chiran_samurai_garden.png"},{"name":"屋久島","file":"05_yakushima.png"},{"name":"出水麓","file":"06_izumi_fumoto.png"},{"name":"さつまいも","file":"07_satsumaimo.png"},{"name":"長島","file":"08_nagashima.png"},{"name":"霧島高原","file":"09_kirishima_highlands.png"},{"name":"芋焼酎","file":"10_imo_shochu.png"}]},{"id":"03_miyazaki","key":"miyazaki","name":"宮崎県","reading":"みやざきけん","badges":[{"name":"サンメッセ日南","file":"01_badge.png"},{"name":"高千穂峡","file":"02_badge.png"},{"name":"チキン南蛮","file":"03_badge.png"},{"name":"青島","file":"04_badge.png"},{"name":"宮崎マンゴー","file":"05_badge.png"},{"name":"鵜戸神宮","file":"06_badge.png"},{"name":"地鶏の炭焼き","file":"07_badge.png"},{"name":"霧島連山","file":"08_badge.png"},{"name":"都井岬の野生馬","file":"09_badge.png"},{"name":"冷し汁","file":"10_badge.png"}]},{"id":"04_oita","key":"oita","name":"大分県","reading":"おおいたけん","badges":[{"name":"別府地獄めぐり","file":"01_badge.png"},{"name":"別府温泉街","file":"02_badge.png"},{"name":"とり天","file":"03_badge.png"},{"name":"地獄蒸し","file":"04_badge.png"},{"name":"りゅうきゅう丼","file":"05_badge.png"},{"name":"かぼす","file":"06_badge.png"},{"name":"高崎山のさる","file":"07_badge.png"},{"name":"豊後二見ヶ浦","file":"08_badge.png"},{"name":"杵臼城跡","file":"09_badge.png"},{"name":"ざびえる","file":"10_badge.png"}]},{"id":"05_kumamoto","key":"kumamoto","name":"熊本県","reading":"くまもとけん","badges":[{"name":"熊本城","file":"01_badge.png"},{"name":"阿蘇山","file":"02_badge.png"},{"name":"馬肉","file":"03_badge.png"},{"name":"からし蓮根","file":"04_badge.png"},{"name":"黒川温泉","file":"05_badge.png"},{"name":"天草のイルカ","file":"06_badge.png"},{"name":"あか牛のステーキ","file":"07_badge.png"},{"name":"水天寺成趣園","file":"08_badge.png"},{"name":"通潤橋","file":"09_badge.png"},{"name":"熊本ラーメン","file":"10_badge.png"}]},{"id":"06_nagasaki","key":"nagasaki","name":"長崎県","reading":"ながさきけん","badges":[{"name":"稲佐山の夜景","file":"01_badge.png"},{"name":"大浦天主堂","file":"02_badge.png"},{"name":"長崎ちゃんぽん","file":"03_badge.png"},{"name":"カステラ","file":"04_badge.png"},{"name":"出島","file":"05_badge.png"},{"name":"グラバー園","file":"06_badge.png"},{"name":"ハウステンボス","file":"07_badge.png"},{"name":"長崎くんち","file":"08_badge.png"},{"name":"軍艦島","file":"09_badge.png"},{"name":"長崎のびわ","file":"10_badge.png"}]},{"id":"07_saga","key":"saga","name":"佐賀県","reading":"さがけん","badges":[{"name":"唐津城","file":"01_badge.png"},{"name":"虹の松原","file":"02_badge.png"},{"name":"佐賀牛","file":"03_badge.png"},{"name":"有田焼","file":"04_badge.png"},{"name":"嬉野温泉","file":"05_badge.png"},{"name":"有明海のり","file":"06_badge.png"},{"name":"呼子のいか","file":"07_badge.png"},{"name":"唐津くんち","file":"08_badge.png"},{"name":"嬉野茶","file":"09_badge.png"},{"name":"村岡屋の丸ぼうろ","file":"10_badge.png"}]},{"id":"08_fukuoka","key":"fukuoka","name":"福岡県","reading":"ふくおかけん","badges":[{"name":"太宰府天満宮","file":"01_badge.png"},{"name":"福岡タワー","file":"02_badge.png"},{"name":"博多ラーメン","file":"03_badge.png"},{"name":"明太子","file":"04_badge.png"},{"name":"中洲屋台","file":"05_badge.png"},{"name":"もつ鍋","file":"06_badge.png"},{"name":"福岡城跡","file":"07_badge.png"},{"name":"柳川の川下り","file":"08_badge.png"},{"name":"桜井二見ヶ浦 夫婦岩","file":"09_badge.png"},{"name":"ごぼう天うどん","file":"10_badge.png"}]}]};
-const STORAGE_KEY='sjj_state_v8_calendar';
-const OLD_STORAGE_KEYS=['sjj_state_v7_cheers','sjj_state_v6_multi','sjj_state_v5_multi'];
+const STORAGE_KEY='sjj_state_v8_1_timer';
+const OLD_STORAGE_KEYS=['sjj_state_v8_calendar','sjj_state_v7_cheers','sjj_state_v6_multi','sjj_state_v5_multi'];
 const PROFILE_KEY='sjj_profile_v2';
 const OLD_PROFILE_KEY='sjj_profile_v1';
-const defaultState={totalSeconds:0,running:false,sessionStartSeconds:0,pendingStudySeconds:0,pendingDailySeconds:{},serverWeeklyMinutes:0,serverTotalMinutes:0,cheerPoints:0,medalPoints:0,streakPoints:0,currentStreak:0,todayQualified:false,todayServerMinutes:0};
+const defaultState={totalSeconds:0,running:false,sessionStartSeconds:0,activeLastAccountedAt:0,pendingStudySeconds:0,pendingDailySeconds:{},serverWeeklyMinutes:0,serverTotalMinutes:0,cheerPoints:0,medalPoints:0,streakPoints:0,currentStreak:0,todayQualified:false,todayServerMinutes:0};
 let storedState=localStorage.getItem(STORAGE_KEY);
 if(!storedState) for(const key of OLD_STORAGE_KEYS){storedState=localStorage.getItem(key);if(storedState)break;}
 let state=Object.assign({},defaultState,JSON.parse(storedState||'{}'));if(!state.pendingDailySeconds||typeof state.pendingDailySeconds!=='object')state.pendingDailySeconds={};if((state.pendingStudySeconds||0)>0&&!Object.values(state.pendingDailySeconds).some(Number))state.pendingDailySeconds[localDateKey()]=state.pendingStudySeconds;
 let profile=JSON.parse(localStorage.getItem(PROFILE_KEY)||localStorage.getItem(OLD_PROFILE_KEY)||'null');
-let interval=null,selectedPref=0,mapPreviewMode='auto',syncing=false,pendingAvatarData='',calendarMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+let interval=null,selectedPref=0,mapViewMode='current',syncing=false,pendingAvatarData='',calendarMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);
 const pageTitles={home:'Home',timer:'Timer',collection:'Journey Collection',map:'Journey Map',friends:'Journey Friends'};
 
 function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}
@@ -19,6 +19,7 @@ function initials(name=''){return [...name.trim()].slice(0,2).join('').toUpperCa
 function localDateKey(d=new Date()){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
 function monthKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}
 function formatTime(s){const h=String(Math.floor(s/3600)).padStart(2,'0'),m=String(Math.floor((s%3600)/60)).padStart(2,'0'),sec=String(s%60).padStart(2,'0');return `${h}:${m}:${sec}`;}
+function formatPoints(value){const n=Math.round((Number(value)||0)*10)/10;return Number.isInteger(n)?String(n):n.toFixed(1);}
 function unlockedCount(){return Math.min(DATA.prefectures.reduce((n,p)=>n+p.badges.length,0),Math.floor(state.totalSeconds/600));}
 function currentPrefecture(){const index=Math.min(DATA.prefectures.length-1,Math.floor(unlockedCount()/10));return DATA.prefectures[index]?.name||'沖縄県';}
 function toast(message,type='ok'){const el=document.getElementById('syncToast');el.textContent=message;el.className=`sync-toast show ${type}`;clearTimeout(el._t);el._t=setTimeout(()=>el.className='sync-toast',3500);}
@@ -36,19 +37,119 @@ async function handleAvatarFile(event){const file=event.target.files?.[0],msg=do
 function compressImage(file,maxSize,quality){return new Promise((resolve,reject)=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{try{const size=Math.min(img.width,img.height),sx=(img.width-size)/2,sy=(img.height-size)/2,canvas=document.createElement('canvas');canvas.width=maxSize;canvas.height=maxSize;canvas.getContext('2d').drawImage(img,sx,sy,size,size,0,0,maxSize,maxSize);URL.revokeObjectURL(url);resolve(canvas.toDataURL('image/jpeg',quality));}catch(e){reject(e);}};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('image error'));};img.src=url;});}
 
 async function syncPendingMinutes(){if(!profile||syncing)return;const entries=Object.entries(state.pendingDailySeconds||{}).map(([date,seconds])=>({date,minutes:Math.floor(Number(seconds||0)/60)})).filter(x=>x.minutes>0).sort((a,b)=>a.date.localeCompare(b.date));if(!entries.length)return;syncing=true;const total=entries.reduce((a,b)=>a+b.minutes,0);toast(`${total}分を記録しています…`);let lastData=null;try{for(const item of entries){const data=await apiPost({action:'addStudy',userId:profile.userId,minutes:String(item.minutes),studyDate:item.date,currentPrefecture:currentPrefecture()});state.pendingDailySeconds[item.date]=Math.max(0,Number(state.pendingDailySeconds[item.date]||0)-item.minutes*60);lastData=data;if(data.medalPointsAdded)toast(`${medalLabel(data.medal)}を獲得しました！ +${data.medalPointsAdded}pt 🎉`);if(data.streakBonusAdded)toast(`連続学習${data.streak}日目！ +${data.streakBonusAdded}pt 🎉`);}state.pendingStudySeconds=Object.values(state.pendingDailySeconds).reduce((a,b)=>a+Number(b||0),0);if(lastData){state.serverWeeklyMinutes=Number(lastData.weeklyMinutes)||0;state.serverTotalMinutes=Number(lastData.totalMinutes)||0;state.cheerPoints=Number(lastData.cheerPoints)||0;state.medalPoints=Number(lastData.medalPoints)||0;state.streakPoints=Number(lastData.streakPoints)||0;state.currentStreak=Number(lastData.streak)||0;}save();toast(`${total}分をランキングとカレンダーへ反映しました`);await Promise.all([loadRanking(),loadCalendar(false)]);}catch(e){toast('記録の送信に失敗しました。次回停止時に再送します：'+e.message,'error');}finally{syncing=false;renderAll();}}
-function toggleTimer(){if(!profile){openProfile();return;}if(!state.running){state.running=true;state.sessionStartSeconds=state.totalSeconds;interval=setInterval(()=>{state.totalSeconds++;const key=localDateKey();state.pendingDailySeconds[key]=(Number(state.pendingDailySeconds[key])||0)+1;state.pendingStudySeconds=Object.values(state.pendingDailySeconds).reduce((a,b)=>a+Number(b||0),0);save();renderAll();},1000);}else{state.running=false;clearInterval(interval);interval=null;state.sessionStartSeconds=state.totalSeconds;save();const minutes=Math.floor((state.pendingStudySeconds||0)/60);if(minutes>0)syncPendingMinutes();else toast('1分未満の記録も保持しています。合計1分でランキングに加算されます');}renderAll();}
-function resetTimer(){if(state.running){toast('タイマーを停止してからリセットしてください','error');return;}state.totalSeconds=0;state.sessionStartSeconds=0;save();renderAll();}
+function addElapsedSeconds(startMs,endMs){
+  let seconds=Math.max(0,Math.floor((endMs-startMs)/1000));
+  if(!seconds)return 0;
+  let cursor=startMs,remaining=seconds;
+  while(remaining>0){
+    const d=new Date(cursor),nextMidnight=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1).getTime();
+    const segment=Math.min(remaining,Math.max(1,Math.ceil((nextMidnight-cursor)/1000)));
+    const key=localDateKey(d);
+    state.pendingDailySeconds[key]=(Number(state.pendingDailySeconds[key])||0)+segment;
+    cursor+=segment*1000;
+    remaining-=segment;
+  }
+  state.totalSeconds+=seconds;
+  state.pendingStudySeconds=Object.values(state.pendingDailySeconds).reduce((a,b)=>a+Number(b||0),0);
+  return seconds;
+}
+function reconcileRunningTime(){
+  if(!state.running)return 0;
+  const now=Date.now();
+  if(!Number(state.activeLastAccountedAt)){state.activeLastAccountedAt=now;save();return 0;}
+  const added=addElapsedSeconds(Number(state.activeLastAccountedAt),now);
+  if(added){state.activeLastAccountedAt=Number(state.activeLastAccountedAt)+added*1000;save();}
+  return added;
+}
+function startTimerLoop(){
+  clearInterval(interval);
+  interval=setInterval(()=>{reconcileRunningTime();renderAll();},1000);
+}
+function toggleTimer(){
+  if(!profile){openProfile();return;}
+  if(!state.running){
+    state.running=true;
+    state.sessionStartSeconds=state.totalSeconds;
+    state.activeLastAccountedAt=Date.now();
+    save();
+    startTimerLoop();
+  }else{
+    reconcileRunningTime();
+    state.running=false;
+    state.activeLastAccountedAt=0;
+    clearInterval(interval);
+    interval=null;
+    state.sessionStartSeconds=state.totalSeconds;
+    save();
+    const minutes=Math.floor((state.pendingStudySeconds||0)/60);
+    if(minutes>0)syncPendingMinutes();
+    else toast('1分未満の記録も保持しています。合計1分でランキングに加算されます');
+  }
+  renderAll();
+}
+function resetTimer(){
+  if(state.running){toast('タイマーを停止してからリセットしてください','error');return;}
+  state.totalSeconds=0;
+  state.sessionStartSeconds=0;
+  state.activeLastAccountedAt=0;
+  save();
+  renderAll();
+}
 
 async function sendCheer(recipientId,nickname,button){if(!profile)return openProfile();button.disabled=true;try{const data=await apiPost({action:'sendCheer',senderId:profile.userId,recipientId});state.cheerPoints=Number(data.senderCheerPoints)||state.cheerPoints;save();toast(`${nickname}さんにエールを送りました🎉 +${data.points}pt`);await loadRanking();}catch(e){toast(e.message,'error');button.disabled=false;}}
 async function thankCheer(cheerId,button){button.disabled=true;try{const data=await apiPost({action:'thankCheer',userId:profile.userId,cheerId});state.cheerPoints=Number(data.cheerPoints)||state.cheerPoints;save();toast(`ありがとう😊 +${data.points}pt`);await loadRanking();}catch(e){toast(e.message,'error');button.disabled=false;}}
 function renderInbox(items){const box=document.getElementById('cheerInbox');box.innerHTML='';if(!items?.length){box.hidden=true;return;}box.hidden=false;items.forEach(item=>{const row=document.createElement('div');row.className='cheer-notice';row.innerHTML=`<strong>🎉 ${escapeHtml(item.senderNickname)}さんからエールが届きました😄</strong><button type="button">ありがとう😊</button>`;row.querySelector('button').onclick=e=>thankCheer(item.cheerId,e.currentTarget);box.appendChild(row);});}
 
-function renderCollection(){const unlocked=unlockedCount(),p=DATA.prefectures[selectedPref];[...document.getElementById('prefTabs').children].forEach((b,i)=>b.classList.toggle('active',i===selectedPref));document.getElementById('prefReading').textContent=p.reading;document.getElementById('prefTitle').textContent=p.name;const prefUnlocked=Math.max(0,Math.min(10,unlocked-selectedPref*10));document.getElementById('prefCount').textContent=`${prefUnlocked} / 10`;document.getElementById('collectionProgress').textContent=`${unlocked} / ${DATA.prefectures.reduce((n,x)=>n+x.badges.length,0)}`;const grid=document.getElementById('badgeGrid');grid.innerHTML='';p.badges.forEach((badge,i)=>{const globalIndex=selectedPref*10+i,isUnlocked=globalIndex<unlocked,btn=document.createElement('button');btn.className='badge-card'+(isUnlocked?'':' locked');const path=`Assets/badges/${p.id}/${badge.file}`;btn.innerHTML=`<div class="badge-wrap"><img src="${path}" alt="${isUnlocked?badge.name:'未取得バッジ'}"><div class="lock-icon">?</div></div><small>${String(i+1).padStart(2,'0')}</small><strong>${isUnlocked?badge.name:'未取得'}</strong>`;if(isUnlocked)btn.onclick=()=>openBadge(path,p.name,badge.name);grid.appendChild(btn);});}
+let collectionRenderKey='';
+function renderCollection(force=false){const unlocked=unlockedCount(),key=`${selectedPref}:${unlocked}`;if(!force&&key===collectionRenderKey)return;collectionRenderKey=key;const p=DATA.prefectures[selectedPref];[...document.getElementById('prefTabs').children].forEach((b,i)=>b.classList.toggle('active',i===selectedPref));document.getElementById('prefReading').textContent=p.reading;document.getElementById('prefTitle').textContent=p.name;const prefUnlocked=Math.max(0,Math.min(10,unlocked-selectedPref*10));document.getElementById('prefCount').textContent=`${prefUnlocked} / 10`;document.getElementById('collectionProgress').textContent=`${unlocked} / ${DATA.prefectures.reduce((n,x)=>n+x.badges.length,0)}`;const grid=document.getElementById('badgeGrid');grid.innerHTML='';p.badges.forEach((badge,i)=>{const globalIndex=selectedPref*10+i,isUnlocked=globalIndex<unlocked,btn=document.createElement('button');btn.className='badge-card'+(isUnlocked?'':' locked');const path=`Assets/badges/${p.id}/${badge.file}`;btn.innerHTML=`<div class="badge-wrap"><img src="${path}" alt="${isUnlocked?badge.name:'未取得バッジ'}"><div class="lock-icon">?</div></div><small>${String(i+1).padStart(2,'0')}</small><strong>${isUnlocked?badge.name:'未取得'}</strong>`;if(isUnlocked)btn.onclick=()=>openBadge(path,p.name,badge.name);grid.appendChild(btn);});}
 const dialog=document.getElementById('badgeDialog');function openBadge(path,pref,name){document.getElementById('dialogImage').src=path;document.getElementById('dialogPref').textContent=pref;document.getElementById('dialogName').textContent=name;dialog.showModal();}
-function updateMap(){const unlocked=unlockedCount();let completed=Math.floor(unlocked/10);if(mapPreviewMode!=='auto')completed=Number(mapPreviewMode);const ok=document.getElementById('okinawaOverlay'),kg=document.getElementById('kagoshimaOverlay');ok.className='map-layer overlay';kg.className='map-layer overlay';if(completed>=1)ok.classList.add('complete');else ok.classList.add('current');if(completed>=2)kg.classList.add('complete');else if(completed>=1)kg.classList.add('current');document.getElementById('okinawaMapStatus').textContent=`${Math.max(0,Math.min(10,unlocked))} / 10`;document.getElementById('kagoshimaMapStatus').textContent=`${Math.max(0,Math.min(10,unlocked-10))} / 10`;const current=completed>=2?'宮崎県':completed>=1?'鹿児島県':'沖縄県';document.getElementById('mapCurrentPref').textContent=current;document.getElementById('mapCurrentText').textContent=completed>=2?'次の目的地、宮崎県のバッジを準備中です。':`${current}の10個の思い出を集めましょう。`;}
-function renderAll(){const unlocked=unlockedCount(),mins=Math.floor(state.totalSeconds/60),pending=Math.floor((state.pendingStudySeconds||0)/60),todayPending=Math.floor(Number((state.pendingDailySeconds||{})[localDateKey()]||0)/60),todayTotal=(Number(state.todayServerMinutes)||0)+todayPending,weeklyMinutes=(Number(state.serverWeeklyMinutes)||0)+pending,studyPoints=(Number(state.serverTotalMinutes)||0)+pending,cheerPoints=Number(state.cheerPoints)||0,medalPoints=Number(state.medalPoints)||0,streakPoints=Number(state.streakPoints)||0,totalPoints=studyPoints+cheerPoints+medalPoints+streakPoints,flat=DATA.prefectures.flatMap(p=>p.badges.map(b=>b.name));document.getElementById('homeTimer').textContent=formatTime(state.totalSeconds);document.getElementById('timerDisplay').textContent=formatTime(state.totalSeconds);document.getElementById('todayMinutes').textContent=`${todayTotal} min`;document.getElementById('weekMinutes').textContent=`${weeklyMinutes} min`;document.getElementById('totalPoints').textContent=`${totalPoints} pt`;document.getElementById('sessionPoints').textContent=`${mins} pt`;document.getElementById('timerTotalPoints').textContent=`${totalPoints} pt`;document.getElementById('homeProgressText').textContent=`${unlocked} / 470 Memories`;document.getElementById('mapProgress').textContent=`${unlocked} / 470 Memories`;document.getElementById('homeProgressFill').style.width=`${unlocked/470*100}%`;document.getElementById('nextDestination').textContent=flat[Math.min(unlocked,flat.length-1)];const rem=10-(mins%10||0);document.getElementById('nextBadgeText').textContent=unlocked>=flat.length?'追加バッジを準備中':`あと${rem}分`;document.getElementById('homeStart').textContent=state.running?'PAUSE':'START';document.getElementById('timerStart').textContent=state.running?'PAUSE':'START';const pref=currentPrefecture();document.getElementById('currentChip').textContent=`現在地：${pref}`;document.getElementById('myJourneyText').textContent=`${pref}・${unlocked} Memories`;document.getElementById('myJourneyMinutes').textContent=`${weeklyMinutes} min`;document.getElementById('myJourneyPoints').textContent=`${totalPoints} pt`;document.getElementById('pendingSync').textContent=pending>0?`未同期 ${pending}分（${pending}pt）`:'同期済み';renderStreakBanner(todayTotal);renderCollection();updateMap();}
+function setOverlayState(element,completed,current){
+  if(!element)return;
+  element.className='journey-map-layer overlay';
+  if(completed)element.classList.add('complete');
+  else if(current)element.classList.add('current');
+}
+function updateMap(){
+  const unlocked=unlockedCount();
+  const prefIndex=Math.min(Math.floor(unlocked/10),Math.max(0,DATA.prefectures.length-1));
+  const currentPref=DATA.prefectures[prefIndex]?.name||'沖縄県';
+  const prefProgress=Math.max(0,Math.min(10,unlocked-prefIndex*10));
+  const completed=Math.floor(unlocked/10);
+  const isNational=mapViewMode==='national';
+
+  setOverlayState(document.getElementById('okinawaOverlay'),completed>=1,completed<1);
+  setOverlayState(document.getElementById('kagoshimaOverlay'),completed>=2,completed===1);
+  setOverlayState(document.getElementById('homeOkinawaOverlay'),completed>=1,completed<1);
+  setOverlayState(document.getElementById('homeKagoshimaOverlay'),completed>=2,completed===1);
+
+  const mapViewport=document.getElementById('mapViewport');
+  const homeViewport=document.getElementById('homeMapViewport');
+  if(mapViewport)mapViewport.classList.toggle('national',isNational);
+  if(homeViewport)homeViewport.classList.remove('national');
+
+  document.getElementById('mapViewTitle').textContent=isNational?'日本全体':'現在地周辺';
+  document.getElementById('mapViewToggle').textContent=isNational?'📍 現在地へ戻る':'🗾 日本全体を見る';
+  document.getElementById('mapCaption').textContent=isNational
+    ?'日本一周全体の位置を表示しています。'
+    :'現在地のある九州地方を拡大表示しています。';
+  document.getElementById('mapCurrentPref').textContent=currentPref;
+  document.getElementById('mapCurrentText').textContent=`${currentPref}の10個の思い出を集めましょう。`;
+  document.getElementById('mapCurrentProgressLabel').textContent=`${currentPref}の進捗`;
+  document.getElementById('mapCurrentProgress').textContent=`${prefProgress} / 10`;
+  document.getElementById('mapPrefProgressFill').style.width=`${prefProgress*10}%`;
+
+  const nextPref=DATA.prefectures[prefIndex+1]?.name;
+  document.getElementById('mapNextText').textContent=nextPref
+    ?`あと${10-prefProgress}個で${nextPref}へ`
+    :'北海道のゴールを目指しましょう';
+
+  document.getElementById('homeMapCurrentPref').textContent=currentPref;
+  document.getElementById('homeMapPrefProgress').textContent=`${prefProgress} / 10`;
+  document.getElementById('homeMapCaption').textContent=`現在地：${currentPref}（九州地方を拡大表示）`;
+}
+function renderAll(){const unlocked=unlockedCount(),mins=Math.floor(state.totalSeconds/60),pending=Math.floor((state.pendingStudySeconds||0)/60),todayPending=Math.floor(Number((state.pendingDailySeconds||{})[localDateKey()]||0)/60),todayTotal=(Number(state.todayServerMinutes)||0)+todayPending,weeklyMinutes=(Number(state.serverWeeklyMinutes)||0)+pending,studyPoints=(Number(state.serverTotalMinutes)||0)+pending,cheerPoints=Number(state.cheerPoints)||0,medalPoints=Number(state.medalPoints)||0,streakPoints=Number(state.streakPoints)||0,totalPoints=studyPoints+cheerPoints+medalPoints+streakPoints,flat=DATA.prefectures.flatMap(p=>p.badges.map(b=>b.name));document.getElementById('homeTimer').textContent=formatTime(state.totalSeconds);document.getElementById('timerDisplay').textContent=formatTime(state.totalSeconds);document.getElementById('todayMinutes').textContent=`${todayTotal} min`;document.getElementById('weekMinutes').textContent=`${weeklyMinutes} min`;document.getElementById('totalPoints').textContent=`${formatPoints(totalPoints)} pt`;document.getElementById('sessionPoints').textContent=`${mins} pt`;document.getElementById('timerTotalPoints').textContent=`${formatPoints(totalPoints)} pt`;document.getElementById('homeProgressText').textContent=`${unlocked} / 470 Memories`;document.getElementById('mapProgress').textContent=`${unlocked} / 470 Memories`;document.getElementById('homeProgressFill').style.width=`${unlocked/470*100}%`;document.getElementById('nextDestination').textContent=flat[Math.min(unlocked,flat.length-1)];const rem=10-(mins%10||0);document.getElementById('nextBadgeText').textContent=unlocked>=flat.length?'追加バッジを準備中':`あと${rem}分`;document.getElementById('homeStart').textContent=state.running?'PAUSE':'START';document.getElementById('timerStart').textContent=state.running?'PAUSE':'START';const pref=currentPrefecture();document.getElementById('currentChip').textContent=`現在地：${pref}`;document.getElementById('myJourneyText').textContent=`${pref}・${unlocked} Memories`;document.getElementById('myJourneyMinutes').textContent=`${weeklyMinutes} min`;document.getElementById('myJourneyPoints').textContent=`${formatPoints(totalPoints)} pt`;document.getElementById('pendingSync').textContent=pending>0?`未同期 ${pending}分（${pending}pt）`:'同期済み';renderStreakBanner(todayTotal);renderCollection();updateMap();}
 async function loadRanking(){const status=document.getElementById('rankingStatus'),list=document.getElementById('friendsList');status.textContent='読み込み中…';try{const userId=profile?.userId||'';const r=await fetch(`${API_URL}?action=ranking&userId=${encodeURIComponent(userId)}&_=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`通信エラー (${r.status})`);const data=await r.json();if(!data.success)throw new Error(data.message||'取得に失敗しました');renderRanking(data.ranking||[]);renderInbox(data.inbox||[]);status.textContent=`${data.ranking.length}人が今週の旅に参加中`;}catch(e){status.textContent='ランキングを取得できませんでした';list.innerHTML=`<div class="empty-ranking">${escapeHtml(e.message)}<br>Apps Scriptの最新版がデプロイされているか確認してください。</div>`;}}
-function renderRanking(rows){const list=document.getElementById('friendsList');list.innerHTML='';if(!rows.length){list.innerHTML='<div class="empty-ranking">まだランキング記録がありません。<br>タイマーを合計1分以上動かして停止すると反映されます。</div>';return;}rows.forEach(row=>{const mine=profile&&row.userId===profile.userId;if(mine){state.serverWeeklyMinutes=Number(row.weeklyMinutes)||0;state.serverTotalMinutes=Number(row.totalMinutes)||0;state.cheerPoints=Number(row.cheerPoints)||0;state.medalPoints=Number(row.medalPoints)||0;state.streakPoints=Number(row.streakPoints)||0;if(row.avatarUrl&&profile.avatarUrl!==row.avatarUrl){profile.avatarUrl=row.avatarUrl;saveProfile();updateProfileUI();}save();renderAll();}const div=document.createElement('div');div.className='friend-row'+(mine?' mine':'');const totalPoints=Number(row.totalPoints)||0;const action=mine?'':`<button type="button" class="cheer-btn ${row.dormant?'dormant':''}" ${row.cheeredToday?'disabled':''}>${row.cheeredToday?'送信済み':`エールを送る🎉 +${row.cheerValue}pt`}</button>`;div.innerHTML=`<span class="rank-no">${Number(row.rank)||'-'}</span>${avatarMarkup(row.avatarUrl,row.nickname)}<div><strong>${escapeHtml(row.nickname)}${mine?'（あなた）':''}</strong><small>${escapeHtml(row.currentPrefecture||'沖縄県')} ${row.faculty?'・'+escapeHtml(row.faculty):''}</small><div class="points-breakdown">学習 ${Number(row.totalMinutes)||0}pt・メダル ${Number(row.medalPoints)||0}pt・連続 ${Number(row.streakPoints)||0}pt・エール ${Number(row.cheerPoints)||0}pt</div></div><span class="friend-score"><strong>${Number(row.weeklyMinutes)||0} min</strong><small>${totalPoints} pt</small></span>${action}`;const btn=div.querySelector('.cheer-btn');if(btn&&!btn.disabled)btn.onclick=()=>sendCheer(row.userId,row.nickname,btn);list.appendChild(div);});}
+function renderRanking(rows){const list=document.getElementById('friendsList');list.innerHTML='';if(!rows.length){list.innerHTML='<div class="empty-ranking">まだランキング記録がありません。<br>タイマーを合計1分以上動かして停止すると反映されます。</div>';return;}rows.forEach(row=>{const mine=profile&&row.userId===profile.userId;if(mine){state.serverWeeklyMinutes=Number(row.weeklyMinutes)||0;state.serverTotalMinutes=Number(row.totalMinutes)||0;state.cheerPoints=Number(row.cheerPoints)||0;state.medalPoints=Number(row.medalPoints)||0;state.streakPoints=Number(row.streakPoints)||0;if(row.avatarUrl&&profile.avatarUrl!==row.avatarUrl){profile.avatarUrl=row.avatarUrl;saveProfile();updateProfileUI();}save();renderAll();}const div=document.createElement('div');div.className='friend-row'+(mine?' mine':'');const totalPoints=Number(row.totalPoints)||0;const action=mine?'':`<button type="button" class="cheer-btn ${row.dormant?'dormant':''}" ${row.cheeredToday?'disabled':''}>${row.cheeredToday?'送信済み':`エールを送る🎉 +${row.cheerValue}pt`}</button>`;div.innerHTML=`<span class="rank-no">${Number(row.rank)||'-'}</span>${avatarMarkup(row.avatarUrl,row.nickname)}<div><strong>${escapeHtml(row.nickname)}${mine?'（あなた）':''}</strong><small>${escapeHtml(row.currentPrefecture||'沖縄県')} ${row.faculty?'・'+escapeHtml(row.faculty):''}</small><div class="points-breakdown">学習 ${Number(row.totalMinutes)||0}pt・メダル ${Number(row.medalPoints)||0}pt・連続 ${Number(row.streakPoints)||0}pt・エール ${formatPoints(row.cheerPoints)}pt</div></div><span class="friend-score"><strong>${Number(row.weeklyMinutes)||0} min</strong><small>${formatPoints(totalPoints)} pt</small></span>${action}`;const btn=div.querySelector('.cheer-btn');if(btn&&!btn.disabled)btn.onclick=()=>sendCheer(row.userId,row.nickname,btn);list.appendChild(div);});}
 function medalLabel(medal){return medal==='gold'?'金メダル':medal==='silver'?'銀メダル':medal==='bronze'?'銅メダル':'メダル';}
 function medalImage(medal){return medal?`Assets/medals/${medal}.png`:'';}
 function renderStreakBanner(todayMinutes){const el=document.getElementById('streakBanner'),streak=Number(state.currentStreak)||0;if(todayMinutes>=10)el.textContent=`連続学習 ${Math.max(1,streak)}日目🎉`;else if(streak>0)el.textContent=`あと${Math.max(0,10-todayMinutes)}分で連続学習 ${streak+1}日目`;else el.textContent=`あと${Math.max(0,10-todayMinutes)}分で連続学習1日目`;}
@@ -60,6 +161,13 @@ function escapeHtml(s=''){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','
 function escapeAttr(s=''){return escapeHtml(s);}
 
 document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>showScreen(b.dataset.target));document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>showScreen(b.dataset.nav));document.getElementById('homeStart').onclick=toggleTimer;document.getElementById('timerStart').onclick=toggleTimer;document.getElementById('resetBtn').onclick=resetTimer;document.getElementById('profileBtn').onclick=openProfile;document.getElementById('calendarBtn').onclick=openCalendar;document.getElementById('calendarPrev').onclick=()=>changeCalendarMonth(-1);document.getElementById('calendarNext').onclick=()=>changeCalendarMonth(1);document.querySelector('.calendar-close').onclick=()=>document.getElementById('calendarDialog').close();document.getElementById('registerForm').addEventListener('submit',register);document.getElementById('avatarInput').addEventListener('change',handleAvatarFile);document.getElementById('avatarClearButton').addEventListener('click',clearAvatarSelection);document.getElementById('refreshRanking').onclick=async()=>{await syncPendingMinutes();await loadRanking();};
-const tabs=document.getElementById('prefTabs');DATA.prefectures.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p.name;b.onclick=()=>{selectedPref=i;renderCollection();};tabs.appendChild(b);});
-document.querySelector('.dialog-close').onclick=()=>dialog.close();dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});document.querySelectorAll('[data-map-preview]').forEach(btn=>{btn.onclick=()=>{mapPreviewMode=btn.dataset.mapPreview;document.querySelectorAll('[data-map-preview]').forEach(b=>b.classList.toggle('active',b===btn));updateMap();};});
-state.running=false;save();updateProfileUI();renderAll();showScreen('home');if(!profile)setTimeout(openProfile,400);else{loadRanking();loadCalendar(false);syncPendingMinutes();}
+const tabs=document.getElementById('prefTabs');DATA.prefectures.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p.name;b.onclick=()=>{selectedPref=i;renderCollection(true);};tabs.appendChild(b);});
+document.querySelector('.dialog-close').onclick=()=>dialog.close();dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});document.getElementById('mapViewToggle').onclick=()=>{mapViewMode=mapViewMode==='current'?'national':'current';updateMap();};
+if(state.running){
+  reconcileRunningTime();
+  startTimerLoop();
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&state.running){reconcileRunningTime();renderAll();startTimerLoop();}});
+window.addEventListener('pageshow',()=>{if(state.running){reconcileRunningTime();renderAll();startTimerLoop();}});
+window.addEventListener('beforeunload',()=>{if(state.running)reconcileRunningTime();});
+updateProfileUI();renderAll();showScreen('home');if(!profile)setTimeout(openProfile,400);else{loadRanking();loadCalendar(false);syncPendingMinutes();}

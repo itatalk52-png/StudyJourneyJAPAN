@@ -103,8 +103,8 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
 .calendar-dialog{width:min(96vw,790px);background:#f7f2e7;border:1px solid rgba(22,55,43,.13)}
 .calendar-topline{grid-template-columns:44px 1fr 44px;margin:4px 28px 12px}.calendar-topline h2{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:end;text-align:left;color:#16372b;line-height:1}.calendar-month-en{font-size:clamp(26px,5vw,48px);font-weight:950;letter-spacing:-.045em}.calendar-year-number{font-size:15px;font-weight:900;color:#2d8b78;padding-bottom:5px}.calendar-month-number{font-size:clamp(28px,5vw,50px);font-weight:950;letter-spacing:-.04em}
 .calendar-weekdays,.calendar-grid{gap:0}.calendar-weekdays{margin-bottom:0;border:1px solid rgba(22,55,43,.35);border-bottom:0;background:#fbf7ed;color:#16372b;opacity:1}.calendar-weekdays span{padding:7px 2px;border-right:1px solid rgba(22,55,43,.25);font-size:10px;font-weight:900;letter-spacing:.04em}.calendar-weekdays span:nth-child(6){color:#268d82;background:rgba(38,141,130,.07)}.calendar-weekdays span:nth-child(7){color:#d85d69;background:rgba(216,93,105,.08)}.calendar-weekdays span:last-child{border-right:0}
-.calendar-grid{border-left:1px solid rgba(22,55,43,.35);border-top:1px solid rgba(22,55,43,.35)}.calendar-day{min-height:92px;border-radius:0;border:0;border-right:1px solid rgba(22,55,43,.35);border-bottom:1px solid rgba(22,55,43,.35);background:#fbf7ed;padding:7px}.calendar-day.empty{background:#f7f2e7;border-right:1px solid rgba(22,55,43,.18);border-bottom:1px solid rgba(22,55,43,.18)}.calendar-day.saturday{background:rgba(38,141,130,.075)}.calendar-day.sunday{background:rgba(216,93,105,.09)}.calendar-day.saturday .calendar-date{color:#268d82}.calendar-day.sunday .calendar-date{color:#d85d69}.calendar-day.today{outline:3px solid #16372b;outline-offset:-3px;background:#fffdf7}.calendar-day.today::after{content:'TODAY';position:absolute;left:6px;bottom:4px;font-size:8px;font-weight:900;letter-spacing:.06em;color:#16372b}.calendar-date{display:block;text-align:right;font-size:15px;color:#16372b}.calendar-medal{width:54px;height:54px;margin:-2px auto -5px}.calendar-minutes{font-size:10px;color:#405d52}
-@media(max-width:520px){.calendar-topline{margin:2px 8px 10px;grid-template-columns:36px 1fr 36px}.calendar-topline h2{gap:6px}.calendar-month-en{font-size:22px}.calendar-year-number{font-size:10px;padding-bottom:3px}.calendar-month-number{font-size:26px}.calendar-arrow{width:34px;height:34px}.calendar-weekdays span{font-size:8px;padding:6px 0}.calendar-day{min-height:62px;padding:3px}.calendar-date{font-size:11px}.calendar-medal{width:38px;height:38px;margin:-1px auto -4px}.calendar-minutes{font-size:8px}.calendar-day.today::after{font-size:6px;left:3px;bottom:2px}}
+.calendar-grid{border-left:1px solid rgba(22,55,43,.35);border-top:1px solid rgba(22,55,43,.35)}.calendar-day{min-height:92px;border-radius:0;border:0;border-right:1px solid rgba(22,55,43,.35);border-bottom:1px solid rgba(22,55,43,.35);background:#fbf7ed;padding:7px}.calendar-day.empty{background:#f7f2e7;border-right:1px solid rgba(22,55,43,.18);border-bottom:1px solid rgba(22,55,43,.18)}.calendar-day.saturday{background:rgba(38,141,130,.075)}.calendar-day.sunday{background:rgba(216,93,105,.09)}.calendar-day.saturday .calendar-date{color:#268d82}.calendar-day.sunday .calendar-date{color:#d85d69}.calendar-day.today{outline:3px solid #16372b;outline-offset:-3px;background:#fffdf7}.calendar-date{display:block;text-align:right;font-size:15px;color:#16372b}.calendar-medal{width:54px;height:54px;margin:-2px auto -5px}.calendar-minutes{font-size:10px;color:#405d52}
+@media(max-width:520px){.calendar-topline{margin:2px 8px 10px;grid-template-columns:36px 1fr 36px}.calendar-topline h2{gap:6px}.calendar-month-en{font-size:22px}.calendar-year-number{font-size:10px;padding-bottom:3px}.calendar-month-number{font-size:26px}.calendar-arrow{width:34px;height:34px}.calendar-weekdays span{font-size:8px;padding:6px 0}.calendar-day{min-height:62px;padding:3px}.calendar-date{font-size:11px}.calendar-medal{width:38px;height:38px;margin:-1px auto -4px}.calendar-minutes{font-size:8px}}
 
 /* Ver.1.7.4 — official release calendar icon */
 .calendar-btn .calendar-icon{color:#16372b}
@@ -114,3 +114,221 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
 .avatar-upload-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
 .avatar-clear-button{border:1px solid var(--line);border-radius:999px;padding:11px 16px;background:transparent;color:var(--muted);font:inherit;font-weight:700;cursor:pointer}
 .avatar-clear-button:hover{background:#f1f0eb;color:var(--forest)}
+
+/* Ver.1.8.1 — true circular profile images */
+.profile-btn,
+.avatar,
+.avatar-preview {
+  aspect-ratio: 1 / 1;
+  border-radius: 50% !important;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.profile-btn img,
+.avatar img,
+.avatar-preview img {
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: 1 / 1;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block;
+}
+
+/* Ver.1.8.2 — calendar readability */
+.calendar-day {
+  position: relative;
+}
+.calendar-medal {
+  display: block;
+  margin: 1px auto 2px !important;
+}
+.calendar-minutes {
+  display: block;
+  text-align: center;
+  line-height: 1.2;
+  margin-top: 1px;
+}
+
+/* Ver.1.8.2 — current-location map */
+.home-map-panel {
+  overflow: hidden;
+}
+.home-map-heading,
+.map-view-toolbar,
+.map-current-progress {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.home-map-heading h3 {
+  margin: 5px 0 8px;
+  font-size: 25px;
+}
+.home-map-heading span {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--green);
+}
+.journey-map-viewport {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  background: linear-gradient(180deg,#fbfcfb,#f2f4f1);
+  isolation: isolate;
+}
+.journey-map-viewport.compact {
+  height: 260px;
+  margin: 8px 0 10px;
+}
+.journey-map-viewport.large {
+  width: 100%;
+  height: min(68vh,680px);
+  min-height: 520px;
+}
+.journey-map-canvas {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+  transform: scale(2.55) translate(18%, -19%);
+  transition: transform .65s ease;
+}
+.journey-map-viewport.compact .journey-map-canvas {
+  transform: scale(2.7) translate(18%, -19%);
+}
+.journey-map-viewport.national .journey-map-canvas {
+  transform: scale(1) translate(0,0);
+}
+.journey-map-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+}
+.journey-map-layer.overlay {
+  opacity: 0;
+  transition: opacity .5s ease,filter .5s ease;
+}
+.journey-map-layer.overlay.current {
+  opacity: .62;
+  filter: saturate(.95) brightness(.92) drop-shadow(0 0 7px rgba(47,74,63,.5));
+}
+.journey-map-layer.overlay.complete {
+  opacity: 1;
+  filter: drop-shadow(0 5px 8px rgba(38,59,50,.18));
+}
+.current-location-pin {
+  position: absolute;
+  left: 49%;
+  top: 69%;
+  z-index: 5;
+  width: 24px;
+  height: 24px;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #16372b;
+  color: #16372b;
+  box-shadow: 0 4px 12px rgba(22,55,43,.32);
+  font-size: 0;
+  transform: translate(-50%,-50%);
+}
+.journey-map-viewport.national .current-location-pin {
+  left: 24%;
+  top: 81%;
+  width: 18px;
+  height: 18px;
+}
+.home-map-caption,
+.map-caption {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.map-view-toolbar {
+  margin: 2px 2px 14px;
+}
+.map-view-toolbar strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 20px;
+}
+.map-view-toggle {
+  border: 1px solid var(--line);
+  background: #fffdf8;
+  color: var(--green);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.map-current-progress {
+  padding: 15px 0 9px;
+  border-top: 1px solid var(--line);
+}
+.map-current-progress span {
+  color: var(--muted);
+  font-size: 13px;
+}
+.map-current-progress strong {
+  font-size: 16px;
+}
+.map-pref-progress-track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7ece8;
+}
+.map-pref-progress-track > div {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--green);
+  transition: width .4s ease;
+}
+.map-next-text {
+  margin: 12px 0 0 !important;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green) !important;
+}
+.preview-box,
+.preview-buttons {
+  display: none !important;
+}
+
+@media(max-width:850px){
+  .journey-map-viewport.large {
+    height: 590px;
+    min-height: 470px;
+  }
+}
+@media(max-width:560px){
+  .journey-map-viewport.compact {
+    height: 240px;
+  }
+  .journey-map-viewport.large {
+    height: 475px;
+    min-height: 410px;
+  }
+  .journey-map-canvas {
+    transform: scale(2.75) translate(18%, -19%);
+  }
+  .map-view-toolbar {
+    align-items: flex-end;
+  }
+  .map-view-toggle {
+    padding: 9px 11px;
+    font-size: 12px;
+  }
+  .calendar-medal {
+    width: 48px;
+    height: 48px;
+  }
+}

@@ -58,11 +58,21 @@
           <p>10分学ぶごとに、旅の思い出が1つ増えます。</p>
           <button class="ghost-btn" data-nav="collection">Collectionを見る</button>
         </div>
-        <div class="panel">
-          <div class="panel-kicker">JOURNEY MAP</div>
-          <div class="mini-map-wrap">
-            <img src="Assets/maps/japan_map_gray.png" alt="日本地図">
+        <div class="panel home-map-panel">
+          <div class="panel-kicker">CURRENT LOCATION</div>
+          <div class="home-map-heading">
+            <h3 id="homeMapCurrentPref">沖縄県</h3>
+            <span id="homeMapPrefProgress">0 / 10</span>
           </div>
+          <div class="journey-map-viewport compact" id="homeMapViewport">
+            <div class="journey-map-canvas">
+              <img class="journey-map-layer base" src="Assets/maps/japan_map_gray.png" alt="現在地周辺の地図">
+              <img class="journey-map-layer overlay" id="homeOkinawaOverlay" src="Assets/maps/overlay_okinawa.png" alt="沖縄県">
+              <img class="journey-map-layer overlay" id="homeKagoshimaOverlay" src="Assets/maps/overlay_kagoshima.png" alt="鹿児島県">
+            </div>
+            <div class="current-location-pin" aria-hidden="true">●</div>
+          </div>
+          <p class="home-map-caption" id="homeMapCaption">現在地周辺を拡大表示しています。</p>
           <button class="ghost-btn" data-nav="map">Mapを見る</button>
         </div>
       </div>
@@ -115,31 +125,34 @@
 
       <div class="map-layout">
         <div class="map-card">
-          <div class="map-stage" id="mapStage">
-            <img class="map-layer base" src="Assets/maps/japan_map_gray.png" alt="日本地図">
-            <img class="map-layer overlay" id="okinawaOverlay" src="Assets/maps/overlay_okinawa.png" alt="沖縄県">
-            <img class="map-layer overlay" id="kagoshimaOverlay" src="Assets/maps/overlay_kagoshima.png" alt="鹿児島県">
+          <div class="map-view-toolbar">
+            <div>
+              <div class="panel-kicker">MAP VIEW</div>
+              <strong id="mapViewTitle">現在地周辺</strong>
+            </div>
+            <button type="button" class="map-view-toggle" id="mapViewToggle">🗾 日本全体を見る</button>
           </div>
-          <div class="map-caption">県の10バッジを集めると、正しい都道府県の位置がカラーに変わります。</div>
+          <div class="journey-map-viewport large" id="mapViewport">
+            <div class="journey-map-canvas">
+              <img class="journey-map-layer base" src="Assets/maps/japan_map_gray.png" alt="日本地図">
+              <img class="journey-map-layer overlay" id="okinawaOverlay" src="Assets/maps/overlay_okinawa.png" alt="沖縄県">
+              <img class="journey-map-layer overlay" id="kagoshimaOverlay" src="Assets/maps/overlay_kagoshima.png" alt="鹿児島県">
+            </div>
+            <div class="current-location-pin" aria-hidden="true">●</div>
+          </div>
+          <div class="map-caption" id="mapCaption">現在地周辺を拡大表示しています。</div>
         </div>
 
         <aside class="map-status-panel">
           <div class="panel-kicker">CURRENT JOURNEY</div>
           <h3 id="mapCurrentPref">沖縄県</h3>
           <p id="mapCurrentText">沖縄県の10個の思い出を集めましょう。</p>
-          <div class="map-stat"><span>沖縄県</span><strong id="okinawaMapStatus">0 / 10</strong></div>
-          <div class="map-stat"><span>鹿児島県</span><strong id="kagoshimaMapStatus">0 / 10</strong></div>
-
-          <div class="preview-box">
-            <div class="panel-kicker">MAP PREVIEW</div>
-            <p>色づき方をすぐ確認できます。</p>
-            <div class="preview-buttons">
-              <button data-map-preview="0">未クリア</button>
-              <button data-map-preview="1">沖縄クリア</button>
-              <button data-map-preview="2">鹿児島クリア</button>
-              <button data-map-preview="auto" class="active">実際の進捗</button>
-            </div>
+          <div class="map-current-progress">
+            <span id="mapCurrentProgressLabel">沖縄県の進捗</span>
+            <strong id="mapCurrentProgress">0 / 10</strong>
           </div>
+          <div class="map-pref-progress-track"><div id="mapPrefProgressFill"></div></div>
+          <p class="map-next-text" id="mapNextText">あと10個で鹿児島県へ</p>
         </aside>
       </div>
     </section>
