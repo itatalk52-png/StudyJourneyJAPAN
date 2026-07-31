@@ -4,30 +4,53 @@ const DATA={"prefectures":[{"id":"01_okinawa","key":"okinawa","name":"沖縄県"
 // Japan map coordinates (percent of the complete map image).
 // Route order and badge availability are independent from this table.
 const PREFECTURE_POSITIONS={
-  "北海道":{x:68.0,y:12.0,zoom:2.05},
-  "青森県":{x:48.7,y:31.0,zoom:3.15},"岩手県":{x:48.4,y:36.0,zoom:3.25},
-  "宮城県":{x:46.5,y:42.0,zoom:3.35},"秋田県":{x:43.8,y:35.8,zoom:3.25},
-  "山形県":{x:43.5,y:41.2,zoom:3.35},"福島県":{x:43.7,y:46.5,zoom:3.45},
-  "茨城県":{x:45.4,y:53.1,zoom:3.75},"栃木県":{x:42.5,y:50.0,zoom:3.75},
-  "群馬県":{x:39.8,y:50.0,zoom:3.85},"埼玉県":{x:41.4,y:53.1,zoom:4.0},
-  "千葉県":{x:44.1,y:56.0,zoom:4.1},"東京都":{x:41.0,y:55.2,zoom:4.25},
-  "神奈川県":{x:39.8,y:56.6,zoom:4.2},"新潟県":{x:38.4,y:44.0,zoom:3.45},
-  "富山県":{x:34.4,y:50.6,zoom:3.75},"石川県":{x:31.9,y:50.3,zoom:3.75},
-  "福井県":{x:31.4,y:54.8,zoom:3.85},"山梨県":{x:38.5,y:54.2,zoom:4.0},
-  "長野県":{x:36.6,y:50.5,zoom:3.75},"岐阜県":{x:33.5,y:54.5,zoom:3.8},
-  "静岡県":{x:37.1,y:58.0,zoom:3.9},"愛知県":{x:33.7,y:58.1,zoom:4.0},
-  "三重県":{x:31.7,y:60.5,zoom:4.0},"滋賀県":{x:29.9,y:57.5,zoom:4.1},
-  "京都府":{x:28.2,y:56.5,zoom:4.1},"大阪府":{x:28.1,y:59.0,zoom:4.25},
-  "兵庫県":{x:25.8,y:57.8,zoom:4.0},"奈良県":{x:29.5,y:60.2,zoom:4.2},
-  "和歌山県":{x:28.3,y:63.1,zoom:4.1},"鳥取県":{x:23.7,y:55.8,zoom:3.95},
-  "島根県":{x:20.3,y:57.0,zoom:3.8},"岡山県":{x:23.5,y:59.3,zoom:4.0},
-  "広島県":{x:20.5,y:60.3,zoom:3.95},"山口県":{x:16.6,y:62.0,zoom:3.85},
-  "徳島県":{x:25.2,y:63.7,zoom:4.15},"香川県":{x:24.6,y:61.8,zoom:4.2},
-  "愛媛県":{x:21.3,y:64.0,zoom:4.0},"高知県":{x:22.4,y:66.2,zoom:3.95},
-  "福岡県":{x:13.7,y:65.5,zoom:4.15},"佐賀県":{x:11.6,y:67.2,zoom:4.25},
-  "長崎県":{x:9.3,y:68.2,zoom:4.05},"熊本県":{x:13.1,y:70.0,zoom:4.1},
-  "大分県":{x:16.0,y:68.3,zoom:4.1},"宮崎県":{x:15.9,y:72.2,zoom:4.1},
-  "鹿児島県":{x:12.9,y:74.5,zoom:4.0},"沖縄県":{x:7.25,y:88.2,zoom:5.0}
+  "北海道":{x:74.0,y:8.5,zoom:2.15},
+  "青森県":{x:61.0,y:21.0,zoom:3.2},
+  "岩手県":{x:64.0,y:27.5,zoom:3.35},
+  "宮城県":{x:60.8,y:33.0,zoom:3.45},
+  "秋田県":{x:56.5,y:25.5,zoom:3.35},
+  "山形県":{x:54.5,y:32.5,zoom:3.45},
+  "福島県":{x:58.5,y:37.5,zoom:3.55},
+  "茨城県":{x:62.5,y:43.5,zoom:3.85},
+  "栃木県":{x:59.5,y:42.0,zoom:3.85},
+  "群馬県":{x:55.5,y:41.0,zoom:3.9},
+  "埼玉県":{x:58.0,y:47.0,zoom:4.0},
+  "千葉県":{x:63.0,y:48.5,zoom:4.05},
+  "東京都":{x:58.0,y:49.5,zoom:4.2},
+  "神奈川県":{x:56.5,y:51.5,zoom:4.15},
+  "新潟県":{x:51.0,y:35.5,zoom:3.55},
+  "富山県":{x:46.5,y:39.5,zoom:3.8},
+  "石川県":{x:43.0,y:40.5,zoom:3.85},
+  "福井県":{x:41.5,y:43.5,zoom:3.95},
+  "山梨県":{x:54.5,y:47.0,zoom:4.05},
+  "長野県":{x:50.5,y:41.5,zoom:3.85},
+  "岐阜県":{x:45.5,y:47.0,zoom:3.95},
+  "静岡県":{x:53.0,y:53.0,zoom:4.0},
+  "愛知県":{x:48.0,y:52.0,zoom:4.05},
+  "三重県":{x:51.5,y:55.0,zoom:4.05},
+  "滋賀県":{x:45.5,y:47.5,zoom:4.1},
+  "京都府":{x:43.0,y:48.5,zoom:4.1},
+  "大阪府":{x:42.0,y:51.0,zoom:4.2},
+  "兵庫県":{x:38.5,y:48.5,zoom:4.0},
+  "奈良県":{x:44.0,y:52.5,zoom:4.15},
+  "和歌山県":{x:45.0,y:55.5,zoom:4.1},
+  "鳥取県":{x:33.5,y:44.5,zoom:3.95},
+  "島根県":{x:28.5,y:43.0,zoom:3.85},
+  "岡山県":{x:35.5,y:47.5,zoom:4.0},
+  "広島県":{x:30.5,y:48.5,zoom:3.95},
+  "山口県":{x:23.5,y:48.0,zoom:3.9},
+  "徳島県":{x:42.0,y:59.0,zoom:4.15},
+  "香川県":{x:40.0,y:56.5,zoom:4.15},
+  "愛媛県":{x:37.5,y:60.0,zoom:4.0},
+  "高知県":{x:40.5,y:62.5,zoom:4.0},
+  "福岡県":{x:26.0,y:52.0,zoom:4.15},
+  "佐賀県":{x:22.5,y:53.5,zoom:4.2},
+  "長崎県":{x:18.5,y:55.0,zoom:4.05},
+  "熊本県":{x:22.5,y:57.5,zoom:4.1},
+  "大分県":{x:26.5,y:56.5,zoom:4.1},
+  "宮崎県":{x:27.0,y:61.0,zoom:4.1},
+  "鹿児島県":{x:21.5,y:63.5,zoom:4.0},
+  "沖縄県":{x:6.5,y:90.5,zoom:5.0}
 };
 
 const STORAGE_KEY='sjj_state_v8_1_timer';
@@ -139,20 +162,44 @@ function setOverlayState(element,completed,current){
   if(completed)element.classList.add('complete');
   else if(current)element.classList.add('current');
 }
+function updateCurrentLocationMarker(pin,prefName){
+  if(!pin)return;
+  const avatarUrl=profile?.avatarLocal||profile?.avatarUrl||'';
+  pin.innerHTML='';
+  if(avatarUrl){
+    const img=document.createElement('img');
+    img.src=avatarUrl;
+    img.alt=`${profile?.nickname||''}の現在地アイコン`;
+    img.onerror=()=>{
+      pin.innerHTML='';
+      const fallback=document.createElement('span');
+      fallback.textContent=initials(profile?.nickname||'SJ');
+      pin.appendChild(fallback);
+    };
+    pin.appendChild(img);
+  }else{
+    const fallback=document.createElement('span');
+    fallback.textContent=initials(profile?.nickname||'SJ');
+    pin.appendChild(fallback);
+  }
+  pin.setAttribute('title',`現在地：${prefName}`);
+  pin.setAttribute('aria-label',`現在地：${prefName}`);
+}
 function applyMapPosition(viewport,prefName,isNational){
   if(!viewport)return;
   const pos=PREFECTURE_POSITIONS[prefName]||PREFECTURE_POSITIONS["沖縄県"];
   const canvas=viewport.querySelector('.journey-map-canvas');
   const pin=viewport.querySelector('.current-location-pin');
   const zoom=isNational?1:(pos.zoom||4);
-  if(canvas){
-    canvas.style.transform=`translate(${50-zoom*pos.x}%,${50-zoom*pos.y}%) scale(${zoom})`;
-  }
+
   if(pin){
     pin.style.left=`${pos.x}%`;
     pin.style.top=`${pos.y}%`;
-    pin.setAttribute('title',prefName);
-    pin.setAttribute('aria-label',`現在地：${prefName}`);
+    updateCurrentLocationMarker(pin,prefName);
+  }
+  if(canvas){
+    // The marker is inside the canvas, so the map and marker always transform together.
+    canvas.style.transform=`translate(${50-zoom*pos.x}%,${50-zoom*pos.y}%) scale(${zoom})`;
   }
   viewport.classList.toggle('national',isNational);
 }

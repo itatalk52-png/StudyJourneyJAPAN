@@ -1,3 +1,11 @@
+# Ver.1.8.4
+
+- Rebuilt all 47 prefecture coordinates using prefecture-label centers from the supplied reference map.
+- Moved the current-location marker inside the transformed map canvas.
+- Added the user's configured avatar to the current-location marker.
+- Added initials fallback when no avatar is configured.
+- Updated the service-worker cache version.
+
 # Ver.1.8.2
 
 - Removed the TODAY label from calendar cells.
