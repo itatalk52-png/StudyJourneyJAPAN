@@ -1,5 +1,35 @@
 const API_URL='https://script.google.com/macros/s/AKfycby2SNa8Fx258tUi3UUDVHNGAqOWg80VYx3I5dSavJnhpMbJaNV-TidNYUh9PxhNnr-fNw/exec';
 const DATA={"prefectures":[{"id":"01_okinawa","key":"okinawa","name":"沖縄県","reading":"おきなわけん","badges":[{"name":"首里城","file":"01_shurijo.png"},{"name":"美ら海水族館","file":"02_churaumi_aquarium.png"},{"name":"沖縄そば","file":"03_okinawa_soba.png"},{"name":"紅いもタルト","file":"04_beniimo_tart.png"},{"name":"タコライス","file":"05_taco_rice.png"},{"name":"南国フルーツ","file":"06_tropical_fruits.png"},{"name":"琉球ガラス","file":"07_ryukyu_glass.png"},{"name":"もずく","file":"08_mozuku.png"},{"name":"古宇利大橋","file":"09_kouri_bridge.png"},{"name":"竹富島","file":"10_taketomi_island.png"}]},{"id":"02_kagoshima","key":"kagoshima","name":"鹿児島県","reading":"かごしまけん","badges":[{"name":"桜島","file":"01_sakurajima.png"},{"name":"鹿児島城跡","file":"02_kagoshima_castle.png"},{"name":"黒豚しゃぶしゃぶ","file":"03_kurobuta_shabushabu.png"},{"name":"知覧武家屋敷庭園","file":"04_chiran_samurai_garden.png"},{"name":"屋久島","file":"05_yakushima.png"},{"name":"出水麓","file":"06_izumi_fumoto.png"},{"name":"さつまいも","file":"07_satsumaimo.png"},{"name":"長島","file":"08_nagashima.png"},{"name":"霧島高原","file":"09_kirishima_highlands.png"},{"name":"芋焼酎","file":"10_imo_shochu.png"}]},{"id":"03_miyazaki","key":"miyazaki","name":"宮崎県","reading":"みやざきけん","badges":[{"name":"サンメッセ日南","file":"01_badge.png"},{"name":"高千穂峡","file":"02_badge.png"},{"name":"チキン南蛮","file":"03_badge.png"},{"name":"青島","file":"04_badge.png"},{"name":"宮崎マンゴー","file":"05_badge.png"},{"name":"鵜戸神宮","file":"06_badge.png"},{"name":"地鶏の炭焼き","file":"07_badge.png"},{"name":"霧島連山","file":"08_badge.png"},{"name":"都井岬の野生馬","file":"09_badge.png"},{"name":"冷し汁","file":"10_badge.png"}]},{"id":"04_oita","key":"oita","name":"大分県","reading":"おおいたけん","badges":[{"name":"別府地獄めぐり","file":"01_badge.png"},{"name":"別府温泉街","file":"02_badge.png"},{"name":"とり天","file":"03_badge.png"},{"name":"地獄蒸し","file":"04_badge.png"},{"name":"りゅうきゅう丼","file":"05_badge.png"},{"name":"かぼす","file":"06_badge.png"},{"name":"高崎山のさる","file":"07_badge.png"},{"name":"豊後二見ヶ浦","file":"08_badge.png"},{"name":"杵臼城跡","file":"09_badge.png"},{"name":"ざびえる","file":"10_badge.png"}]},{"id":"05_kumamoto","key":"kumamoto","name":"熊本県","reading":"くまもとけん","badges":[{"name":"熊本城","file":"01_badge.png"},{"name":"阿蘇山","file":"02_badge.png"},{"name":"馬肉","file":"03_badge.png"},{"name":"からし蓮根","file":"04_badge.png"},{"name":"黒川温泉","file":"05_badge.png"},{"name":"天草のイルカ","file":"06_badge.png"},{"name":"あか牛のステーキ","file":"07_badge.png"},{"name":"水天寺成趣園","file":"08_badge.png"},{"name":"通潤橋","file":"09_badge.png"},{"name":"熊本ラーメン","file":"10_badge.png"}]},{"id":"06_nagasaki","key":"nagasaki","name":"長崎県","reading":"ながさきけん","badges":[{"name":"稲佐山の夜景","file":"01_badge.png"},{"name":"大浦天主堂","file":"02_badge.png"},{"name":"長崎ちゃんぽん","file":"03_badge.png"},{"name":"カステラ","file":"04_badge.png"},{"name":"出島","file":"05_badge.png"},{"name":"グラバー園","file":"06_badge.png"},{"name":"ハウステンボス","file":"07_badge.png"},{"name":"長崎くんち","file":"08_badge.png"},{"name":"軍艦島","file":"09_badge.png"},{"name":"長崎のびわ","file":"10_badge.png"}]},{"id":"07_saga","key":"saga","name":"佐賀県","reading":"さがけん","badges":[{"name":"唐津城","file":"01_badge.png"},{"name":"虹の松原","file":"02_badge.png"},{"name":"佐賀牛","file":"03_badge.png"},{"name":"有田焼","file":"04_badge.png"},{"name":"嬉野温泉","file":"05_badge.png"},{"name":"有明海のり","file":"06_badge.png"},{"name":"呼子のいか","file":"07_badge.png"},{"name":"唐津くんち","file":"08_badge.png"},{"name":"嬉野茶","file":"09_badge.png"},{"name":"村岡屋の丸ぼうろ","file":"10_badge.png"}]},{"id":"08_fukuoka","key":"fukuoka","name":"福岡県","reading":"ふくおかけん","badges":[{"name":"太宰府天満宮","file":"01_badge.png"},{"name":"福岡タワー","file":"02_badge.png"},{"name":"博多ラーメン","file":"03_badge.png"},{"name":"明太子","file":"04_badge.png"},{"name":"中洲屋台","file":"05_badge.png"},{"name":"もつ鍋","file":"06_badge.png"},{"name":"福岡城跡","file":"07_badge.png"},{"name":"柳川の川下り","file":"08_badge.png"},{"name":"桜井二見ヶ浦 夫婦岩","file":"09_badge.png"},{"name":"ごぼう天うどん","file":"10_badge.png"}]}]};
+
+// Japan map coordinates (percent of the complete map image).
+// Route order and badge availability are independent from this table.
+const PREFECTURE_POSITIONS={
+  "北海道":{x:68.0,y:12.0,zoom:2.05},
+  "青森県":{x:48.7,y:31.0,zoom:3.15},"岩手県":{x:48.4,y:36.0,zoom:3.25},
+  "宮城県":{x:46.5,y:42.0,zoom:3.35},"秋田県":{x:43.8,y:35.8,zoom:3.25},
+  "山形県":{x:43.5,y:41.2,zoom:3.35},"福島県":{x:43.7,y:46.5,zoom:3.45},
+  "茨城県":{x:45.4,y:53.1,zoom:3.75},"栃木県":{x:42.5,y:50.0,zoom:3.75},
+  "群馬県":{x:39.8,y:50.0,zoom:3.85},"埼玉県":{x:41.4,y:53.1,zoom:4.0},
+  "千葉県":{x:44.1,y:56.0,zoom:4.1},"東京都":{x:41.0,y:55.2,zoom:4.25},
+  "神奈川県":{x:39.8,y:56.6,zoom:4.2},"新潟県":{x:38.4,y:44.0,zoom:3.45},
+  "富山県":{x:34.4,y:50.6,zoom:3.75},"石川県":{x:31.9,y:50.3,zoom:3.75},
+  "福井県":{x:31.4,y:54.8,zoom:3.85},"山梨県":{x:38.5,y:54.2,zoom:4.0},
+  "長野県":{x:36.6,y:50.5,zoom:3.75},"岐阜県":{x:33.5,y:54.5,zoom:3.8},
+  "静岡県":{x:37.1,y:58.0,zoom:3.9},"愛知県":{x:33.7,y:58.1,zoom:4.0},
+  "三重県":{x:31.7,y:60.5,zoom:4.0},"滋賀県":{x:29.9,y:57.5,zoom:4.1},
+  "京都府":{x:28.2,y:56.5,zoom:4.1},"大阪府":{x:28.1,y:59.0,zoom:4.25},
+  "兵庫県":{x:25.8,y:57.8,zoom:4.0},"奈良県":{x:29.5,y:60.2,zoom:4.2},
+  "和歌山県":{x:28.3,y:63.1,zoom:4.1},"鳥取県":{x:23.7,y:55.8,zoom:3.95},
+  "島根県":{x:20.3,y:57.0,zoom:3.8},"岡山県":{x:23.5,y:59.3,zoom:4.0},
+  "広島県":{x:20.5,y:60.3,zoom:3.95},"山口県":{x:16.6,y:62.0,zoom:3.85},
+  "徳島県":{x:25.2,y:63.7,zoom:4.15},"香川県":{x:24.6,y:61.8,zoom:4.2},
+  "愛媛県":{x:21.3,y:64.0,zoom:4.0},"高知県":{x:22.4,y:66.2,zoom:3.95},
+  "福岡県":{x:13.7,y:65.5,zoom:4.15},"佐賀県":{x:11.6,y:67.2,zoom:4.25},
+  "長崎県":{x:9.3,y:68.2,zoom:4.05},"熊本県":{x:13.1,y:70.0,zoom:4.1},
+  "大分県":{x:16.0,y:68.3,zoom:4.1},"宮崎県":{x:15.9,y:72.2,zoom:4.1},
+  "鹿児島県":{x:12.9,y:74.5,zoom:4.0},"沖縄県":{x:7.25,y:88.2,zoom:5.0}
+};
+
 const STORAGE_KEY='sjj_state_v8_1_timer';
 const OLD_STORAGE_KEYS=['sjj_state_v8_calendar','sjj_state_v7_cheers','sjj_state_v6_multi','sjj_state_v5_multi'];
 const PROFILE_KEY='sjj_profile_v2';
@@ -109,6 +139,23 @@ function setOverlayState(element,completed,current){
   if(completed)element.classList.add('complete');
   else if(current)element.classList.add('current');
 }
+function applyMapPosition(viewport,prefName,isNational){
+  if(!viewport)return;
+  const pos=PREFECTURE_POSITIONS[prefName]||PREFECTURE_POSITIONS["沖縄県"];
+  const canvas=viewport.querySelector('.journey-map-canvas');
+  const pin=viewport.querySelector('.current-location-pin');
+  const zoom=isNational?1:(pos.zoom||4);
+  if(canvas){
+    canvas.style.transform=`translate(${50-zoom*pos.x}%,${50-zoom*pos.y}%) scale(${zoom})`;
+  }
+  if(pin){
+    pin.style.left=`${pos.x}%`;
+    pin.style.top=`${pos.y}%`;
+    pin.setAttribute('title',prefName);
+    pin.setAttribute('aria-label',`現在地：${prefName}`);
+  }
+  viewport.classList.toggle('national',isNational);
+}
 function updateMap(){
   const unlocked=unlockedCount();
   const prefIndex=Math.min(Math.floor(unlocked/10),Math.max(0,DATA.prefectures.length-1));
@@ -122,24 +169,14 @@ function updateMap(){
   setOverlayState(document.getElementById('homeOkinawaOverlay'),completed>=1,completed<1);
   setOverlayState(document.getElementById('homeKagoshimaOverlay'),completed>=2,completed===1);
 
-  const mapViewport=document.getElementById('mapViewport');
-  const homeViewport=document.getElementById('homeMapViewport');
-  if(mapViewport){
-    mapViewport.classList.toggle('national',isNational);
-    mapViewport.classList.toggle('pref-okinawa',prefIndex===0);
-    mapViewport.classList.toggle('pref-kagoshima',prefIndex===1);
-  }
-  if(homeViewport){
-    homeViewport.classList.remove('national');
-    homeViewport.classList.toggle('pref-okinawa',prefIndex===0);
-    homeViewport.classList.toggle('pref-kagoshima',prefIndex===1);
-  }
+  applyMapPosition(document.getElementById('mapViewport'),currentPref,isNational);
+  applyMapPosition(document.getElementById('homeMapViewport'),currentPref,false);
 
   document.getElementById('mapViewTitle').textContent=isNational?'日本全体':'現在地周辺';
   document.getElementById('mapViewToggle').textContent=isNational?'📍 現在地へ戻る':'🗾 日本全体を見る';
   document.getElementById('mapCaption').textContent=isNational
     ?'日本一周全体の位置を表示しています。'
-    :'現在地のある九州地方を拡大表示しています。';
+    :`${currentPref}を中心に拡大表示しています。`;
   document.getElementById('mapCurrentPref').textContent=currentPref;
   document.getElementById('mapCurrentText').textContent=`${currentPref}の10個の思い出を集めましょう。`;
   document.getElementById('mapCurrentProgressLabel').textContent=`${currentPref}の進捗`;
@@ -153,7 +190,7 @@ function updateMap(){
 
   document.getElementById('homeMapCurrentPref').textContent=currentPref;
   document.getElementById('homeMapPrefProgress').textContent=`${prefProgress} / 10`;
-  document.getElementById('homeMapCaption').textContent=`現在地：${currentPref}（九州地方を拡大表示）`;
+  document.getElementById('homeMapCaption').textContent=`現在地：${currentPref}`;
 }
 function renderAll(){const unlocked=unlockedCount(),mins=Math.floor(state.totalSeconds/60),pending=Math.floor((state.pendingStudySeconds||0)/60),todayPending=Math.floor(Number((state.pendingDailySeconds||{})[localDateKey()]||0)/60),todayTotal=(Number(state.todayServerMinutes)||0)+todayPending,weeklyMinutes=(Number(state.serverWeeklyMinutes)||0)+pending,studyPoints=(Number(state.serverTotalMinutes)||0)+pending,cheerPoints=Number(state.cheerPoints)||0,medalPoints=Number(state.medalPoints)||0,streakPoints=Number(state.streakPoints)||0,totalPoints=studyPoints+cheerPoints+medalPoints+streakPoints,flat=DATA.prefectures.flatMap(p=>p.badges.map(b=>b.name));document.getElementById('homeTimer').textContent=formatTime(state.totalSeconds);document.getElementById('timerDisplay').textContent=formatTime(state.totalSeconds);document.getElementById('todayMinutes').textContent=`${todayTotal} min`;document.getElementById('weekMinutes').textContent=`${weeklyMinutes} min`;document.getElementById('totalPoints').textContent=`${formatPoints(totalPoints)} pt`;document.getElementById('sessionPoints').textContent=`${mins} pt`;document.getElementById('timerTotalPoints').textContent=`${formatPoints(totalPoints)} pt`;document.getElementById('homeProgressText').textContent=`${unlocked} / 470 Memories`;document.getElementById('mapProgress').textContent=`${unlocked} / 470 Memories`;document.getElementById('homeProgressFill').style.width=`${unlocked/470*100}%`;document.getElementById('nextDestination').textContent=flat[Math.min(unlocked,flat.length-1)];const rem=10-(mins%10||0);document.getElementById('nextBadgeText').textContent=unlocked>=flat.length?'追加バッジを準備中':`あと${rem}分`;document.getElementById('homeStart').textContent=state.running?'PAUSE':'START';document.getElementById('timerStart').textContent=state.running?'PAUSE':'START';const pref=currentPrefecture();document.getElementById('currentChip').textContent=`現在地：${pref}`;document.getElementById('myJourneyText').textContent=`${pref}・${unlocked} Memories`;document.getElementById('myJourneyMinutes').textContent=`${weeklyMinutes} min`;document.getElementById('myJourneyPoints').textContent=`${formatPoints(totalPoints)} pt`;document.getElementById('pendingSync').textContent=pending>0?`未同期 ${pending}分（${pending}pt）`:'同期済み';renderStreakBanner(todayTotal);renderCollection();updateMap();}
 async function loadRanking(){const status=document.getElementById('rankingStatus'),list=document.getElementById('friendsList');status.textContent='読み込み中…';try{const userId=profile?.userId||'';const r=await fetch(`${API_URL}?action=ranking&userId=${encodeURIComponent(userId)}&_=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`通信エラー (${r.status})`);const data=await r.json();if(!data.success)throw new Error(data.message||'取得に失敗しました');renderRanking(data.ranking||[]);renderInbox(data.inbox||[]);status.textContent=`${data.ranking.length}人が今週の旅に参加中`;}catch(e){status.textContent='ランキングを取得できませんでした';list.innerHTML=`<div class="empty-ranking">${escapeHtml(e.message)}<br>Apps Scriptの最新版がデプロイされているか確認してください。</div>`;}}
