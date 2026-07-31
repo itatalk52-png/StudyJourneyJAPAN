@@ -237,9 +237,90 @@
     <button class="primary-btn register-submit" id="registerSubmit" type="submit">旅をはじめる</button>
   </form>
 </dialog>
+
+<dialog id="updateDialog" class="update-dialog" aria-labelledby="updateTitle">
+  <div class="update-symbol" aria-hidden="true">↻</div>
+  <div class="panel-kicker">APP UPDATE</div>
+  <h2 id="updateTitle">新しいバージョンがあります</h2>
+  <p>最新版に更新しますか？<br>学習時間やプロフィールの記録はそのまま引き継がれます。</p>
+  <div class="update-actions">
+    <button type="button" class="ghost-btn update-later" id="updateLater">あとで</button>
+    <button type="button" class="primary-btn update-now" id="updateNow">今すぐ更新</button>
+  </div>
+  <div class="form-message" id="updateMessage" role="status"></div>
+</dialog>
+
 <div class="sync-toast" id="syncToast" role="status"></div>
 
 <script src="app.js"></script>
-<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(()=>{}));}</script>
+<script>
+(() => {
+  if (!("serviceWorker" in navigator)) return;
+
+  let refreshing = false;
+  let waitingWorker = null;
+  const dialog = document.getElementById("updateDialog");
+  const updateNow = document.getElementById("updateNow");
+  const updateLater = document.getElementById("updateLater");
+  const updateMessage = document.getElementById("updateMessage");
+
+  const showUpdate = worker => {
+    if (!worker || !navigator.serviceWorker.controller) return;
+    waitingWorker = worker;
+    updateNow.disabled = false;
+    updateNow.textContent = "今すぐ更新";
+    updateMessage.textContent = "";
+    if (!dialog.open) dialog.showModal();
+  };
+
+  const watchInstalling = registration => {
+    const worker = registration.installing;
+    if (!worker) return;
+    worker.addEventListener("statechange", () => {
+      if (worker.state === "installed" && navigator.serviceWorker.controller) {
+        showUpdate(registration.waiting || worker);
+      }
+    });
+  };
+
+  window.addEventListener("load", async () => {
+    try {
+      const registration = await navigator.serviceWorker.register("service-worker.js", {
+        updateViaCache: "none"
+      });
+
+      if (registration.waiting) showUpdate(registration.waiting);
+      registration.addEventListener("updatefound", () => watchInstalling(registration));
+
+      // GitHub Pagesで最新版を確認する。
+      await registration.update();
+
+      // 開いたままの利用者にも更新を知らせる。
+      setInterval(() => registration.update().catch(() => {}), 60 * 60 * 1000);
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) registration.update().catch(() => {});
+      });
+    } catch (error) {
+      console.warn("Service Worker registration failed:", error);
+    }
+  });
+
+  updateNow.addEventListener("click", () => {
+    if (!waitingWorker) return;
+    updateNow.disabled = true;
+    updateNow.textContent = "更新しています…";
+    updateMessage.textContent = "最新版を準備しています。";
+    waitingWorker.postMessage({ type: "SKIP_WAITING" });
+  });
+
+  updateLater.addEventListener("click", () => dialog.close());
+
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+})();
+</script>
 </body>
 </html>

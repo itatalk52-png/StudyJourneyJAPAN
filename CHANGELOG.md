@@ -1,3 +1,13 @@
+# Ver.1.8.5 R3
+
+- Added an in-app update notification dialog.
+- Added “Update now” and “Later” actions.
+- The new service worker waits for user approval before activation.
+- Reloads automatically after the approved update becomes active.
+- Checks for updates on launch, when returning to the app, and every hour.
+- Keeps local learning records and profile data during updates.
+- Updated the service-worker cache version.
+
 # Ver.1.8.5 R2
 
 - Fixed the top-right Home profile icon to render as a true circle.
