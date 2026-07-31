@@ -1,3 +1,12 @@
+# Ver.1.9.2
+
+- Fixed weekly study time showing as zero when the week ID cell is a Google Sheets date value.
+- Applied the same normalized week comparison to study updates, cloud sync, and Friends ranking.
+- Added the label “今週の勉強時間”.
+- Changed weekly duration display to Japanese hours and minutes, such as `2時間07分`.
+- Removed the Timer RESET button to prevent accidental confusion.
+- Updated the service-worker cache version.
+
 # Ver.1.9.0
 
 - Added server-generated random Study Journey IDs.

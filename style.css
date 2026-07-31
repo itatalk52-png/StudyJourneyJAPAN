@@ -648,3 +648,39 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
   font-size:.92rem;
   line-height:1.5;
 }
+
+
+/* ============================================================
+   Ver.1.9.2 — weekly study time clarity / RESET removal
+   ============================================================ */
+.timer-controls-single{
+  grid-template-columns:minmax(180px,320px) !important;
+  justify-content:center;
+}
+.timer-controls-single .wide{
+  width:100%;
+}
+.weekly-time-label{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:700;
+  line-height:1.35;
+  white-space:nowrap;
+}
+.rank-score,
+.friend-score{
+  align-content:center;
+}
+.rank-score strong,
+.friend-score strong{
+  line-height:1.25;
+}
+@media(max-width:560px){
+  .weekly-time-label{
+    font-size:9px;
+  }
+  .friend-score strong{
+    font-size:12px;
+  }
+}

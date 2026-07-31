@@ -81,8 +81,7 @@
       <div class="timer-screen-card">
         <div class="timer-label">FOCUS TIMER</div>
         <div class="timer-display" id="timerDisplay">00:00:00</div>
-        <div class="timer-controls">
-          <button class="secondary-btn" id="resetBtn">RESET</button>
+        <div class="timer-controls timer-controls-single">
           <button class="primary-btn wide" id="timerStart">START</button>
         </div>
         <div class="timer-points-grid">
@@ -161,7 +160,7 @@
           <div class="panel-kicker">JOURNEY FRIENDS</div>
           <h2>一緒に旅する仲間</h2>
         </div>
-        <span>Weekly</span>
+        <span>今週</span>
       </div>
       <div class="my-rank-card">
         <div class="avatar big">JI</div>
@@ -169,7 +168,7 @@
           <div class="rank-label">あなたの今週の旅</div>
           <h3 id="myJourneyText">沖縄県・0 Memories</h3>
         </div>
-        <div class="rank-score"><strong id="myJourneyMinutes">0 min</strong><small id="myJourneyPoints">0 pt</small></div>
+        <div class="rank-score"><span class="weekly-time-label">今週の勉強時間</span><strong id="myJourneyMinutes">0分</strong><small id="myJourneyPoints">0 pt</small></div>
       </div>
       <div class="ranking-toolbar"><span id="rankingStatus">ランキングを読み込みます</span><button id="refreshRanking" class="ghost-btn">更新</button></div>
       <div class="friends-list" id="friendsList"></div>

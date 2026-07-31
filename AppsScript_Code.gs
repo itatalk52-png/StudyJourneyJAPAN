@@ -25,7 +25,7 @@ function doGet(e) {
     if (action === 'ranking') return jsonResponse({success:true, ranking:getRanking(cleanText(p.userId)), inbox:getInbox(cleanText(p.userId))});
     if (action === 'calendar') return jsonResponse(getCalendar(cleanText(p.userId), cleanText(p.month)));
     if (action === 'sync' || action === 'login') return jsonResponse(getSyncData(cleanText(p.userId)));
-    if (action === 'health') return jsonResponse({success:true, message:'Study Journey JAPAN API Ver.1.9.0 is working.'});
+    if (action === 'health') return jsonResponse({success:true, message:'Study Journey JAPAN API Ver.1.9.2 is working.'});
     return jsonResponse({success:false, message:'指定された処理が見つかりません。'});
   } catch (error) { return errorResponse(error); }
 }
@@ -92,7 +92,7 @@ function addStudyTime(params) {
   if(!userId)throw new Error('ユーザーIDがありません。'); if(!Number.isFinite(minutes)||minutes<=0)throw new Error('学習時間が正しくありません。'); if(minutes>1440)throw new Error('一度に登録できる学習時間は1,440分までです。');
   const sheet=getUserSheet(), rowNumber=findUserRow(sheet,userId); if(!rowNumber)throw new Error('ユーザー登録が確認できません。プロフィールを保存し直してください。');
   const values=sheet.getRange(rowNumber,1,1,HEADERS.length).getValues()[0], currentWeekId=getCurrentWeekId();
-  let weeklyMinutes=String(values[9]||'')===currentWeekId?Number(values[5])||0:0, totalMinutes=Number(values[6])||0;
+  let weeklyMinutes=cellDateString(values[9])===currentWeekId?Number(values[5])||0:0, totalMinutes=Number(values[6])||0;
   const oldTotalMinutes=totalMinutes; weeklyMinutes+=minutes; totalMinutes+=minutes; const now=new Date();
   const newBadges=recordNewBadges(userId,oldTotalMinutes,totalMinutes,now);
   sheet.getRange(rowNumber,6,1,5).setValues([[weeklyMinutes,totalMinutes,currentPrefecture,now,currentWeekId]]); sheet.getRange(rowNumber,13).setValue(now);
@@ -168,7 +168,7 @@ function getBadgeHistory(userId){
 function getSyncData(userId){
   if(!userId)throw new Error('Study Journey IDを入力してください。');
   const users=getUserSheet(),row=findUserRow(users,userId);if(!row)throw new Error('このIDは見つかりませんでした。入力内容をご確認ください。');
-  const v=users.getRange(row,1,1,HEADERS.length).getValues()[0],weekId=getCurrentWeekId(),weekly=String(v[9]||'')===weekId?Number(v[5])||0:0,total=Number(v[6])||0;
+  const v=users.getRange(row,1,1,HEADERS.length).getValues()[0],weekId=getCurrentWeekId(),weekly=cellDateString(v[9])===weekId?Number(v[5])||0:0,total=Number(v[6])||0;
   ensureBadgeHistory(userId,total);
   const daily=getDailySheet(),dailyRows=[];if(daily.getLastRow()>=2)daily.getRange(2,1,daily.getLastRow()-1,DAILY_HEADERS.length).getValues().forEach(r=>{if(String(r[0])===userId)dailyRows.push({date:cellDateString(r[1]),minutes:Number(r[2])||0,medal:String(r[3]||''),medalPoints:Number(r[4])||0,streakBonusPoints:Number(r[6])||0});});
   return{success:true,profile:{userId:String(v[0]),nickname:String(v[1]||''),faculty:String(v[2]||''),department:String(v[3]||''),teacherEmail:String(v[4]||'')},sync:{weeklyMinutes:weekly,totalMinutes:total,currentPrefecture:String(v[7]||'沖縄県'),cheerPoints:Number(v[11])||0,medalPoints:Number(v[14])||0,streakPoints:Number(v[15])||0,currentStreak:calculateCurrentStreak(userId),todayMinutes:(getDailyRecord(userId,todayString())||{}).minutes||0,badgeCount:Math.floor(total/10),badgeHistory:getBadgeHistory(userId),dailyRecords:dailyRows,updatedAt:formatDate(v[8])}};
@@ -176,7 +176,7 @@ function getSyncData(userId){
 
 function getRanking(viewerId){
   const sheet=getUserSheet(),lastRow=sheet.getLastRow();if(lastRow<2)return[];const currentWeekId=getCurrentWeekId(),now=new Date(),values=sheet.getRange(2,1,lastRow-1,HEADERS.length).getValues();
-  const ranking=values.filter(r=>String(r[0]||'')).map(r=>{const weekly=String(r[9]||'')===currentWeekId?Number(r[5])||0:0,cheerPoints=Number(r[11])||0,medalPoints=Number(r[14])||0,streakPoints=Number(r[15])||0,dormant=isDormantRow(r,now);return{userId:String(r[0]),nickname:String(r[1]||''),faculty:String(r[2]||''),department:String(r[3]||''),weeklyMinutes:weekly,totalMinutes:Number(r[6])||0,totalPoints:(Number(r[6])||0)+cheerPoints+medalPoints+streakPoints,cheerPoints,medalPoints,streakPoints,currentPrefecture:String(r[7]||'沖縄県'),updatedAt:formatDate(r[8]),avatarUrl:String(r[10]||''),dormant,cheerValue:dormant?0.2:0.1,cheeredToday:viewerId?hasCheeredToday(viewerId,String(r[0])):false};});
+  const ranking=values.filter(r=>String(r[0]||'')).map(r=>{const weekly=cellDateString(r[9])===currentWeekId?Number(r[5])||0:0,cheerPoints=Number(r[11])||0,medalPoints=Number(r[14])||0,streakPoints=Number(r[15])||0,dormant=isDormantRow(r,now);return{userId:String(r[0]),nickname:String(r[1]||''),faculty:String(r[2]||''),department:String(r[3]||''),weeklyMinutes:weekly,totalMinutes:Number(r[6])||0,totalPoints:(Number(r[6])||0)+cheerPoints+medalPoints+streakPoints,cheerPoints,medalPoints,streakPoints,currentPrefecture:String(r[7]||'沖縄県'),updatedAt:formatDate(r[8]),avatarUrl:String(r[10]||''),dormant,cheerValue:dormant?0.2:0.1,cheeredToday:viewerId?hasCheeredToday(viewerId,String(r[0])):false};});
   ranking.sort((a,b)=>b.weeklyMinutes-a.weeklyMinutes||b.totalPoints-a.totalPoints||a.nickname.localeCompare(b.nickname,'ja'));return ranking.map((u,i)=>Object.assign({rank:i+1},u));
 }
 function getInbox(userId){if(!userId)return[];const cheers=getCheerSheet(),lastRow=cheers.getLastRow();if(lastRow<2)return[];const users=getUserSheet(),rows=cheers.getRange(2,1,lastRow-1,CHEER_HEADERS.length).getValues();return rows.filter(r=>String(r[2])===userId&&!r[5]).sort((a,b)=>b[3]-a[3]).slice(0,20).map(r=>{const senderRow=findUserRow(users,String(r[1]));return{cheerId:String(r[0]),senderNickname:senderRow?String(users.getRange(senderRow,2).getValue()||'仲間'):'仲間',points:Number(r[4])||0.1,sentAt:formatDate(r[3])};});}

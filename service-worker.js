@@ -1,4 +1,4 @@
-const CACHE="study-journey-v1-9-0-official";
+const CACHE="study-journey-v1-9-2-official";
 const ASSETS=["./","./index.html","./style.css","./app.js","./manifest.webmanifest"];
 
 self.addEventListener("install",event=>{
