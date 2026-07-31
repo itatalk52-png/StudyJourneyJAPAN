@@ -637,3 +637,14 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
    Ver.1.9.0 — passwordless ID login & cloud sync
    ============================================================ */
 .login-existing{margin:22px 0 8px}.login-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:#87918d;font-size:12px;font-weight:800;letter-spacing:.08em}.login-divider::before,.login-divider::after{content:"";height:1px;flex:1;background:#dfe5e1}.login-submit{width:100%;min-height:50px;margin-top:12px;border-radius:999px}.current-id{margin:16px 0;padding:13px 16px;border-radius:16px;background:#edf2ef;color:#244d3e;text-align:center}.current-id strong{font-size:18px;letter-spacing:.08em}.id-dialog{width:min(92vw,440px);border:0;border-radius:30px;padding:34px;background:#fffdf8;color:#18382d;text-align:center;box-shadow:0 24px 70px rgba(25,50,42,.24)}.id-dialog::backdrop{background:rgba(18,37,31,.4);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}.id-dialog h2{font-size:28px;margin:12px 0}.id-dialog p{color:#74817c;line-height:1.7}.issued-id{margin:24px 0 18px;padding:18px;border:2px solid #244d3e;border-radius:18px;background:#f5f7f4;font-size:clamp(28px,8vw,40px);font-weight:900;letter-spacing:.08em;user-select:all}.id-dialog button{width:100%;min-height:52px;margin-top:10px;border-radius:999px}.id-dialog small{display:block;margin-top:18px;color:#7b8681;line-height:1.6}.avatar-help::after{content:" アイコンはこの端末だけに保存されます。"}
+
+
+.register-tip{
+  margin:12px 0 18px;
+  padding:10px 12px;
+  border-radius:10px;
+  background:#f6f6ef;
+  color:#2f4f3e;
+  font-size:.92rem;
+  line-height:1.5;
+}
