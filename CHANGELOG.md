@@ -1,3 +1,20 @@
+# Ver.1.9.4
+
+- Added “今週の勉強時間ランク〇位” below This Week on the Home screen.
+- Weekly rank is calculated from Monday-to-Sunday cumulative study minutes.
+- Added competition ranking for weekly-time ties: 1st, 2nd, 2nd, 4th.
+- Aligned Friends list rank numbers with the weekly study-time rank.
+- Retained the cumulative point rank introduced in Ver.1.9.3.
+- Updated the Apps Script API and service-worker cache version.
+
+# Ver.1.9.3
+
+- Added the user’s cumulative point rank below Total Points on the Home screen.
+- Point rank includes study, medal, streak, and cheer points.
+- Added competition ranking for ties: 1st, 2nd, 2nd, 4th.
+- Kept the Friends list ordered by weekly study time.
+- Updated the Apps Script API and service-worker cache version.
+
 # Ver.1.9.2
 
 - Fixed weekly study time showing as zero when the week ID cell is a Google Sheets date value.

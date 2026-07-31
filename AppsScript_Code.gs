@@ -25,7 +25,7 @@ function doGet(e) {
     if (action === 'ranking') return jsonResponse({success:true, ranking:getRanking(cleanText(p.userId)), inbox:getInbox(cleanText(p.userId))});
     if (action === 'calendar') return jsonResponse(getCalendar(cleanText(p.userId), cleanText(p.month)));
     if (action === 'sync' || action === 'login') return jsonResponse(getSyncData(cleanText(p.userId)));
-    if (action === 'health') return jsonResponse({success:true, message:'Study Journey JAPAN API Ver.1.9.2 is working.'});
+    if (action === 'health') return jsonResponse({success:true, message:'Study Journey JAPAN API Ver.1.9.4 is working.'});
     return jsonResponse({success:false, message:'指定された処理が見つかりません。'});
   } catch (error) { return errorResponse(error); }
 }
@@ -177,7 +177,30 @@ function getSyncData(userId){
 function getRanking(viewerId){
   const sheet=getUserSheet(),lastRow=sheet.getLastRow();if(lastRow<2)return[];const currentWeekId=getCurrentWeekId(),now=new Date(),values=sheet.getRange(2,1,lastRow-1,HEADERS.length).getValues();
   const ranking=values.filter(r=>String(r[0]||'')).map(r=>{const weekly=cellDateString(r[9])===currentWeekId?Number(r[5])||0:0,cheerPoints=Number(r[11])||0,medalPoints=Number(r[14])||0,streakPoints=Number(r[15])||0,dormant=isDormantRow(r,now);return{userId:String(r[0]),nickname:String(r[1]||''),faculty:String(r[2]||''),department:String(r[3]||''),weeklyMinutes:weekly,totalMinutes:Number(r[6])||0,totalPoints:(Number(r[6])||0)+cheerPoints+medalPoints+streakPoints,cheerPoints,medalPoints,streakPoints,currentPrefecture:String(r[7]||'沖縄県'),updatedAt:formatDate(r[8]),avatarUrl:String(r[10]||''),dormant,cheerValue:dormant?0.2:0.1,cheeredToday:viewerId?hasCheeredToday(viewerId,String(r[0])):false};});
-  ranking.sort((a,b)=>b.weeklyMinutes-a.weeklyMinutes||b.totalPoints-a.totalPoints||a.nickname.localeCompare(b.nickname,'ja'));return ranking.map((u,i)=>Object.assign({rank:i+1},u));
+
+  // 累計ポイント順位。同点は同順位とし、次の順位を飛ばします（1位・2位・2位・4位）。
+  const pointOrder=ranking.slice().sort((a,b)=>b.totalPoints-a.totalPoints||a.nickname.localeCompare(b.nickname,'ja'));
+  let previousPoints=null,previousRank=0;
+  pointOrder.forEach((user,index)=>{
+    const rank=previousPoints!==null&&user.totalPoints===previousPoints?previousRank:index+1;
+    user.pointRank=rank;
+    previousPoints=user.totalPoints;
+    previousRank=rank;
+  });
+
+  // 今週の勉強時間順位。同点は同順位とし、次の順位を飛ばします。
+  const weeklyOrder=ranking.slice().sort((a,b)=>b.weeklyMinutes-a.weeklyMinutes||b.totalPoints-a.totalPoints||a.nickname.localeCompare(b.nickname,'ja'));
+  let previousWeekly=null,previousWeeklyRank=0;
+  weeklyOrder.forEach((user,index)=>{
+    const rank=previousWeekly!==null&&user.weeklyMinutes===previousWeekly?previousWeeklyRank:index+1;
+    user.weeklyRank=rank;
+    previousWeekly=user.weeklyMinutes;
+    previousWeeklyRank=rank;
+  });
+
+  // Friends一覧は今週の勉強時間順で表示します。
+  ranking.sort((a,b)=>b.weeklyMinutes-a.weeklyMinutes||b.totalPoints-a.totalPoints||a.nickname.localeCompare(b.nickname,'ja'));
+  return ranking.map(u=>Object.assign({rank:u.weeklyRank},u));
 }
 function getInbox(userId){if(!userId)return[];const cheers=getCheerSheet(),lastRow=cheers.getLastRow();if(lastRow<2)return[];const users=getUserSheet(),rows=cheers.getRange(2,1,lastRow-1,CHEER_HEADERS.length).getValues();return rows.filter(r=>String(r[2])===userId&&!r[5]).sort((a,b)=>b[3]-a[3]).slice(0,20).map(r=>{const senderRow=findUserRow(users,String(r[1]));return{cheerId:String(r[0]),senderNickname:senderRow?String(users.getRange(senderRow,2).getValue()||'仲間'):'仲間',points:Number(r[4])||0.1,sentAt:formatDate(r[3])};});}
 
