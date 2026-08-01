@@ -1,3 +1,10 @@
+# Ver.2.0.3 Hotfix
+
+- Renamed “本日の獲得ポイント” to “本日の勉強時間ポイント” on the Timer screen.
+- Renamed “累計ポイント” to “累計獲得ポイント” on the Timer screen.
+- Updated the service-worker cache version.
+- No calculation logic or Apps Script changes.
+
 # Ver.2.0.2 Hotfix
 
 - Changed “今回の学習ポイント” to “本日の獲得ポイント” on the Timer screen.
