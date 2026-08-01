@@ -1,3 +1,10 @@
+# Ver.2.0.8 Official Release
+
+- Updated the post-update profile flow for registered users.
+- Restored saved avatar and profile fields before opening the dialog.
+- Added a “プロフィールはそのまま” button that closes the dialog and returns Home.
+- Updated the application and Service Worker version to 2.0.8.
+
 # Ver.2.0.7 Official Release
 
 - アプリ内の表示バージョンを Ver.2.0.7 に更新

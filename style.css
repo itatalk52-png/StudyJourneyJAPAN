@@ -804,3 +804,11 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
 .manual-update-result strong{font-size:14px;font-weight:900;}
 .manual-update-result span{margin-top:4px;font-size:11px;line-height:1.55;}
 
+
+.profile-keep-button{
+  width:100%;
+  margin-top:-4px;
+  padding:14px 18px;
+  font-weight:800;
+  background:#fff;
+}

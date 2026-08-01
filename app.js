@@ -73,8 +73,38 @@ function applyCloudData(cloud){
 }
 async function loadCloudState(showToast=true){if(!profile?.userId)return;try{if(state.running)reconcileRunningTime();const data=await fetchCloudState(profile.userId);profile={...data.profile,avatarLocal:profile.avatarLocal||''};saveProfile();applyCloudData(data.sync);updateProfileUI();if(showToast)toast('最新の記録に同期しました');}catch(e){if(showToast)toast('同期できませんでした：'+e.message,'error');}}
 function openProfile(){
-  if(profile){document.getElementById('nicknameInput').value=profile.nickname||'';document.getElementById('facultyInput').value=profile.faculty||'';document.getElementById('departmentInput').value=profile.department||'';document.getElementById('teacherEmailInput').value=profile.teacherEmail||'';document.getElementById('currentIdBox').hidden=false;document.getElementById('currentUserId').textContent=profile.userId;document.getElementById('loginExisting').hidden=true;document.getElementById('registerSubmit').textContent='プロフィールを更新';}else{document.getElementById('currentIdBox').hidden=true;document.getElementById('loginExisting').hidden=false;document.getElementById('registerSubmit').textContent='IDを発行して旅をはじめる';}
-  pendingAvatarData='';document.getElementById('avatarClearButton').dataset.remove='false';updateAvatarPreview(profile?.avatarLocal||'',profile?.nickname||'');document.getElementById('avatarInput').value='';document.getElementById('registerMessage').textContent='';document.getElementById('loginMessage').textContent='';document.getElementById('registerDialog').showModal();
+  const keepButton=document.getElementById('profileKeepButton');
+  if(profile){
+    document.getElementById('registerTitle').textContent='プロフィール確認';
+    document.getElementById('registerIntro').textContent='現在の登録内容です。変更がなければ「プロフィールはそのまま」を押してください。';
+    document.getElementById('nicknameInput').value=profile.nickname||'';
+    document.getElementById('facultyInput').value=profile.faculty||'';
+    document.getElementById('departmentInput').value=profile.department||'';
+    document.getElementById('teacherEmailInput').value=profile.teacherEmail||'';
+    document.getElementById('currentIdBox').hidden=false;
+    document.getElementById('currentUserId').textContent=profile.userId;
+    document.getElementById('loginExisting').hidden=true;
+    document.getElementById('registerSubmit').textContent='プロフィールを更新';
+    keepButton.hidden=false;
+  }else{
+    document.getElementById('registerTitle').textContent='参加者登録';
+    document.getElementById('registerIntro').textContent='初めての方はプロフィールを登録してください。IDは自動で発行されます。';
+    document.getElementById('nicknameInput').value='';
+    document.getElementById('facultyInput').value='';
+    document.getElementById('departmentInput').value='';
+    document.getElementById('teacherEmailInput').value='';
+    document.getElementById('currentIdBox').hidden=true;
+    document.getElementById('loginExisting').hidden=false;
+    document.getElementById('registerSubmit').textContent='IDを発行して旅をはじめる';
+    keepButton.hidden=true;
+  }
+  pendingAvatarData='';
+  document.getElementById('avatarClearButton').dataset.remove='false';
+  updateAvatarPreview(profile?.avatarLocal||'',profile?.nickname||'');
+  document.getElementById('avatarInput').value='';
+  document.getElementById('registerMessage').textContent='';
+  document.getElementById('loginMessage').textContent='';
+  document.getElementById('registerDialog').showModal();
 }
 function updateProfileUI(){const ownAvatar=profile?.avatarLocal||'';applyAvatar(document.getElementById('profileBtn'),ownAvatar,profile?.nickname);applyAvatar(document.querySelector('.avatar.big'),ownAvatar,profile?.nickname);}
 function updateAvatarPreview(url,name){applyAvatar(document.getElementById('avatarPreview'),url,name);}
@@ -258,7 +288,7 @@ function changeCalendarMonth(delta){calendarMonth=new Date(calendarMonth.getFull
 function escapeHtml(s=''){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function escapeAttr(s=''){return escapeHtml(s);}
 
-document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>showScreen(b.dataset.target));document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>showScreen(b.dataset.nav));document.getElementById('homeStart').onclick=toggleTimer;document.getElementById('timerStart').onclick=toggleTimer;document.getElementById('profileBtn').onclick=openProfile;document.getElementById('calendarBtn').onclick=openCalendar;document.getElementById('calendarPrev').onclick=()=>changeCalendarMonth(-1);document.getElementById('calendarNext').onclick=()=>changeCalendarMonth(1);document.querySelector('.calendar-close').onclick=()=>document.getElementById('calendarDialog').close();document.getElementById('registerForm').addEventListener('submit',register);document.getElementById('loginSubmit').onclick=loginWithId;document.getElementById('loginIdInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();loginWithId();}});document.getElementById('copyIdButton').onclick=async()=>{try{await navigator.clipboard.writeText(profile.userId);toast('IDをコピーしました');}catch(e){toast('IDを長押ししてコピーしてください','error');}};document.getElementById('closeIdButton').onclick=()=>document.getElementById('idDialog').close();document.getElementById('avatarInput').addEventListener('change',handleAvatarFile);document.getElementById('avatarClearButton').addEventListener('click',clearAvatarSelection);document.getElementById('refreshRanking').onclick=async()=>{await syncPendingMinutes();await loadRanking();};
+document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>showScreen(b.dataset.target));document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>showScreen(b.dataset.nav));document.getElementById('homeStart').onclick=toggleTimer;document.getElementById('timerStart').onclick=toggleTimer;document.getElementById('profileBtn').onclick=openProfile;document.getElementById('calendarBtn').onclick=openCalendar;document.getElementById('calendarPrev').onclick=()=>changeCalendarMonth(-1);document.getElementById('calendarNext').onclick=()=>changeCalendarMonth(1);document.querySelector('.calendar-close').onclick=()=>document.getElementById('calendarDialog').close();document.getElementById('registerForm').addEventListener('submit',register);document.getElementById('profileKeepButton').onclick=()=>{document.getElementById('registerDialog').close();showScreen('home');toast('プロフィールはそのまま引き継がれています');};document.getElementById('loginSubmit').onclick=loginWithId;document.getElementById('loginIdInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();loginWithId();}});document.getElementById('copyIdButton').onclick=async()=>{try{await navigator.clipboard.writeText(profile.userId);toast('IDをコピーしました');}catch(e){toast('IDを長押ししてコピーしてください','error');}};document.getElementById('closeIdButton').onclick=()=>document.getElementById('idDialog').close();document.getElementById('avatarInput').addEventListener('change',handleAvatarFile);document.getElementById('avatarClearButton').addEventListener('click',clearAvatarSelection);document.getElementById('refreshRanking').onclick=async()=>{await syncPendingMinutes();await loadRanking();};
 const tabs=document.getElementById('prefTabs');DATA.prefectures.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p.name;b.onclick=()=>{selectedPref=i;renderCollection(true);};tabs.appendChild(b);});
 document.querySelector('.dialog-close').onclick=()=>dialog.close();dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});document.getElementById('mapViewToggle').onclick=()=>{mapViewMode=mapViewMode==='current'?'national':'current';updateMap();};
 if(state.running){
