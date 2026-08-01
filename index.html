@@ -176,7 +176,7 @@
           <div class="rank-label">あなたの今週の旅</div>
           <h3 id="myJourneyText">沖縄県・0 Memories</h3>
         </div>
-        <div class="rank-score"><span class="weekly-time-label">今週の勉強時間</span><strong id="myJourneyMinutes">0分</strong><small id="myJourneyPoints">0 pt</small></div>
+        <div class="rank-score"><span class="weekly-time-label">今週の簿記勉強時間</span><strong id="myJourneyMinutes">0分</strong><small id="myJourneyPoints" class="my-journey-points">0 pt</small></div>
       </div>
       <div class="ranking-toolbar"><span id="rankingStatus">ランキングを読み込みます</span><button id="refreshRanking" class="ghost-btn">更新</button></div>
       <div class="friends-list" id="friendsList"></div>
@@ -252,6 +252,13 @@
     <div class="form-message" id="registerMessage"></div>
     <button class="primary-btn register-submit" id="registerSubmit" type="submit">旅をはじめる</button>
   </form>
+  <section class="manual-update-section" aria-labelledby="manualUpdateHeading">
+    <div class="panel-kicker" id="manualUpdateHeading">APP VERSION</div>
+    <div class="current-version">Version <strong id="currentAppVersion">2.0.6</strong></div>
+    <button class="manual-update-button" id="manualUpdateButton" type="button">🚀 最新バージョンで旅をする</button>
+    <p class="manual-update-help">最新バージョンがあるかもしれません。<br>こちらを押してみてください。</p>
+    <div class="manual-update-result" id="manualUpdateResult" role="status" aria-live="polite"></div>
+  </section>
 </dialog>
 
 
@@ -283,18 +290,53 @@
 <script src="app.js"></script>
 <script>
 (() => {
-  if (!("serviceWorker" in navigator)) return;
+  const APP_VERSION = "2.0.6";
+  document.getElementById("currentAppVersion").textContent = APP_VERSION;
+
+  if (!("serviceWorker" in navigator)) {
+    const button = document.getElementById("manualUpdateButton");
+    const result = document.getElementById("manualUpdateResult");
+    button.addEventListener("click", () => {
+      result.innerHTML = `<strong>この端末では更新確認機能を利用できません。</strong><span>ブラウザでページを再読み込みしてください。</span>`;
+    });
+    return;
+  }
 
   let refreshing = false;
   let waitingWorker = null;
+  let registrationRef = null;
+  let manualCheckInProgress = false;
+  let manualUpdateFound = false;
   const dialog = document.getElementById("updateDialog");
   const updateNow = document.getElementById("updateNow");
   const updateLater = document.getElementById("updateLater");
   const updateMessage = document.getElementById("updateMessage");
+  const manualButton = document.getElementById("manualUpdateButton");
+  const manualResult = document.getElementById("manualUpdateResult");
+
+  const setManualResult = (title, text, state = "success") => {
+    manualResult.className = `manual-update-result ${state}`;
+    manualResult.innerHTML = `<strong>${title}</strong><span>${text}</span>`;
+  };
+
+  const activateUpdate = worker => {
+    if (!worker) return;
+    waitingWorker = worker;
+    localStorage.setItem("sj-update-success", APP_VERSION);
+    worker.postMessage({ type: "SKIP_WAITING" });
+  };
 
   const showUpdate = worker => {
     if (!worker || !navigator.serviceWorker.controller) return;
     waitingWorker = worker;
+    if (manualCheckInProgress) {
+      manualUpdateFound = true;
+      manualButton.disabled = true;
+      manualButton.textContent = "更新しています…";
+      setManualResult("最新版を準備しています…", "まもなく自動で再読み込みします。", "checking");
+      activateUpdate(worker);
+      return;
+    }
     updateNow.disabled = false;
     updateNow.textContent = "今すぐ更新";
     updateMessage.textContent = "";
@@ -311,23 +353,59 @@
     });
   };
 
+  const manualCheck = async () => {
+    manualCheckInProgress = true;
+    manualUpdateFound = false;
+    manualButton.disabled = true;
+    manualButton.textContent = "最新版を確認中…";
+    setManualResult("最新版を確認しています…", "少しだけお待ちください。", "checking");
+    try {
+      const registration = registrationRef || await navigator.serviceWorker.ready;
+      registrationRef = registration;
+      if (registration.waiting) {
+        showUpdate(registration.waiting);
+        return;
+      }
+      await registration.update();
+      await new Promise(resolve => setTimeout(resolve, 2200));
+      if (!manualUpdateFound && !registration.waiting) {
+        setManualResult("✅ 現在、最新版です！", `Ver.${APP_VERSION}で旅をしています。`);
+        manualButton.disabled = false;
+        manualButton.textContent = "🚀 最新バージョンで旅をする";
+        manualCheckInProgress = false;
+      } else if (registration.waiting) {
+        showUpdate(registration.waiting);
+      }
+    } catch (error) {
+      setManualResult("更新を確認できませんでした。", "通信環境を確認して、もう一度お試しください。", "error");
+      manualButton.disabled = false;
+      manualButton.textContent = "🚀 最新バージョンで旅をする";
+      manualCheckInProgress = false;
+    }
+  };
+
+  manualButton.addEventListener("click", manualCheck);
+
   window.addEventListener("load", async () => {
     try {
-      const registration = await navigator.serviceWorker.register("service-worker.js", {
-        updateViaCache: "none"
-      });
-
+      const registration = await navigator.serviceWorker.register("service-worker.js", { updateViaCache: "none" });
+      registrationRef = registration;
       if (registration.waiting) showUpdate(registration.waiting);
       registration.addEventListener("updatefound", () => watchInstalling(registration));
-
-      // GitHub Pagesで最新版を確認する。
       await registration.update();
-
-      // 開いたままの利用者にも更新を知らせる。
       setInterval(() => registration.update().catch(() => {}), 60 * 60 * 1000);
       document.addEventListener("visibilitychange", () => {
         if (!document.hidden) registration.update().catch(() => {});
       });
+
+      const updatedVersion = localStorage.getItem("sj-update-success");
+      if (updatedVersion) {
+        localStorage.removeItem("sj-update-success");
+        setTimeout(() => {
+          if (!document.getElementById("registerDialog").open) document.getElementById("registerDialog").showModal();
+          setManualResult("✅ 最新版に更新しました！", `Ver.${APP_VERSION}になりました。新しい旅をお楽しみください！`);
+        }, 450);
+      }
     } catch (error) {
       console.warn("Service Worker registration failed:", error);
     }
@@ -338,6 +416,7 @@
     updateNow.disabled = true;
     updateNow.textContent = "更新しています…";
     updateMessage.textContent = "最新版を準備しています。";
+    localStorage.setItem("sj-update-success", APP_VERSION);
     waitingWorker.postMessage({ type: "SKIP_WAITING" });
   });
 

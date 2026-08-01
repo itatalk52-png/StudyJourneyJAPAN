@@ -733,3 +733,73 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
   word-break:keep-all;
   overflow-wrap:normal;
 }
+
+
+/* ============================================================
+   Ver.2.0.6 Hotfix — manual update control and journey points
+   ============================================================ */
+.my-journey-points{
+  display:block;
+  margin-top:3px;
+  color:#d00000 !important;
+  font-size:15px !important;
+  font-weight:900 !important;
+  line-height:1.2;
+}
+.manual-update-section{
+  margin-top:26px;
+  padding-top:24px;
+  border-top:1px solid var(--line);
+  text-align:center;
+}
+.current-version{
+  margin:6px 0 14px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+.manual-update-button{
+  width:100%;
+  min-height:54px;
+  border:0;
+  border-radius:999px;
+  padding:12px 18px;
+  background:var(--green);
+  color:#fff;
+  font:inherit;
+  font-size:14px;
+  font-weight:850;
+  cursor:pointer;
+  box-shadow:0 9px 22px rgba(31,70,55,.18);
+}
+.manual-update-button:disabled{
+  opacity:.66;
+  cursor:wait;
+}
+.manual-update-help{
+  margin:10px 0 0 !important;
+  color:var(--muted) !important;
+  font-size:11px !important;
+  line-height:1.65 !important;
+}
+.manual-update-result{
+  min-height:0;
+  margin-top:0;
+  padding:0;
+  border-radius:16px;
+  overflow:hidden;
+  transition:.25s ease;
+}
+.manual-update-result:not(:empty){
+  min-height:64px;
+  margin-top:14px;
+  padding:13px 14px;
+  background:#edf5ef;
+  color:var(--green);
+}
+.manual-update-result.checking:not(:empty){background:#f6f2e7;color:#76662c;}
+.manual-update-result.error:not(:empty){background:#fff0ef;color:#a43a34;}
+.manual-update-result strong,
+.manual-update-result span{display:block;}
+.manual-update-result strong{font-size:14px;font-weight:900;}
+.manual-update-result span{margin-top:4px;font-size:11px;line-height:1.55;}

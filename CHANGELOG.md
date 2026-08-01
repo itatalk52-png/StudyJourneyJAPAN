@@ -1,3 +1,12 @@
+# Ver.2.0.6 Hotfix
+
+- Added a manual “最新バージョンで旅をする” update control to the profile screen.
+- Added clear success messages for updated and already-current states.
+- Retained automatic service-worker update notifications.
+- Ensured the own Friends card uses “今週の簿記勉強時間”.
+- Emphasized own total points in bold red.
+- Updated the service-worker cache version.
+
 # Ver.2.0.3 Hotfix
 
 - Renamed “本日の獲得ポイント” to “本日の勉強時間ポイント” on the Timer screen.
