@@ -383,9 +383,153 @@
           "file": "10_badge.png"
         }
       ]
+    },
+    {
+      "id": "09_ehime",
+      "key": "ehime",
+      "name": "愛媛県",
+      "reading": "えひめけん",
+      "badges": [
+        {
+          "name": "道後温泉",
+          "file": "01_dogo_onsen.png"
+        },
+        {
+          "name": "松山城",
+          "file": "02_matsuyama_castle.png"
+        },
+        {
+          "name": "しまなみ海道",
+          "file": "03_shimanami_kaido.png"
+        },
+        {
+          "name": "愛媛みかん",
+          "file": "04_ehime_mikan.png"
+        },
+        {
+          "name": "今治タオル",
+          "file": "05_imabari_towel.png"
+        },
+        {
+          "name": "宇和島鯛めし",
+          "file": "06_uwajima_taimeshi.png"
+        },
+        {
+          "name": "内子の町並み",
+          "file": "07_uchiko_townscape.png"
+        },
+        {
+          "name": "じゃこ天",
+          "file": "08_jakoten.png"
+        },
+        {
+          "name": "亀老山展望公園",
+          "file": "09_kirosan_observatory.png"
+        },
+        {
+          "name": "伊予柑",
+          "file": "10_iyokan.png"
+        }
+      ]
+    },
+    {
+      "id": "10_kochi",
+      "key": "kochi",
+      "name": "高知県",
+      "reading": "こうちけん",
+      "badges": [
+        {
+          "name": "桂浜",
+          "file": "01_katsurahama.png"
+        },
+        {
+          "name": "かつおのたたき",
+          "file": "02_katsuo_tataki.png"
+        },
+        {
+          "name": "高知城",
+          "file": "03_kochi_castle.png"
+        },
+        {
+          "name": "仁淀川",
+          "file": "04_niyodo_river.png"
+        },
+        {
+          "name": "佐川の町並み",
+          "file": "05_sakawa_townscape.png"
+        },
+        {
+          "name": "馬路村のゆず",
+          "file": "06_umaji_yuzu.png"
+        },
+        {
+          "name": "四国カルスト",
+          "file": "07_shikoku_karst.png"
+        },
+        {
+          "name": "どろめ（生しらす）",
+          "file": "08_dorome.png"
+        },
+        {
+          "name": "よさこい祭り",
+          "file": "09_yosakoi_festival.png"
+        },
+        {
+          "name": "四万十川",
+          "file": "10_shimanto_river.png"
+        }
+      ]
+    },
+    {
+      "id": "11_kagawa",
+      "key": "kagawa",
+      "name": "香川県",
+      "reading": "かがわけん",
+      "badges": [
+        {
+          "name": "瀬戸大橋",
+          "file": "01_seto_bridge.png"
+        },
+        {
+          "name": "讃岐うどん",
+          "file": "02_sanuki_udon.png"
+        },
+        {
+          "name": "高松城",
+          "file": "03_takamatsu_castle.png"
+        },
+        {
+          "name": "栗林公園",
+          "file": "04_ritsurin_garden.png"
+        },
+        {
+          "name": "小豆島オリーブ公園",
+          "file": "05_shodoshima_olive_park.png"
+        },
+        {
+          "name": "金刀比羅宮（石段）",
+          "file": "06_konpira_stairs.png"
+        },
+        {
+          "name": "骨付鳥",
+          "file": "07_honetsukidori.png"
+        },
+        {
+          "name": "飯野山（讃岐富士）",
+          "file": "08_iinoyama.png"
+        },
+        {
+          "name": "エンジェルロード",
+          "file": "09_angel_road.png"
+        },
+        {
+          "name": "小豆島オリーブ",
+          "file": "10_shodoshima_olives.png"
+        }
+      ]
     }
   ],
-  "version": "1.8.0",
-  "availableBadgeCount": 80,
+  "version": "2.0.0",
+  "availableBadgeCount": 110,
   "targetBadgeCount": 470
 }

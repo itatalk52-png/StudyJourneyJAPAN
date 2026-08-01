@@ -1,3 +1,11 @@
+# Ver.2.0.0
+
+- Added 30 new badge memories across Ehime, Kochi, and Kagawa.
+- Expanded the implemented collection from 80 to 110 of 470 memories.
+- Added Angel Road to Kagawa and standardized all new badge filenames.
+- Updated the embedded badge catalog and service-worker cache.
+- No Apps Script changes are required for this content release.
+
 # Ver.1.9.4
 
 - Added “今週の勉強時間ランク〇位” below This Week on the Home screen.
