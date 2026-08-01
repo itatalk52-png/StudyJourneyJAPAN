@@ -736,7 +736,7 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
 
 
 /* ============================================================
-   Ver.2.0.6 Hotfix — manual update control and journey points
+   Ver.2.0.7 Official Release — manual update control and journey points
    ============================================================ */
 .my-journey-points{
   display:block;
@@ -764,7 +764,7 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
   border:0;
   border-radius:999px;
   padding:12px 18px;
-  background:var(--green);
+  background:var(--forest);
   color:#fff;
   font:inherit;
   font-size:14px;
@@ -804,6 +804,3 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
 .manual-update-result strong{font-size:14px;font-weight:900;}
 .manual-update-result span{margin-top:4px;font-size:11px;line-height:1.55;}
 
-/* v2.0.7 update button */
-.update-version-btn{background:#1f6f43!important;color:#fff!important;border-color:#1f6f43!important;font-weight:700;}
-.update-version-btn:hover{filter:brightness(.95);}

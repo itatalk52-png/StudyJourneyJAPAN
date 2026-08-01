@@ -1,3 +1,11 @@
+# Ver.2.0.7 Official Release
+
+- アプリ内の表示バージョンを Ver.2.0.7 に更新
+- 「🚀 最新バージョンで旅をする」ボタンを「プロフィールを更新」と同じ濃い緑色に統一
+- 更新確認・更新完了・最新版表示の仕組みを継続
+- Service Worker のキャッシュ名を Ver.2.0.7 用に更新
+- Google Apps Script の変更なし
+
 # Ver.2.0.6 Hotfix
 
 - Added a manual “最新バージョンで旅をする” update control to the profile screen.
