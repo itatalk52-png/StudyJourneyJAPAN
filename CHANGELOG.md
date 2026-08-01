@@ -1,3 +1,9 @@
+# Ver.2.0.1 Hotfix
+
+- Friends画面の「今週の勉強時間」を「今週の簿記勉強時間」に変更。
+- 文字サイズを維持したまま、ラベルを1行表示に固定。
+- Service Workerのキャッシュバージョンを更新。
+
 # Ver.2.0.0
 
 - Added 30 new badge memories across Ehime, Kochi, and Kagawa.

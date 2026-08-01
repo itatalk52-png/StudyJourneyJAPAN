@@ -720,3 +720,16 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
     font-size:10px;
   }
 }
+
+
+/* ============================================================
+   Ver.2.0.1 Hotfix — Friends weekly bookkeeping label
+   ============================================================ */
+.friends-page .weekly-time-label,
+#friendsPage .weekly-time-label,
+.friend-score .weekly-time-label,
+.rank-score .weekly-time-label{
+  white-space:nowrap;
+  word-break:keep-all;
+  overflow-wrap:normal;
+}
