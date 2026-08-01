@@ -1,8 +1,9 @@
-# Ver.2.0.1 Hotfix
+# Ver.2.0.2 Hotfix
 
-- Friends画面の「今週の勉強時間」を「今週の簿記勉強時間」に変更。
-- 文字サイズを維持したまま、ラベルを1行表示に固定。
-- Service Workerのキャッシュバージョンを更新。
+- Changed “今回の学習ポイント” to “本日の獲得ポイント” on the Timer screen.
+- The left Timer card now shows today’s study points (1 minute = 1 point).
+- Kept cumulative points unchanged on the right card.
+- Updated the service-worker cache version.
 
 # Ver.2.0.0
 
