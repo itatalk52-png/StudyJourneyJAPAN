@@ -803,3 +803,7 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
 .manual-update-result span{display:block;}
 .manual-update-result strong{font-size:14px;font-weight:900;}
 .manual-update-result span{margin-top:4px;font-size:11px;line-height:1.55;}
+
+/* v2.0.7 update button */
+.update-version-btn{background:#1f6f43!important;color:#fff!important;border-color:#1f6f43!important;font-weight:700;}
+.update-version-btn:hover{filter:brightness(.95);}
