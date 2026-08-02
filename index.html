@@ -12,6 +12,15 @@
 <meta name="apple-mobile-web-app-title" content="Study Journey">
 </head>
 <body>
+<div id="splashScreen" class="sjj-splash" aria-label="Study Journey JAPAN 起動画面">
+  <div class="sjj-splash-inner">
+    <div class="sjj-splash-title">Study Journey JAPAN</div>
+    <div class="sjj-splash-subtitle">沖縄から北海道へ、日本縦断の旅。</div>
+    <div class="sjj-splash-route" aria-hidden="true"><span></span></div>
+    <div class="sjj-splash-supported">Supported by K-PLAS</div>
+  </div>
+</div>
+
 <div class="app-shell">
   <header class="app-header">
     <div>
@@ -37,6 +46,11 @@
         <div class="current-chip" id="currentChip">現在地：沖縄県</div>
         <div class="timer-large" id="homeTimer">00:00:00</div>
         <button class="primary-btn" id="homeStart">START</button>
+        <div class="home-mission-separator" aria-hidden="true"></div>
+<div class="mission-launch-grid">
+          <button class="mission-launch" data-mission="commercial"><span class="mission-caption">2級問題集ミッション</span><strong>COM. MISSION</strong><small>商業簿記</small></button>
+          <button class="mission-launch" data-mission="industrial"><span class="mission-caption">2級問題集ミッション</span><strong>IND. MISSION</strong><small>工業簿記</small></button>
+        </div>
         <div class="hero-grid">
           <div><span>Today</span><strong id="todayMinutes">0 min</strong></div>
           <div class="week-stat">
@@ -98,6 +112,39 @@
         </div>
         <div class="timer-note">1分 = 1ポイント / 10分 = 1バッジ</div><div class="sync-state" id="pendingSync">同期済み</div>
       </div>
+      <div class="mission-launch-grid timer-mission-launch">
+        <button class="mission-launch" data-mission="commercial"><span class="mission-caption">2級問題集ミッション</span><strong>COM. MISSION</strong><small>商業簿記</small></button>
+        <button class="mission-launch" data-mission="industrial"><span class="mission-caption">2級問題集ミッション</span><strong>IND. MISSION</strong><small>工業簿記</small></button>
+      </div>
+    </section>
+
+    <section class="screen" data-screen="mission">
+      <div class="mission-topbar">
+        <button class="ghost-btn mission-back" type="button">← 戻る</button>
+        <div class="mission-subject-switch">
+          <button data-mission-switch="commercial">COM.</button><button data-mission-switch="industrial">IND.</button>
+        </div>
+      </div>
+      <div class="mission-hero">
+        <div class="panel-kicker" id="missionKicker">COMMERCIAL BOOKKEEPING</div>
+        <h2 id="missionTitle">COM. MISSION</h2>
+        <p id="missionJapanese">商業簿記</p>
+        <div class="mission-progress-row"><strong id="missionProgressText">0 / 0</strong><span id="missionPercent">0%</span></div>
+        <div class="mission-progress-track"><div id="missionProgressFill"></div></div>
+        <div class="mission-summary-grid">
+          <div><span>解答記録</span><strong id="missionSolvedCount">0回</strong></div>
+          <div><span>問題演習ポイント</span><strong id="missionPointCount">0 pt</strong></div>
+          <div><span>未挑戦</span><strong id="missionRemainingCount">0問</strong></div>
+        </div>
+      </div>
+      <div class="mission-filters">
+        <button class="active" data-mission-filter="all">すべて</button>
+        <button data-mission-filter="unstarted">未挑戦</button>
+        <button data-mission-filter="review">△だけ</button>
+        <button data-mission-filter="master">MASTER</button>
+<button type="button" data-mission-filter="favorite">★ お気に入り</button>
+      </div>
+      <div id="missionChapters" class="mission-chapters"></div>
     </section>
 
     <section class="screen" data-screen="collection">
@@ -255,7 +302,7 @@
   </form>
   <section class="manual-update-section" aria-labelledby="manualUpdateHeading">
     <div class="panel-kicker" id="manualUpdateHeading">APP VERSION</div>
-    <div class="current-version">Version <strong id="currentAppVersion">2.0.8</strong></div>
+    <div class="current-version">Version <strong id="currentAppVersion">2.1.0</strong></div>
     <button class="primary-btn manual-update-button" id="manualUpdateButton" type="button">🚀 最新バージョンで旅をする</button>
     <p class="manual-update-help">最新バージョンがあるかもしれません。<br>こちらを押してみてください。</p>
     <div class="manual-update-result" id="manualUpdateResult" role="status" aria-live="polite"></div>
@@ -288,10 +335,12 @@
 
 <div class="sync-toast" id="syncToast" role="status"></div>
 
+<script src="mission-data.js"></script>
 <script src="app.js"></script>
+<script src="mission.js"></script>
 <script>
 (() => {
-  const APP_VERSION = "2.0.8";
+  const APP_VERSION = "2.1.0";
   document.getElementById("currentAppVersion").textContent = APP_VERSION;
 
   if (!("serviceWorker" in navigator)) {
@@ -429,6 +478,17 @@
     window.location.reload();
   });
 })();
+</script>
+
+<script>
+window.addEventListener('DOMContentLoaded',()=>{
+  const splash=document.getElementById('splashScreen');
+  if(!splash)return;
+  window.setTimeout(()=>{
+    splash.classList.add('hide');
+    window.setTimeout(()=>splash.remove(),260);
+  },1000);
+});
 </script>
 </body>
 </html>

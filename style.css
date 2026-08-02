@@ -812,3 +812,727 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
   font-weight:800;
   background:#fff;
 }
+
+/* Ver.2.1.0 MISSION */
+.mission-launch-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin:12px 0 18px;
+}
+.mission-launch{
+  min-height:58px;
+  border:1px solid #d8c998;
+  background:linear-gradient(145deg,#f5ebc9 0%,#ecdda9 54%,#e6d296 100%);
+  color:#263b33;
+  border-radius:17px;
+  padding:10px 15px 9px;
+  box-shadow:0 6px 15px rgba(120,98,43,.12);
+  cursor:pointer;
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:center;
+  line-height:1;
+  transition:transform .14s ease,box-shadow .14s ease,filter .14s ease;
+}
+.mission-launch:active{
+  transform:translateY(1px) scale(.995);
+  box-shadow:0 3px 9px rgba(120,98,43,.11);
+  filter:brightness(.985);
+}
+.mission-launch strong{
+  display:block;
+  width:100%;
+  font-size:14px;
+  line-height:1.05;
+  letter-spacing:.105em;
+  white-space:nowrap;
+}
+.mission-launch small{
+  display:block;
+  width:100%;
+  font-size:10px;
+  line-height:1.05;
+  margin-top:3px;
+  color:#637069;
+  letter-spacing:.06em;
+  text-align:left;
+}
+.timer-mission-launch{
+  max-width:560px;
+  margin:18px auto 0;
+}.mission-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.mission-subject-switch{display:flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px}.mission-subject-switch button{border:0;background:transparent;border-radius:999px;padding:8px 14px;color:var(--muted)}.mission-subject-switch button.active{background:var(--forest);color:#fff}.mission-hero{background:#fff;border:1px solid var(--line);border-radius:28px;padding:26px}.mission-hero h2{font-size:34px;margin:7px 0 2px}.mission-hero>p{margin:0;color:var(--muted)}.mission-progress-row{display:flex;justify-content:space-between;margin-top:24px}.mission-progress-track{height:12px;background:#eef0eb;border-radius:999px;overflow:hidden;margin-top:8px}.mission-progress-track div{height:100%;width:0;background:#e6c76c;transition:.3s}.mission-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}.mission-summary-grid div{background:#faf9f4;border-radius:16px;padding:14px;text-align:center}.mission-summary-grid span{display:block;color:var(--muted);font-size:10px}.mission-summary-grid strong{display:block;margin-top:5px}.mission-filters{display:flex;gap:8px;overflow:auto;margin:18px 0}.mission-filters button{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;color:var(--forest)}.mission-filters button.active{background:var(--forest);color:#fff}.mission-chapters{display:grid;gap:12px}.mission-chapter{background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden}.mission-chapter summary{list-style:none;padding:18px;cursor:pointer}.mission-chapter summary::-webkit-details-marker{display:none}.mission-chapter-head{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.mission-chapter-name strong{display:block;font-size:16px}.mission-chapter-name small{color:var(--muted)}.chapter-mini-track{height:6px;background:#eef0eb;border-radius:999px;overflow:hidden;margin-top:8px}.chapter-mini-track div{height:100%;background:#e6c76c}.mission-problems{border-top:1px solid var(--line)}.mission-problem{display:grid;grid-template-columns:62px 1fr auto;gap:10px;align-items:center;padding:14px 16px;border-bottom:1px solid #eee}.mission-problem:last-child{border-bottom:0}.mission-problem-id{font-weight:800;color:var(--forest)}.mission-problem-title{font-size:13px}.mission-rounds{display:flex;gap:5px}.mission-round{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:11px;display:grid;place-items:center}.mission-round.done{background:#fff7db;border-color:#d0ae48}.mission-round.level-triangle{color:#8b6c17}.mission-round.level-circle{color:#507465}.mission-round.level-double{background:var(--forest);border-color:var(--forest);color:#fff}.mission-master{font-size:10px;font-weight:800;color:#9d7817}.mission-dialog{text-align:left}.mission-dialog p{color:var(--muted)}.round-selector,.level-selector{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:18px 0}.round-selector button,.level-selector button{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 5px;color:var(--forest)}.round-selector button.active,.level-selector button.active{background:#e6c76c;border-color:#c7a645;color:#2c2c2c}.level-selector{grid-template-columns:repeat(3,1fr)}.level-selector strong,.level-selector small{display:block}.level-selector strong{font-size:24px}.level-selector small{font-size:9px;margin-top:3px}.mission-dialog .wide{width:100%}@media(max-width:560px){.mission-launch-grid{grid-template-columns:1fr 1fr;gap:9px}.mission-launch{min-height:54px;padding:9px 11px 8px}.mission-launch strong{font-size:12px;letter-spacing:.075em}.mission-launch small{font-size:9px;margin-top:3px}.mission-summary-grid{grid-template-columns:1fr 1fr 1fr}.mission-problem{grid-template-columns:48px 1fr}.mission-rounds{grid-column:1/-1;justify-content:flex-end}.mission-hero{padding:22px 18px}}
+
+/* Ver.2.1.0 Beta1 */
+.beta-label{display:inline-block;margin-left:8px;padding:3px 8px;border-radius:999px;background:#e6c76c;color:#2c2c2c;font-size:11px;font-weight:800;letter-spacing:.12em;vertical-align:middle;}
+
+/* Ver.2.1.0 Beta2: clickable MISSION rounds */
+.mission-problem{
+  grid-template-columns:minmax(0,1fr) auto;
+}
+.mission-problem-main{
+  min-width:0;
+  display:grid;
+  grid-template-columns:62px minmax(0,1fr);
+  gap:10px;
+  align-items:center;
+  border:0;
+  background:transparent;
+  padding:0;
+  color:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+.mission-round{
+  padding:0;
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.mission-round:active{
+  transform:scale(.92);
+}
+@media(max-width:560px){
+  .mission-problem-main{
+    grid-template-columns:48px minmax(0,1fr);
+  }
+}
+
+/* Ver.2.1.0 Beta3: compact pill-style MISSION buttons */
+.mission-launch{
+  min-height:40px;
+  border-radius:999px;
+  padding:6px 16px 5px;
+}
+.mission-launch strong{
+  line-height:1;
+}
+.mission-launch small{
+  line-height:1;
+  margin-top:2px;
+}
+
+/* Timer MISSION buttons: narrower, centered and stronger labels */
+.timer-mission-launch{
+  width:min(76%,420px);
+  max-width:420px;
+  margin:16px auto 0;
+  gap:10px;
+}
+.timer-mission-launch .mission-launch{
+  min-height:42px;
+  padding:6px 14px 5px;
+}
+.timer-mission-launch .mission-launch strong{
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:.07em;
+}
+.timer-mission-launch .mission-launch small{
+  font-size:10px;
+  font-weight:700;
+}
+
+/* Round buttons use full labels and wrap cleanly */
+.mission-rounds{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(64px,1fr));
+  gap:6px;
+  width:100%;
+  margin-top:10px;
+}
+.mission-round{
+  width:auto;
+  min-width:64px;
+  height:34px;
+  padding:0 8px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.mission-problem{
+  grid-template-columns:minmax(0,1fr);
+  gap:6px;
+}
+.mission-problem-main{
+  width:100%;
+}
+.mission-round.done{
+  background:#fff4c9;
+  border-color:#d3b15b;
+  box-shadow:0 2px 8px rgba(145,111,29,.10);
+}
+.mission-round.done::before{
+  content:"🔥";
+  margin-right:3px;
+}
+.mission-round.level-triangle::after{content:" △";}
+.mission-round.level-circle::after{content:" ○";}
+.mission-round.level-double::after{content:" ◎";}
+.mission-round.level-double{
+  background:var(--forest);
+  border-color:var(--forest);
+  color:#fff;
+}
+
+@media(max-width:560px){
+  .mission-launch{
+    min-height:38px;
+    padding:5px 12px 4px;
+  }
+  .timer-mission-launch{
+    width:min(88%,390px);
+  }
+  .timer-mission-launch .mission-launch strong{
+    font-size:14px;
+  }
+  .mission-rounds{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .mission-round{
+    min-width:0;
+    width:100%;
+    height:36px;
+    font-size:11px;
+  }
+  .mission-rounds .mission-round:last-child{
+    grid-column:1 / -1;
+  }
+}
+
+/* ============================================================
+   Ver.2.1.0 β4 Complete
+   ============================================================ */
+
+/* Home: MISSION buttons 20% narrower and centered */
+.home-mission-separator{
+  width:100%;
+  height:1px;
+  margin:15px 0 11px;
+  background:linear-gradient(90deg,transparent,rgba(40,73,61,.16),transparent);
+}
+#homeScreen .mission-launch-grid{
+  width:80%;
+  margin-left:auto;
+  margin-right:auto;
+}
+#homeScreen .mission-launch{
+  text-align:center;
+  align-items:center;
+}
+#homeScreen .mission-launch strong,
+#homeScreen .mission-launch small{
+  width:100%;
+  text-align:center;
+}
+
+/* Timer: smaller centered buttons, centered text */
+.timer-mission-launch{
+  width:min(68%,360px);
+  margin-left:auto;
+  margin-right:auto;
+}
+.timer-mission-launch .mission-launch{
+  text-align:center;
+  align-items:center;
+}
+.timer-mission-launch .mission-launch strong,
+.timer-mission-launch .mission-launch small{
+  width:100%;
+  text-align:center;
+}
+.timer-mission-launch .mission-launch strong{
+  font-size:15px;
+  font-weight:900;
+}
+
+/* MISSION rounds: compact buttons, all five in a single row */
+.mission-rounds{
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  align-items:center;
+  justify-content:space-between;
+  gap:4px !important;
+  width:100%;
+  overflow:hidden;
+}
+.mission-round{
+  flex:0 1 auto;
+  width:auto !important;
+  min-width:0 !important;
+  height:30px !important;
+  padding:0 7px !important;
+  border-radius:999px;
+  font-size:9px !important;
+  line-height:1;
+  white-space:nowrap;
+}
+.mission-rounds .mission-round:last-child{
+  grid-column:auto !important;
+}
+
+/* Favorite mission problems */
+.mission-problem{
+  position:relative;
+}
+.mission-problem-main{
+  padding-right:38px;
+}
+.mission-favorite{
+  position:absolute;
+  top:9px;
+  right:9px;
+  width:30px;
+  height:30px;
+  padding:0;
+  border:1px solid rgba(190,153,55,.28);
+  border-radius:50%;
+  background:#fff;
+  color:#b9af94;
+  font-size:17px;
+  cursor:pointer;
+}
+.mission-favorite.active{
+  color:#b8860b;
+  background:#fff6d8;
+  border-color:#d3b15b;
+  box-shadow:0 3px 10px rgba(142,109,31,.14);
+}
+
+@media(max-width:560px){
+  #homeScreen .mission-launch-grid{
+    width:80%;
+  }
+  .timer-mission-launch{
+    width:min(78%,340px);
+  }
+  .mission-round{
+    padding:0 5px !important;
+    font-size:8.5px !important;
+    height:29px !important;
+  }
+}
+
+/* ============================================================
+   Ver.2.1.0 β5 Complete
+   ============================================================ */
+.sjj-splash{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:linear-gradient(180deg,#eff8ff 0%,#fff 65%,#f7fbf7 100%);opacity:1;transition:opacity .24s ease}
+.sjj-splash.hide{opacity:0;pointer-events:none}
+.sjj-splash-inner{width:min(86vw,420px);text-align:center;color:#23463b;padding:24px}
+.sjj-splash-title{font-size:clamp(24px,6vw,38px);line-height:1.1;font-weight:900;letter-spacing:.04em}
+.sjj-splash-subtitle{margin-top:14px;font-size:clamp(13px,3.5vw,18px);font-weight:700;letter-spacing:.05em}
+.sjj-splash-route{width:66%;height:1px;margin:22px auto 18px;background:linear-gradient(90deg,transparent,#e6c76c 20%,#b7d5ca 80%,transparent);position:relative}
+.sjj-splash-route span{position:absolute;top:50%;left:16%;width:8px;height:8px;border-radius:50%;background:#e6c76c;transform:translate(-50%,-50%);animation:sjjRouteDot .68s ease forwards}
+@keyframes sjjRouteDot{from{left:16%}to{left:84%}}
+.sjj-splash-supported{margin-top:18px;font-size:11px;font-weight:800;letter-spacing:.16em;color:#77867f}
+
+/* Home spacing */
+#homeScreen .home-mission-separator{margin-top:clamp(26px,5vw,36px);margin-bottom:clamp(22px,4.5vw,30px)}
+#homeScreen .mission-launch-grid{margin-top:0;margin-bottom:clamp(22px,4.5vw,30px)}
+#homeScreen .mission-launch{align-items:center!important;justify-content:center!important;text-align:center!important}
+#homeScreen .mission-launch strong,#homeScreen .mission-launch small{width:100%;text-align:center!important;align-self:center!important}
+
+/* Timer centering */
+.timer-mission-launch .mission-launch{align-items:center!important;justify-content:center!important;text-align:center!important}
+.timer-mission-launch .mission-launch strong,.timer-mission-launch .mission-launch small{width:100%;text-align:center!important}
+
+/* Three rounds */
+.mission-rounds{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;width:100%;overflow:visible!important}
+.mission-round{width:100%!important;min-width:0!important;height:34px!important;padding:0 8px!important;border-radius:999px!important;font-size:10px!important;font-weight:900;white-space:nowrap;color:#3d443f;border:1px solid rgba(185,151,62,.32);box-shadow:0 3px 9px rgba(124,99,35,.10)}
+.mission-round:nth-child(1){background:#f7f0d8!important}
+.mission-round:nth-child(2){background:#efdda6!important}
+.mission-round:nth-child(3){background:#e6c76c!important}
+.mission-round.done{color:#2f3f38;border-color:#c7a84e}
+.mission-round.level-double{color:#243c32!important;background:#e6c76c!important}
+@media(max-width:560px){.mission-round{height:33px!important;font-size:9px!important;padding:0 5px!important}}
+
+
+/* ============================================================
+   Ver.2.1.0 β6 Complete
+   ============================================================ */
+
+/* Home: move the separator and MISSION area lower, with generous spacing */
+#homeScreen .home-mission-separator{
+  margin-top:clamp(34px,7vw,48px) !important;
+  margin-bottom:clamp(24px,5vw,34px) !important;
+}
+#homeScreen .mission-launch-grid{
+  margin-top:0 !important;
+  margin-bottom:clamp(24px,5vw,34px) !important;
+}
+
+/* Home MISSION labels: both lines sit exactly in the center */
+#homeScreen .mission-launch{
+  display:grid !important;
+  grid-template-rows:auto auto;
+  place-content:center !important;
+  place-items:center !important;
+  text-align:center !important;
+}
+#homeScreen .mission-launch strong,
+#homeScreen .mission-launch small{
+  display:block !important;
+  width:100% !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  text-align:center !important;
+  justify-self:center !important;
+  align-self:center !important;
+}
+
+/* Timer MISSION labels: exact horizontal centering */
+.timer-mission-launch .mission-launch{
+  display:grid !important;
+  grid-template-rows:auto auto;
+  place-content:center !important;
+  place-items:center !important;
+  text-align:center !important;
+}
+.timer-mission-launch .mission-launch strong,
+.timer-mission-launch .mission-launch small{
+  display:block !important;
+  width:100% !important;
+  text-align:center !important;
+  justify-self:center !important;
+  align-self:center !important;
+}
+
+/* Third round uses the same champagne-gold gradient as Home MISSION buttons */
+.mission-round:nth-child(3){
+  background:linear-gradient(145deg,#f5ebc9 0%,#ecdda9 54%,#e6d296 100%) !important;
+  border-color:#d8c998 !important;
+}
+.mission-round:nth-child(3).done,
+.mission-round:nth-child(3).level-double{
+  background:linear-gradient(145deg,#f5ebc9 0%,#ecdda9 54%,#e6d296 100%) !important;
+  color:#263b33 !important;
+  border-color:#c8aa4f !important;
+}
+
+/* ============================================================
+   Ver.2.1.0 β7 Complete — interactive MISSION
+   ============================================================ */
+.mission-problem{
+  position:relative;
+}
+.mission-problem-main{
+  cursor:pointer !important;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.mission-rounds{
+  pointer-events:auto !important;
+}
+.mission-round{
+  cursor:pointer !important;
+  pointer-events:auto !important;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  display:flex !important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:1px;
+}
+.mission-round .round-label{
+  display:block;
+  line-height:1;
+}
+.mission-round .round-state{
+  display:block;
+  min-height:11px;
+  margin-top:2px;
+  line-height:1;
+  font-size:10px;
+  font-weight:900;
+}
+.mission-round.done{
+  outline:2px solid rgba(193,157,55,.22);
+  box-shadow:0 4px 12px rgba(121,96,33,.14);
+}
+.mission-round.level-triangle .round-state{color:#766b44;}
+.mission-round.level-circle .round-state{color:#3f6c5c;}
+.mission-round.level-double .round-state{color:#253f35;}
+.mission-favorite{
+  pointer-events:auto !important;
+  z-index:2;
+}
+
+/* ============================================================
+   Ver.2.1.0 β8 Complete — understanding dropdown
+   ============================================================ */
+.mission-problem-head{
+  position:relative;
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+}
+.mission-problem-main.static{
+  flex:1;
+  cursor:default !important;
+  padding-right:38px;
+}
+.mission-status{
+  display:inline-flex;
+  align-items:center;
+  margin:7px 0 9px;
+  padding:5px 10px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.03em;
+}
+.mission-status-challenge{
+  color:#8b5d24;
+  background:#fff5d8;
+  border:1px solid rgba(207,169,77,.35);
+}
+.mission-status-master{
+  color:#74520f;
+  background:linear-gradient(145deg,#fff5c9,#e6c76c);
+  border:1px solid rgba(184,134,11,.42);
+  box-shadow:0 4px 12px rgba(143,105,20,.15);
+}
+.mission-rounds{
+  align-items:start !important;
+}
+.mission-round-wrap{
+  position:relative;
+  min-width:0;
+  text-align:center;
+}
+.mission-round{
+  width:100% !important;
+  cursor:pointer !important;
+  pointer-events:auto !important;
+}
+.mission-selected-level{
+  min-height:25px;
+  margin-top:5px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#b58918;
+  font-size:16px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:.03em;
+}
+.mission-selected-level.level-double{
+  font-size:14px;
+  white-space:nowrap;
+}
+.mission-level-menu{
+  display:none;
+  position:absolute;
+  z-index:20;
+  top:39px;
+  left:50%;
+  width:max-content;
+  min-width:82px;
+  padding:6px;
+  transform:translateX(-50%);
+  border:1px solid rgba(193,157,55,.34);
+  border-radius:14px;
+  background:#fffdf7;
+  box-shadow:0 12px 26px rgba(53,67,60,.18);
+}
+.mission-level-menu.open{
+  display:grid;
+  gap:4px;
+}
+.mission-level-option{
+  min-width:68px;
+  min-height:32px;
+  padding:5px 10px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:#344840;
+  font-size:15px;
+  font-weight:900;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.mission-level-option:hover,
+.mission-level-option:focus-visible{
+  background:#f7efd7;
+}
+.mission-level-option.selected{
+  color:#74520f;
+  background:linear-gradient(145deg,#fff4c6,#e6c76c);
+}
+@media(max-width:560px){
+  .mission-level-menu{
+    top:38px;
+    min-width:76px;
+    padding:5px;
+  }
+  .mission-level-option{
+    min-width:64px;
+    font-size:14px;
+  }
+}
+
+/* ============================================================
+   Ver.2.1.0 β9 Complete — top-layer understanding menu
+   ============================================================ */
+.mission-level-portal{
+  position:fixed;
+  z-index:2147483647;
+  display:grid;
+  gap:6px;
+  padding:9px;
+  border:1px solid rgba(193,157,55,.42);
+  border-radius:16px;
+  background:#fffdf7;
+  box-shadow:0 18px 42px rgba(36,49,43,.28);
+  isolation:isolate;
+}
+.mission-level-portal .mission-level-option{
+  width:100%;
+  min-height:38px;
+  border-radius:11px;
+}
+.mission-level-portal .mission-level-option.selected{
+  background:linear-gradient(145deg,#fff4c6,#e6c76c);
+}
+.mission-chapter,
+.mission-problems,
+.mission-problem{
+  overflow:visible !important;
+}
+
+/* ============================================================
+   Ver.2.1.0 β10 Complete — layout refinements
+   ============================================================ */
+.friend-self-card .friend-time,
+.friend-self-card .friend-time-value,
+.friend-self-card .weekly-study-time,
+.friends-hero .friend-time,
+.friends-hero .weekly-study-time,
+#myWeeklyTime,
+#friendOwnWeeklyTime{
+  white-space:nowrap !important;
+  word-break:keep-all !important;
+  overflow-wrap:normal !important;
+  display:inline-flex;
+  align-items:baseline;
+}
+#homeScreen .mission-launch,
+[data-screen="home"] .mission-launch{
+  text-align:center !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+#homeScreen .mission-launch strong,
+#homeScreen .mission-launch small,
+[data-screen="home"] .mission-launch strong,
+[data-screen="home"] .mission-launch small{
+  width:100% !important;
+  text-align:center !important;
+  align-self:center !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+.timer-mission-launch{
+  width:min(68%,360px) !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  padding-left:0 !important;
+  padding-right:0 !important;
+  justify-content:center !important;
+  transform:none !important;
+}
+.timer-mission-launch .mission-launch{margin:0 !important;}
+[data-screen="timer"] .mission-launch-grid{
+  margin-left:auto !important;
+  margin-right:auto !important;
+  transform:none !important;
+}
+@media(max-width:560px){.timer-mission-launch{width:min(78%,340px) !important;}}
+
+/* Ver.2.1.0 β11 Complete — Chapter completion wording */
+.chapter-complete-message{
+  max-width:48%;
+  text-align:right;
+  line-height:1.25;
+  font-size:11px;
+  font-weight:900;
+  color:#8a6514;
+}
+@media(max-width:560px){
+  .chapter-complete-message{
+    max-width:54%;
+    font-size:10px;
+  }
+}
+
+/* Ver.2.1.0 β12 Complete */
+#homeScreen .home-mission-separator,
+[data-screen="home"] .home-mission-separator{
+  margin-bottom:clamp(38px,9vw,60px) !important;
+}
+#homeScreen .mission-launch-grid,
+[data-screen="home"] .mission-launch-grid{
+  margin-top:0 !important;
+}
+
+.friend-self-card .friend-time,
+.friend-self-card .friend-time-value,
+.friend-self-card .weekly-study-time,
+.friends-hero .friend-time,
+.friends-hero .weekly-study-time,
+#myWeeklyTime,
+#friendOwnWeeklyTime,
+[id*="WeeklyTime"],
+[class*="weekly-time"],
+[class*="friend-time"]{
+  display:inline-flex !important;
+  flex-wrap:nowrap !important;
+  align-items:baseline !important;
+  white-space:nowrap !important;
+  word-break:keep-all !important;
+  overflow-wrap:normal !important;
+  min-width:max-content !important;
+}
+
+/* Ver.2.1.0 β13 Complete — mission caption */
+.mission-launch{
+  min-height:48px !important;
+  padding-top:7px !important;
+  padding-bottom:6px !important;
+}
+.mission-launch .mission-caption{
+  display:block;
+  width:100%;
+  margin:0 0 3px;
+  text-align:center;
+  font-size:8px;
+  line-height:1;
+  font-weight:700;
+  letter-spacing:.08em;
+  color:#7d827f;
+  white-space:nowrap;
+}
+.mission-launch strong,
+.mission-launch small{
+  text-align:center !important;
+}
+@media(max-width:560px){
+  .mission-launch .mission-caption{
+    font-size:7.5px;
+    letter-spacing:.06em;
+  }
+}
+
+/* Ver.2.1.0 Official Release */
+.beta-badge,
+.badge-beta,
+[class*="beta-label"],
+[id*="betaBadge"]{
+  display:none !important;
+}

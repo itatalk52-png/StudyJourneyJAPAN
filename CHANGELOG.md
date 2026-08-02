@@ -1,3 +1,36 @@
+# Ver.2.1.0 β6 Complete
+
+- Refined spacing below START and around the Home MISSION area.
+- Centered both lines inside Home and Timer MISSION buttons.
+- Matched the third-round button to the Home champagne-gold gradient.
+
+# Ver.2.1.0 β5 Complete
+
+- Added one-second K-PLAS splash screen.
+- Refined Home spacing and centered MISSION labels.
+- Reduced MISSION tracking to three rounds with champagne-gold gradient.
+
+# Ver.2.1.0 β4 Complete
+
+- Narrowed and centered Home MISSION buttons.
+- Added a subtle divider beneath START.
+- Centered Timer MISSION labels and reduced button width.
+- Kept all five round buttons compact and on one line.
+- Added mission favorites and favorite filtering.
+
+# Ver.2.1.0 β3
+
+- Compact pill-shaped MISSION buttons on Home.
+- Narrower centered MISSION buttons on Timer with larger bold labels.
+- Replaced numeric round buttons with 1回転目〜5回転目.
+- Added visible 🔥 and understanding marks after recording.
+
+# Ver.2.1.0 β2
+
+- Refined Home and Timer MISSION buttons with a lighter champagne-gold design.
+- Enabled direct interaction with each 1–5 MISSION round button.
+- Added offline pre-caching for maps, badge images, icons, MISSION data and core app files.
+
 # Ver.2.0.8 Official Release
 
 - Updated the post-update profile flow for registered users.
