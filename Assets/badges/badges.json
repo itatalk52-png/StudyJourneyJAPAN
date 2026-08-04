@@ -527,9 +527,57 @@
           "file": "10_shodoshima_olives.png"
         }
       ]
+    },
+    {
+      "id": "12_tokushima",
+      "key": "tokushima",
+      "name": "徳島県",
+      "reading": "とくしまけん",
+      "badges": [
+        {
+          "name": "鳴門の渦潮",
+          "file": "01_naruto_whirlpools.png"
+        },
+        {
+          "name": "阿波踊り",
+          "file": "02_awa_odori.png"
+        },
+        {
+          "name": "大歩危・小歩危",
+          "file": "03_oboke_koboke.png"
+        },
+        {
+          "name": "すだち",
+          "file": "04_sudachi.png"
+        },
+        {
+          "name": "なると巻き",
+          "file": "05_narutomaki.png"
+        },
+        {
+          "name": "鳴門金時",
+          "file": "06_naruto_kintoki.png"
+        },
+        {
+          "name": "祖谷のかずら橋",
+          "file": "07_iya_vine_bridge.png"
+        },
+        {
+          "name": "徳島城",
+          "file": "08_tokushima_castle.png"
+        },
+        {
+          "name": "日和佐うみがめ",
+          "file": "09_hiwasa_sea_turtle.png"
+        },
+        {
+          "name": "剣山と眉山",
+          "file": "10_tsurugi_bizan.png"
+        }
+      ]
     }
   ],
-  "version": "2.0.0",
-  "availableBadgeCount": 110,
+  "version": "2.2.1",
+  "availableBadgeCount": 120,
   "targetBadgeCount": 470
 }

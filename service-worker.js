@@ -1,6 +1,6 @@
 importScripts("./offline-assets.js");
 
-const CACHE="study-journey-v2-2-0-timer-correction-official";
+const CACHE="study-journey-v2-2-1-tokushima-badges-official";
 const CORE_ASSETS=[
   "./",
   "./index.html",
