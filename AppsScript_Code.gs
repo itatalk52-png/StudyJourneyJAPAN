@@ -4,6 +4,8 @@ const CHEER_SHEET_NAME = 'エール履歴';
 const DAILY_SHEET_NAME = '日別学習記録';
 const BADGE_SHEET_NAME = 'バッジ取得履歴';
 const MISSION_SHEET_NAME = '問題演習履歴';
+const STUDY_RECORD_SHEET_NAME = '学習送信履歴';
+const CORRECTION_SHEET_NAME = '学習時間修正履歴';
 const AVATAR_FOLDER_NAME = 'Study Journey JAPAN Icons';
 const TIMEZONE = 'Asia/Tokyo';
 const DORMANT_HOURS = 72;
@@ -18,6 +20,8 @@ const CHEER_HEADERS = ['エールID','送信者ID','受信者ID','送信日時',
 const DAILY_HEADERS = ['ユーザーID','日付','学習分数','メダル','メダルポイント','更新日時','連続ボーナスポイント'];
 const BADGE_HEADERS = ['バッジ取得ID','ユーザーID','通算バッジ番号','取得日時','取得時通算学習分数'];
 const MISSION_HEADERS = ['記録ID','ユーザーID','科目','問題ID','回転','理解度','獲得ポイント','更新日時'];
+const STUDY_RECORD_HEADERS = ['記録ID','ユーザーID','学習日','学習分数','受信日時'];
+const CORRECTION_HEADERS = ['修正ID','ユーザーID','学習日','修正前秒数','修正後秒数','減少秒数','修正日時'];
 
 function doGet(e) {
   try {
@@ -26,9 +30,11 @@ function doGet(e) {
     const action = String(p.action || 'ranking');
     if (action === 'ranking') return jsonResponse({success:true, ranking:getRanking(cleanText(p.userId)), inbox:getInbox(cleanText(p.userId))});
     if (action === 'calendar') return jsonResponse(getCalendar(cleanText(p.userId), cleanText(p.month)));
+    if (action === 'correctionRecords') return jsonResponse(getCorrectionRecords(cleanText(p.userId)));
+    if (action === 'correctionHistory') return jsonResponse(getCorrectionHistory(cleanText(p.userId)));
     if (action === 'sync' || action === 'login') return jsonResponse(getSyncData(cleanText(p.userId)));
     if (action === 'missionSync') return jsonResponse(getMissionSync(cleanText(p.userId)));
-    if (action === 'health') return jsonResponse({success:true, message:'Study Journey JAPAN API Ver.1.9.4 is working.'});
+    if (action === 'health') return jsonResponse({success:true, message:'Study Journey JAPAN API Ver.2.2.0 Safety Update is working.'});
     return jsonResponse({success:false, message:'指定された処理が見つかりません。'});
   } catch (error) { return errorResponse(error); }
 }
@@ -43,6 +49,7 @@ function doPost(e) {
     if (action === 'register') return jsonResponse(registerUser(params));
     if (action === 'login') return jsonResponse(getSyncData(cleanText(params.userId)));
     if (action === 'addStudy') return jsonResponse(addStudyTime(params));
+    if (action === 'correctStudyTime') return jsonResponse(correctStudyTime(params));
     if (action === 'sendCheer') return jsonResponse(sendCheer(params));
     if (action === 'thankCheer') return jsonResponse(thankCheer(params));
     if (action === 'saveMission') return jsonResponse(saveMission(params));
@@ -69,6 +76,15 @@ function setupSheet() {
   if (!missions) missions = ss.insertSheet(MISSION_SHEET_NAME);
   missions.getRange(1,1,1,MISSION_HEADERS.length).setValues([MISSION_HEADERS]); missions.setFrozenRows(1);
 
+  let studyRecords = ss.getSheetByName(STUDY_RECORD_SHEET_NAME);
+  if (!studyRecords) studyRecords = ss.insertSheet(STUDY_RECORD_SHEET_NAME);
+  studyRecords.getRange(1,1,1,STUDY_RECORD_HEADERS.length).setValues([STUDY_RECORD_HEADERS]);
+  studyRecords.setFrozenRows(1);
+  studyRecords.getRange('A:C').setNumberFormat('@');
+  let corrections = ss.getSheetByName(CORRECTION_SHEET_NAME);
+  if (!corrections) corrections = ss.insertSheet(CORRECTION_SHEET_NAME);
+  corrections.getRange(1,1,1,CORRECTION_HEADERS.length).setValues([CORRECTION_HEADERS]); corrections.setFrozenRows(1);
+
   const lastRow = users.getLastRow();
   if (lastRow >= 2) {
     const rows = users.getRange(2,1,lastRow-1,HEADERS.length).getValues(); let changed = false;
@@ -94,25 +110,129 @@ function registerUser(params) {
 }
 
 function addStudyTime(params) {
-  const userId=cleanText(params.userId), minutes=Math.floor(Number(params.minutes)), currentPrefecture=cleanText(params.currentPrefecture)||'沖縄県';
+  const userId=cleanText(params.userId);
+  const minutes=Math.floor(Number(params.minutes));
+  const currentPrefecture=cleanText(params.currentPrefecture)||'沖縄県';
   const studyDate=normalizeDateString(params.studyDate)||todayString();
-  if(!userId)throw new Error('ユーザーIDがありません。'); if(!Number.isFinite(minutes)||minutes<=0)throw new Error('学習時間が正しくありません。'); if(minutes>1440)throw new Error('一度に登録できる学習時間は1,440分までです。');
-  const sheet=getUserSheet(), rowNumber=findUserRow(sheet,userId); if(!rowNumber)throw new Error('ユーザー登録が確認できません。プロフィールを保存し直してください。');
-  const values=sheet.getRange(rowNumber,1,1,HEADERS.length).getValues()[0], currentWeekId=getCurrentWeekId();
-  let weeklyMinutes=cellDateString(values[9])===currentWeekId?Number(values[5])||0:0, totalMinutes=Number(values[6])||0;
-  const oldTotalMinutes=totalMinutes; weeklyMinutes+=minutes; totalMinutes+=minutes; const now=new Date();
+  const recordId=cleanText(params.recordId);
+
+  if(!userId)throw new Error('ユーザーIDがありません。');
+  if(!recordId)throw new Error('学習記録IDがありません。アプリを最新版に更新してください。');
+  if(!Number.isFinite(minutes)||minutes<=0)throw new Error('学習時間が正しくありません。');
+  if(minutes>1440)throw new Error('一度に登録できる学習時間は1,440分までです。');
+
+  const sheet=getUserSheet();
+  const rowNumber=findUserRow(sheet,userId);
+  if(!rowNumber)throw new Error('ユーザー登録が確認できません。プロフィールを保存し直してください。');
+
+  const recordSheet=getStudyRecordSheet();
+  if(findStudyRecordRow(recordSheet,recordId)){
+    return buildStudyResponse(userId,rowNumber,{
+      success:true,
+      duplicate:true,
+      addedMinutes:0,
+      studyDate,
+      currentPrefecture
+    });
+  }
+
+  const values=sheet.getRange(rowNumber,1,1,HEADERS.length).getValues()[0];
+  const currentWeekId=getCurrentWeekId();
+  const studyWeekId=getWeekIdForDate(studyDate);
+
+  let weeklyMinutes=cellDateString(values[9])===currentWeekId
+    ? Number(values[5])||0
+    : 0;
+  let totalMinutes=Number(values[6])||0;
+  const oldTotalMinutes=totalMinutes;
+
+  if(studyWeekId===currentWeekId){
+    weeklyMinutes+=minutes;
+  }
+  totalMinutes+=minutes;
+
+  const now=new Date();
   const newBadges=recordNewBadges(userId,oldTotalMinutes,totalMinutes,now);
-  sheet.getRange(rowNumber,6,1,5).setValues([[weeklyMinutes,totalMinutes,currentPrefecture,now,currentWeekId]]); sheet.getRange(rowNumber,13).setValue(now);
+
+  sheet.getRange(rowNumber,6,1,5).setValues([
+    [weeklyMinutes,totalMinutes,currentPrefecture,now,currentWeekId]
+  ]);
+  sheet.getRange(rowNumber,13).setValue(now);
+
+  recordSheet.appendRow([recordId,userId,studyDate,minutes,now]);
 
   const dailyResult=addDailyMinutes(userId,studyDate,minutes,now);
   let medalPoints=Number(sheet.getRange(rowNumber,15).getValue())||0;
-  if(dailyResult.pointsAdded){medalPoints+=dailyResult.pointsAdded;sheet.getRange(rowNumber,15).setValue(medalPoints);}
+  if(dailyResult.pointsAdded){
+    medalPoints+=dailyResult.pointsAdded;
+    sheet.getRange(rowNumber,15).setValue(medalPoints);
+  }
+
   const streakResult=awardStreakBonus(userId,rowNumber);
   const restartBonusCount=awardRestartBonuses(userId,now);
-  const cheerPoints=Number(sheet.getRange(rowNumber,12).getValue())||0, streakPoints=Number(sheet.getRange(rowNumber,16).getValue())||0;
   SpreadsheetApp.flush();
-  return{success:true,addedMinutes:minutes,studyDate,weeklyMinutes,totalMinutes,cheerPoints,medalPoints,streakPoints,totalPoints:totalMinutes+cheerPoints+medalPoints+streakPoints,restartBonusCount,currentPrefecture,medal:dailyResult.medal,dayMinutes:dailyResult.minutes,medalPointsAdded:dailyResult.pointsAdded,streak:streakResult.streak,streakBonusAdded:streakResult.pointsAdded,newBadges:newBadges,badgeCount:Math.floor(totalMinutes/10)};
+
+  return buildStudyResponse(userId,rowNumber,{
+    success:true,
+    duplicate:false,
+    addedMinutes:minutes,
+    studyDate,
+    studyWeekId,
+    currentWeekId,
+    currentPrefecture,
+    medal:dailyResult.medal,
+    dayMinutes:dailyResult.minutes,
+    medalPointsAdded:dailyResult.pointsAdded,
+    streak:streakResult.streak,
+    streakBonusAdded:streakResult.pointsAdded,
+    restartBonusCount,
+    newBadges
+  });
 }
+
+function buildStudyResponse(userId,rowNumber,extra){
+  const sheet=getUserSheet();
+  const row=sheet.getRange(rowNumber,1,1,HEADERS.length).getValues()[0];
+  const weeklyMinutes=cellDateString(row[9])===getCurrentWeekId()?Number(row[5])||0:0;
+  const totalMinutes=Number(row[6])||0;
+  const cheerPoints=Number(row[11])||0;
+  const medalPoints=Number(row[14])||0;
+  const streakPoints=Number(row[15])||0;
+  const streak=calculateCurrentStreak(userId);
+
+  return Object.assign({
+    success:true,
+    weeklyMinutes,
+    totalMinutes,
+    cheerPoints,
+    medalPoints,
+    streakPoints,
+    totalPoints:totalMinutes+cheerPoints+medalPoints+streakPoints,
+    streak,
+    badgeCount:Math.floor(totalMinutes/10),
+    newBadges:[]
+  },extra||{});
+}
+
+function getStudyRecordSheet(){
+  return getSpreadsheet().getSheetByName(STUDY_RECORD_SHEET_NAME);
+}
+
+function findStudyRecordRow(sheet,recordId){
+  if(!recordId||sheet.getLastRow()<2)return 0;
+  const finder=sheet.getRange(2,1,sheet.getLastRow()-1,1)
+    .createTextFinder(recordId)
+    .matchEntireCell(true)
+    .findNext();
+  return finder?finder.getRow():0;
+}
+function getCorrectionSheet(){return getSpreadsheet().getSheetByName(CORRECTION_SHEET_NAME);}
+function getCorrectionRecords(userId){if(!userId)return{success:false,message:'ユーザーIDがありません。'};const s=getDailySheet(),last=s.getLastRow(),records=[];if(last>=2)s.getRange(2,1,last-1,DAILY_HEADERS.length).getValues().forEach(r=>{if(cleanText(r[0])===userId){const d=cellDateString(r[1]),m=Number(r[2])||0;if(d&&m>0)records.push({studyDate:d,seconds:m*60})}});records.sort((a,b)=>b.studyDate.localeCompare(a.studyDate));return{success:true,records:records.slice(0,90)}}
+function getCorrectionHistory(userId){const s=getCorrectionSheet(),last=s.getLastRow(),history=[];if(last>=2)s.getRange(2,1,last-1,CORRECTION_HEADERS.length).getValues().forEach(r=>{if(cleanText(r[1])===userId)history.push({correctionId:cleanText(r[0]),studyDate:cellDateString(r[2]),beforeSeconds:Number(r[3])||0,afterSeconds:Number(r[4])||0,reducedSeconds:Number(r[5])||0,correctedAt:formatDate(r[6])})});history.sort((a,b)=>String(b.correctedAt).localeCompare(String(a.correctedAt)));return{success:true,history:history.slice(0,100)}}
+function findCorrectionRow(sheet,id){if(!id||sheet.getLastRow()<2)return 0;const f=sheet.getRange(2,1,sheet.getLastRow()-1,1).createTextFinder(id).matchEntireCell(true).findNext();return f?f.getRow():0}
+function correctStudyTime(p){const userId=cleanText(p.userId),studyDate=normalizeDateString(p.studyDate),afterSeconds=Math.floor(Number(p.correctedSeconds)),id=cleanText(p.correctionId);if(!userId||!studyDate||!id)throw new Error('修正情報が不足しています。');const cs=getCorrectionSheet();if(findCorrectionRow(cs,id)){const ur=findUserRow(getUserSheet(),userId);return buildStudyResponse(userId,ur,{success:true,duplicate:true})}const ds=getDailySheet(),dr=findDailyRow(ds,userId,studyDate);if(!dr)throw new Error('その日の学習記録が見つかりません。');const row=ds.getRange(dr,1,1,DAILY_HEADERS.length).getValues()[0],beforeMinutes=Number(row[2])||0,beforeSeconds=beforeMinutes*60;if(afterSeconds<0||afterSeconds>=beforeSeconds)throw new Error('現在より短い時間を指定してください。');const afterMinutes=Math.floor(afterSeconds/60),now=new Date();ds.getRange(dr,3,1,4).setValues([[afterMinutes,medalForMinutes(afterMinutes),medalPointsForMinutes(afterMinutes),now]]);cs.appendRow([id,userId,studyDate,beforeSeconds,afterSeconds,beforeSeconds-afterSeconds,now]);recalculateUserStudyTotals(userId);recalculateUserMedalPoints(userId);const ur=findUserRow(getUserSheet(),userId);return buildStudyResponse(userId,ur,{success:true,studyDate,beforeSeconds,afterSeconds,reducedSeconds:beforeSeconds-afterSeconds})}
+function recalculateUserStudyTotals(userId){const d=getDailySheet(),last=d.getLastRow(),week=getCurrentWeekId();let total=0,weekly=0;if(last>=2)d.getRange(2,1,last-1,DAILY_HEADERS.length).getValues().forEach(r=>{if(cleanText(r[0])===userId){const m=Number(r[2])||0,totalDate=cellDateString(r[1]);total+=m;if(getWeekIdForDate(totalDate)===week)weekly+=m}});const u=getUserSheet(),row=findUserRow(u,userId);if(row){u.getRange(row,6).setValue(weekly);u.getRange(row,7).setValue(total);u.getRange(row,9).setValue(new Date());u.getRange(row,10).setValue(week)}}
+function recalculateUserMedalPoints(userId){const d=getDailySheet(),last=d.getLastRow();let total=0;if(last>=2)d.getRange(2,1,last-1,DAILY_HEADERS.length).getValues().forEach(r=>{if(cleanText(r[0])===userId)total+=Number(r[4])||0});const u=getUserSheet(),row=findUserRow(u,userId);if(row)u.getRange(row,15).setValue(total)}
 
 function addDailyMinutes(userId,dateString,minutes,now){
   const sheet=getDailySheet(), row=findDailyRow(sheet,userId,dateString); let oldMinutes=0,oldPoints=0;
@@ -237,6 +357,15 @@ function findDailyRow(sheet,userId,date){const lastRow=sheet.getLastRow();if(las
 function getBadgeSheet(){return getSpreadsheet().getSheetByName(BADGE_SHEET_NAME);}
 function getSpreadsheet(){const props=PropertiesService.getScriptProperties();let id=props.getProperty(SPREADSHEET_PROPERTY_KEY);if(!id){const active=SpreadsheetApp.getActiveSpreadsheet();if(!active)throw new Error('スプレッドシートとの接続設定がありません。スプレッドシートからApps Scriptを開き、setupSheetを一度実行してください。');id=active.getId();props.setProperty(SPREADSHEET_PROPERTY_KEY,id);}return SpreadsheetApp.openById(id);}function getUserSheet(){return getSpreadsheet().getSheetByName(SHEET_NAME);}function getCheerSheet(){return getSpreadsheet().getSheetByName(CHEER_SHEET_NAME);}function getDailySheet(){return getSpreadsheet().getSheetByName(DAILY_SHEET_NAME);}
 function getCurrentWeekId(){const now=new Date(),day=Number(Utilities.formatDate(now,TIMEZONE,'u')),monday=new Date(now.getTime()-(day-1)*86400000);return Utilities.formatDate(monday,TIMEZONE,'yyyy-MM-dd');}
+function getWeekIdForDate(dateString){
+  const normalized=normalizeDateString(dateString);
+  if(!normalized)return getCurrentWeekId();
+  const parts=normalized.split('-').map(Number);
+  const date=new Date(parts[0],parts[1]-1,parts[2],12,0,0);
+  const day=date.getDay()===0?7:date.getDay();
+  date.setDate(date.getDate()-(day-1));
+  return Utilities.formatDate(date,TIMEZONE,'yyyy-MM-dd');
+}
 function todayString(){return Utilities.formatDate(new Date(),TIMEZONE,'yyyy-MM-dd');}function cellDateString(v){if(v instanceof Date)return Utilities.formatDate(v,TIMEZONE,'yyyy-MM-dd');const s=String(v||'').trim().replace(/\//g,'-');const m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);return m?m[1]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[3]).padStart(2,'0'):s.slice(0,10);}function normalizeDateString(v){const s=String(v||'');return/^\d{4}-\d{2}-\d{2}$/.test(s)?s:'';}function cleanText(v){return String(v||'').trim().slice(0,200);}function formatDate(v){return v instanceof Date?Utilities.formatDate(v,TIMEZONE,'yyyy-MM-dd HH:mm:ss'):'';}function jsonResponse(data){return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);}function errorResponse(error){return jsonResponse({success:false,message:error&&error.message?error.message:'処理中にエラーが発生しました。'});}
 
 

@@ -105,12 +105,15 @@
         <div class="timer-display" id="timerDisplay">00:00:00</div>
         <div class="timer-controls timer-controls-single">
           <button class="primary-btn wide" id="timerStart">START</button>
+<button type="button" id="openTimeCorrection" class="timer-correction-button">時間の修正</button>
         </div>
         <div class="timer-points-grid">
           <div><span>本日の勉強時間ポイント</span><strong id="sessionPoints">0 pt</strong></div>
           <div><span>累計獲得ポイント</span><strong id="timerTotalPoints">0 pt</strong></div>
         </div>
         <div class="timer-note">1分 = 1ポイント / 10分 = 1バッジ</div><div class="sync-state" id="pendingSync">同期済み</div>
+<button type="button" id="openCorrectionHistory" class="correction-history-button">修正履歴を確認する</button>
+
       </div>
       <div class="mission-launch-grid timer-mission-launch">
         <button class="mission-launch" data-mission="commercial"><span class="mission-caption">2級問題集ミッション</span><strong>COM. MISSION</strong><small>商業簿記</small></button>
@@ -302,7 +305,7 @@
   </form>
   <section class="manual-update-section" aria-labelledby="manualUpdateHeading">
     <div class="panel-kicker" id="manualUpdateHeading">APP VERSION</div>
-    <div class="current-version">Version <strong id="currentAppVersion">2.1.0</strong></div>
+    <div class="current-version">Version <strong id="currentAppVersion">2.2.0 Official Release</strong></div>
     <button class="primary-btn manual-update-button" id="manualUpdateButton" type="button">🚀 最新バージョンで旅をする</button>
     <p class="manual-update-help">最新バージョンがあるかもしれません。<br>こちらを押してみてください。</p>
     <div class="manual-update-result" id="manualUpdateResult" role="status" aria-live="polite"></div>
@@ -340,7 +343,7 @@
 <script src="mission.js"></script>
 <script>
 (() => {
-  const APP_VERSION = "2.1.0";
+  const APP_VERSION = "2.2.0 Official Release";
   document.getElementById("currentAppVersion").textContent = APP_VERSION;
 
   if (!("serviceWorker" in navigator)) {
@@ -490,5 +493,28 @@ window.addEventListener('DOMContentLoaded',()=>{
   },1000);
 });
 </script>
+
+<dialog id="timeCorrectionDialog" class="time-correction-dialog"><div class="time-correction-card">
+<button type="button" id="closeTimeCorrection" class="time-correction-close">×</button><p class="time-correction-kicker">TIMER CORRECTION</p><h2>学習時間を修正</h2>
+<label for="correctionDateSelect">修正する学習日</label><select id="correctionDateSelect" class="time-correction-date"></select>
+<div class="time-correction-current"><span>現在の記録</span><strong id="correctionCurrentTime">00時間00分00秒</strong></div>
+<div class="wheel-picker swipe-wheel-picker" id="timeWheelPicker" aria-label="修正後の学習時間">
+  <div class="swipe-wheel-group">
+    <div class="swipe-wheel" id="hoursWheel" data-unit="hours" aria-label="時間"></div>
+    <span>時間</span>
+  </div>
+  <div class="swipe-wheel-group">
+    <div class="swipe-wheel" id="minutesWheel" data-unit="minutes" aria-label="分"></div>
+    <span>分</span>
+  </div>
+  <div class="swipe-wheel-group">
+    <div class="swipe-wheel" id="secondsWheel" data-unit="seconds" aria-label="秒"></div>
+    <span>秒</span>
+  </div>
+  <div class="swipe-wheel-highlight" aria-hidden="true"></div>
+</div>
+<div class="time-correction-after"><span>修正後</span><strong id="correctionAfterTime">00時間00分00秒</strong></div><p class="time-correction-note">現在の記録より長い時間には変更できません。</p><button type="button" id="submitTimeCorrection" class="time-correction-submit">この時間に修正する</button>
+</div></dialog>
+<dialog id="correctionHistoryDialog" class="correction-history-dialog"><div class="correction-history-card"><button type="button" id="closeCorrectionHistory" class="time-correction-close">×</button><p class="time-correction-kicker">CORRECTION HISTORY</p><h2>修正履歴</h2><div id="correctionHistoryList"></div></div></dialog>
 </body>
 </html>

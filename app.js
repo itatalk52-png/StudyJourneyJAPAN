@@ -1,4 +1,4 @@
-const API_URL='https://script.google.com/macros/s/AKfycby2SNa8Fx258tUi3UUDVHNGAqOWg80VYx3I5dSavJnhpMbJaNV-TidNYUh9PxhNnr-fNw/exec';
+const API_URL="https://script.google.com/macros/s/AKfycby2SNa8Fx258tUi3UUDVHNGAqOWg80VYx3I5dSavJnhpMbJaNV-TidNYUh9PxhNnr-fNw/exec";
 const DATA={"prefectures":[{"id":"01_okinawa","key":"okinawa","name":"沖縄県","reading":"おきなわけん","badges":[{"name":"首里城","file":"01_shurijo.png"},{"name":"美ら海水族館","file":"02_churaumi_aquarium.png"},{"name":"沖縄そば","file":"03_okinawa_soba.png"},{"name":"紅いもタルト","file":"04_beniimo_tart.png"},{"name":"タコライス","file":"05_taco_rice.png"},{"name":"南国フルーツ","file":"06_tropical_fruits.png"},{"name":"琉球ガラス","file":"07_ryukyu_glass.png"},{"name":"もずく","file":"08_mozuku.png"},{"name":"古宇利大橋","file":"09_kouri_bridge.png"},{"name":"竹富島","file":"10_taketomi_island.png"}]},{"id":"02_kagoshima","key":"kagoshima","name":"鹿児島県","reading":"かごしまけん","badges":[{"name":"桜島","file":"01_sakurajima.png"},{"name":"鹿児島城跡","file":"02_kagoshima_castle.png"},{"name":"黒豚しゃぶしゃぶ","file":"03_kurobuta_shabushabu.png"},{"name":"知覧武家屋敷庭園","file":"04_chiran_samurai_garden.png"},{"name":"屋久島","file":"05_yakushima.png"},{"name":"出水麓","file":"06_izumi_fumoto.png"},{"name":"さつまいも","file":"07_satsumaimo.png"},{"name":"長島","file":"08_nagashima.png"},{"name":"霧島高原","file":"09_kirishima_highlands.png"},{"name":"芋焼酎","file":"10_imo_shochu.png"}]},{"id":"03_miyazaki","key":"miyazaki","name":"宮崎県","reading":"みやざきけん","badges":[{"name":"サンメッセ日南","file":"01_badge.png"},{"name":"高千穂峡","file":"02_badge.png"},{"name":"チキン南蛮","file":"03_badge.png"},{"name":"青島","file":"04_badge.png"},{"name":"宮崎マンゴー","file":"05_badge.png"},{"name":"鵜戸神宮","file":"06_badge.png"},{"name":"地鶏の炭焼き","file":"07_badge.png"},{"name":"霧島連山","file":"08_badge.png"},{"name":"都井岬の野生馬","file":"09_badge.png"},{"name":"冷し汁","file":"10_badge.png"}]},{"id":"04_oita","key":"oita","name":"大分県","reading":"おおいたけん","badges":[{"name":"別府地獄めぐり","file":"01_badge.png"},{"name":"別府温泉街","file":"02_badge.png"},{"name":"とり天","file":"03_badge.png"},{"name":"地獄蒸し","file":"04_badge.png"},{"name":"りゅうきゅう丼","file":"05_badge.png"},{"name":"かぼす","file":"06_badge.png"},{"name":"高崎山のさる","file":"07_badge.png"},{"name":"豊後二見ヶ浦","file":"08_badge.png"},{"name":"杵臼城跡","file":"09_badge.png"},{"name":"ざびえる","file":"10_badge.png"}]},{"id":"05_kumamoto","key":"kumamoto","name":"熊本県","reading":"くまもとけん","badges":[{"name":"熊本城","file":"01_badge.png"},{"name":"阿蘇山","file":"02_badge.png"},{"name":"馬肉","file":"03_badge.png"},{"name":"からし蓮根","file":"04_badge.png"},{"name":"黒川温泉","file":"05_badge.png"},{"name":"天草のイルカ","file":"06_badge.png"},{"name":"あか牛のステーキ","file":"07_badge.png"},{"name":"水天寺成趣園","file":"08_badge.png"},{"name":"通潤橋","file":"09_badge.png"},{"name":"熊本ラーメン","file":"10_badge.png"}]},{"id":"06_nagasaki","key":"nagasaki","name":"長崎県","reading":"ながさきけん","badges":[{"name":"稲佐山の夜景","file":"01_badge.png"},{"name":"大浦天主堂","file":"02_badge.png"},{"name":"長崎ちゃんぽん","file":"03_badge.png"},{"name":"カステラ","file":"04_badge.png"},{"name":"出島","file":"05_badge.png"},{"name":"グラバー園","file":"06_badge.png"},{"name":"ハウステンボス","file":"07_badge.png"},{"name":"長崎くんち","file":"08_badge.png"},{"name":"軍艦島","file":"09_badge.png"},{"name":"長崎のびわ","file":"10_badge.png"}]},{"id":"07_saga","key":"saga","name":"佐賀県","reading":"さがけん","badges":[{"name":"唐津城","file":"01_badge.png"},{"name":"虹の松原","file":"02_badge.png"},{"name":"佐賀牛","file":"03_badge.png"},{"name":"有田焼","file":"04_badge.png"},{"name":"嬉野温泉","file":"05_badge.png"},{"name":"有明海のり","file":"06_badge.png"},{"name":"呼子のいか","file":"07_badge.png"},{"name":"唐津くんち","file":"08_badge.png"},{"name":"嬉野茶","file":"09_badge.png"},{"name":"村岡屋の丸ぼうろ","file":"10_badge.png"}]},{"id":"08_fukuoka","key":"fukuoka","name":"福岡県","reading":"ふくおかけん","badges":[{"name":"太宰府天満宮","file":"01_badge.png"},{"name":"福岡タワー","file":"02_badge.png"},{"name":"博多ラーメン","file":"03_badge.png"},{"name":"明太子","file":"04_badge.png"},{"name":"中洲屋台","file":"05_badge.png"},{"name":"もつ鍋","file":"06_badge.png"},{"name":"福岡城跡","file":"07_badge.png"},{"name":"柳川の川下り","file":"08_badge.png"},{"name":"桜井二見ヶ浦 夫婦岩","file":"09_badge.png"},{"name":"ごぼう天うどん","file":"10_badge.png"}]},{"id":"09_ehime","key":"ehime","name":"愛媛県","reading":"えひめけん","badges":[{"name":"道後温泉","file":"01_dogo_onsen.png"},{"name":"松山城","file":"02_matsuyama_castle.png"},{"name":"しまなみ海道","file":"03_shimanami_kaido.png"},{"name":"愛媛みかん","file":"04_ehime_mikan.png"},{"name":"今治タオル","file":"05_imabari_towel.png"},{"name":"宇和島鯛めし","file":"06_uwajima_taimeshi.png"},{"name":"内子の町並み","file":"07_uchiko_townscape.png"},{"name":"じゃこ天","file":"08_jakoten.png"},{"name":"亀老山展望公園","file":"09_kirosan_observatory.png"},{"name":"伊予柑","file":"10_iyokan.png"}]},{"id":"10_kochi","key":"kochi","name":"高知県","reading":"こうちけん","badges":[{"name":"桂浜","file":"01_katsurahama.png"},{"name":"かつおのたたき","file":"02_katsuo_tataki.png"},{"name":"高知城","file":"03_kochi_castle.png"},{"name":"仁淀川","file":"04_niyodo_river.png"},{"name":"佐川の町並み","file":"05_sakawa_townscape.png"},{"name":"馬路村のゆず","file":"06_umaji_yuzu.png"},{"name":"四国カルスト","file":"07_shikoku_karst.png"},{"name":"どろめ（生しらす）","file":"08_dorome.png"},{"name":"よさこい祭り","file":"09_yosakoi_festival.png"},{"name":"四万十川","file":"10_shimanto_river.png"}]},{"id":"11_kagawa","key":"kagawa","name":"香川県","reading":"かがわけん","badges":[{"name":"瀬戸大橋","file":"01_seto_bridge.png"},{"name":"讃岐うどん","file":"02_sanuki_udon.png"},{"name":"高松城","file":"03_takamatsu_castle.png"},{"name":"栗林公園","file":"04_ritsurin_garden.png"},{"name":"小豆島オリーブ公園","file":"05_shodoshima_olive_park.png"},{"name":"金刀比羅宮（石段）","file":"06_konpira_stairs.png"},{"name":"骨付鳥","file":"07_honetsukidori.png"},{"name":"飯野山（讃岐富士）","file":"08_iinoyama.png"},{"name":"エンジェルロード","file":"09_angel_road.png"},{"name":"小豆島オリーブ","file":"10_shodoshima_olives.png"}]}]};
 
 // Japan map coordinates (percent of the complete map image).
@@ -19,7 +19,7 @@ const STORAGE_KEY='sjj_state_v9_cloud';
 const OLD_STORAGE_KEYS=['sjj_state_v8_1_timer','sjj_state_v8_calendar','sjj_state_v7_cheers','sjj_state_v6_multi','sjj_state_v5_multi'];
 const PROFILE_KEY='sjj_profile_v2';
 const OLD_PROFILE_KEY='sjj_profile_v1';
-const defaultState={totalSeconds:0,running:false,sessionStartSeconds:0,activeLastAccountedAt:0,pendingStudySeconds:0,pendingDailySeconds:{},serverWeeklyMinutes:0,serverTotalMinutes:0,cheerPoints:0,medalPoints:0,streakPoints:0,missionPoints:0,currentStreak:0,todayQualified:false,todayServerMinutes:0,badgeHistory:[],lastCloudSync:''};
+const defaultState={totalSeconds:0,running:false,sessionStartSeconds:0,activeLastAccountedAt:0,pendingStudySeconds:0,pendingDailySeconds:{},pendingRecordIds:{},serverWeeklyMinutes:0,serverTotalMinutes:0,cheerPoints:0,medalPoints:0,streakPoints:0,missionPoints:0,currentStreak:0,todayQualified:false,todayServerMinutes:0,badgeHistory:[],lastCloudSync:''};
 let storedState=localStorage.getItem(STORAGE_KEY);
 if(!storedState) for(const key of OLD_STORAGE_KEYS){storedState=localStorage.getItem(key);if(storedState)break;}
 let state=Object.assign({},defaultState,JSON.parse(storedState||'{}'));if(!state.pendingDailySeconds||typeof state.pendingDailySeconds!=='object')state.pendingDailySeconds={};if((state.pendingStudySeconds||0)>0&&!Object.values(state.pendingDailySeconds).some(Number))state.pendingDailySeconds[localDateKey()]=state.pendingStudySeconds;
@@ -112,7 +112,81 @@ function clearAvatarSelection(){pendingAvatarData='';document.getElementById('av
 async function handleAvatarFile(event){const file=event.target.files?.[0],msg=document.getElementById('registerMessage');if(!file)return;if(!file.type.startsWith('image/')){msg.textContent='画像ファイルを選んでください。';return;}if(file.size>8*1024*1024){msg.textContent='画像は8MB以下にしてください。';return;}try{msg.textContent='画像を準備しています…';pendingAvatarData=await compressImage(file,256,0.82);updateAvatarPreview(pendingAvatarData,document.getElementById('nicknameInput').value);msg.textContent='アイコンを選択しました。登録ボタンで保存されます。';}catch(e){pendingAvatarData='';msg.textContent='画像を読み込めませんでした。別の画像をお試しください。';}}
 function compressImage(file,maxSize,quality){return new Promise((resolve,reject)=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{try{const size=Math.min(img.width,img.height),sx=(img.width-size)/2,sy=(img.height-size)/2,canvas=document.createElement('canvas');canvas.width=maxSize;canvas.height=maxSize;canvas.getContext('2d').drawImage(img,sx,sy,size,size,0,0,maxSize,maxSize);URL.revokeObjectURL(url);resolve(canvas.toDataURL('image/jpeg',quality));}catch(e){reject(e);}};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('image error'));};img.src=url;});}
 
-async function syncPendingMinutes(){if(!profile||syncing)return;const entries=Object.entries(state.pendingDailySeconds||{}).map(([date,seconds])=>({date,minutes:Math.floor(Number(seconds||0)/60)})).filter(x=>x.minutes>0).sort((a,b)=>a.date.localeCompare(b.date));if(!entries.length)return;syncing=true;const total=entries.reduce((a,b)=>a+b.minutes,0);toast(`${total}分を記録しています…`);let lastData=null;try{for(const item of entries){const data=await apiPost({action:'addStudy',userId:profile.userId,minutes:String(item.minutes),studyDate:item.date,currentPrefecture:currentPrefecture()});state.pendingDailySeconds[item.date]=Math.max(0,Number(state.pendingDailySeconds[item.date]||0)-item.minutes*60);lastData=data;if(data.medalPointsAdded)toast(`${medalLabel(data.medal)}を獲得しました！ +${data.medalPointsAdded}pt 🎉`);if(data.streakBonusAdded)toast(`連続学習${data.streak}日目！ +${data.streakBonusAdded}pt 🎉`);}state.pendingStudySeconds=Object.values(state.pendingDailySeconds).reduce((a,b)=>a+Number(b||0),0);if(lastData){state.serverWeeklyMinutes=Number(lastData.weeklyMinutes)||0;state.serverTotalMinutes=Number(lastData.totalMinutes)||0;state.cheerPoints=Number(lastData.cheerPoints)||0;state.medalPoints=Number(lastData.medalPoints)||0;state.streakPoints=Number(lastData.streakPoints)||0;state.currentStreak=Number(lastData.streak)||0;if(Array.isArray(lastData.newBadges)&&lastData.newBadges.length)state.badgeHistory=[...(state.badgeHistory||[]),...lastData.newBadges];state.totalSeconds=state.serverTotalMinutes*60+state.pendingStudySeconds;}save();toast(`${total}分をランキングとカレンダーへ反映しました`);await Promise.all([loadRanking(),loadCalendar(false)]);}catch(e){toast('記録の送信に失敗しました。次回停止時に再送します：'+e.message,'error');}finally{syncing=false;renderAll();}}
+async function syncPendingMinutes(){
+  if(!profile||syncing)return;
+  state.pendingRecordIds=state.pendingRecordIds||{};
+  const entries=Object.entries(state.pendingDailySeconds||{})
+    .map(([date,seconds])=>({date,minutes:Math.floor(Number(seconds||0)/60)}))
+    .filter(x=>x.minutes>0)
+    .sort((a,b)=>a.date.localeCompare(b.date));
+  if(!entries.length)return;
+
+  syncing=true;
+  const total=entries.reduce((a,b)=>a+b.minutes,0);
+  toast(`${total}分を記録しています…`);
+  let lastData=null;
+
+  try{
+    for(const item of entries){
+      if(!state.pendingRecordIds[item.date]){
+        state.pendingRecordIds[item.date]=createStudyRecordId(item.date);
+        save();
+      }
+      const recordId=state.pendingRecordIds[item.date];
+      const data=await apiPost({
+        action:'addStudy',
+        userId:profile.userId,
+        minutes:String(item.minutes),
+        studyDate:item.date,
+        currentPrefecture:currentPrefecture(),
+        recordId
+      });
+
+      state.pendingDailySeconds[item.date]=Math.max(
+        0,
+        Number(state.pendingDailySeconds[item.date]||0)-item.minutes*60
+      );
+      delete state.pendingRecordIds[item.date];
+      save();
+      lastData=data;
+
+      if(data.duplicate){
+        toast('同じ学習記録の二重送信を防止しました');
+      }else{
+        if(data.medalPointsAdded)toast(`${medalLabel(data.medal)}を獲得しました！ +${data.medalPointsAdded}pt 🎉`);
+        if(data.streakBonusAdded)toast(`連続学習${data.streak}日目！ +${data.streakBonusAdded}pt 🎉`);
+      }
+    }
+
+    state.pendingStudySeconds=Object.values(state.pendingDailySeconds)
+      .reduce((a,b)=>a+Number(b||0),0);
+
+    if(lastData){
+      state.serverWeeklyMinutes=Number(lastData.weeklyMinutes)||0;
+      state.serverTotalMinutes=Number(lastData.totalMinutes)||0;
+      state.cheerPoints=Number(lastData.cheerPoints)||0;
+      state.medalPoints=Number(lastData.medalPoints)||0;
+      state.streakPoints=Number(lastData.streakPoints)||0;
+      state.currentStreak=Number(lastData.streak)||0;
+      if(Array.isArray(lastData.newBadges)&&lastData.newBadges.length){
+        state.badgeHistory=[...(state.badgeHistory||[]),...lastData.newBadges];
+      }
+      state.totalSeconds=state.serverTotalMinutes*60+state.pendingStudySeconds;
+    }
+    save();
+    renderAll();
+  }catch(e){
+    toast(e.message||'学習時間の同期に失敗しました','error');
+  }finally{
+    syncing=false;
+  }
+}
+function createStudyRecordId(studyDate){
+  const random=(globalThis.crypto&&crypto.randomUUID)
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2,12)}`;
+  return `study-${profile?.userId||'unknown'}-${studyDate}-${random}`;
+}
 function addElapsedSeconds(startMs,endMs){
   let seconds=Math.max(0,Math.floor((endMs-startMs)/1000));
   if(!seconds)return 0;
@@ -129,13 +203,147 @@ function addElapsedSeconds(startMs,endMs){
   state.pendingStudySeconds=Object.values(state.pendingDailySeconds).reduce((a,b)=>a+Number(b||0),0);
   return seconds;
 }
+const LONG_SESSION_CONFIRM_SECONDS=6*60*60;
+const LONG_SESSION_AUTO_STOP_SECONDS=24*60*60;
+let longSessionDialogOpen=false;
+
 function reconcileRunningTime(){
   if(!state.running)return 0;
   const now=Date.now();
-  if(!Number(state.activeLastAccountedAt)){state.activeLastAccountedAt=now;save();return 0;}
+
+  if(!Number(state.activeLastAccountedAt)){
+    state.activeLastAccountedAt=now;
+    save();
+    return 0;
+  }
+
+  const rawSeconds=Math.max(
+    0,
+    Math.floor((now-Number(state.activeLastAccountedAt))/1000)
+  );
+
+  if(rawSeconds>=LONG_SESSION_CONFIRM_SECONDS){
+    state.running=false;
+    state.activeLastAccountedAt=0;
+    clearInterval(interval);
+    interval=null;
+    save();
+    openLongSessionDialog(rawSeconds,rawSeconds>=LONG_SESSION_AUTO_STOP_SECONDS);
+    renderAll();
+    return 0;
+  }
+
   const added=addElapsedSeconds(Number(state.activeLastAccountedAt),now);
-  if(added){state.activeLastAccountedAt=Number(state.activeLastAccountedAt)+added*1000;save();}
+  if(added){
+    state.activeLastAccountedAt=Number(state.activeLastAccountedAt)+added*1000;
+    save();
+  }
   return added;
+}
+
+function formatTimerCorrection(seconds){
+  const totalMinutes=Math.max(0,Math.floor(seconds/60));
+  const hours=Math.floor(totalMinutes/60);
+  const minutes=totalMinutes%60;
+  return `${hours}時間${String(minutes).padStart(2,'0')}分`;
+}
+
+function ensureLongSessionDialog(){
+  let dialog=document.getElementById('longSessionDialog');
+  if(dialog)return dialog;
+
+  dialog=document.createElement('dialog');
+  dialog.id='longSessionDialog';
+  dialog.className='long-session-dialog';
+  dialog.innerHTML=`
+    <form method="dialog" class="long-session-card">
+      <p class="long-session-kicker">TIMER SAFETY</p>
+      <h2>タイマーを止め忘れていませんか？</h2>
+      <p id="longSessionNotice" class="long-session-notice"></p>
+      <div id="longSessionTime" class="long-session-time">0時間00分</div>
+
+      <div id="longSessionAdjustPanel" class="long-session-adjust" hidden>
+        <p>記録する時間を減らせます</p>
+        <div class="long-session-adjust-buttons">
+          <button type="button" data-reduce="5">−5分</button>
+          <button type="button" data-reduce="10">−10分</button>
+          <button type="button" data-reduce="30">−30分</button>
+          <button type="button" data-reduce="60">−1時間</button>
+        </div>
+      </div>
+
+      <div class="long-session-actions">
+        <button type="button" id="longSessionRecord" class="primary">この時間で記録</button>
+        <button type="button" id="longSessionAdjust">タイマーを修正</button>
+        <button type="button" id="longSessionDiscard">記録しない</button>
+      </div>
+    </form>`;
+
+  document.body.appendChild(dialog);
+  return dialog;
+}
+
+function openLongSessionDialog(detectedSeconds,autoStopped){
+  if(longSessionDialogOpen)return;
+  longSessionDialogOpen=true;
+
+  const dialog=ensureLongSessionDialog();
+  const timeEl=dialog.querySelector('#longSessionTime');
+  const noticeEl=dialog.querySelector('#longSessionNotice');
+  const adjustPanel=dialog.querySelector('#longSessionAdjustPanel');
+  let adjustedSeconds=Math.max(0,Math.floor(detectedSeconds));
+
+  noticeEl.textContent=autoStopped
+    ? '24時間以上動いていたため、安全のため自動停止しました。内容を確認してください。'
+    : '6時間以上の連続計測を検出したため、自動加算せず停止しました。';
+
+  const refresh=()=>{
+    timeEl.textContent=formatTimerCorrection(adjustedSeconds);
+    dialog.querySelector('#longSessionRecord').disabled=adjustedSeconds<60;
+  };
+  refresh();
+
+  adjustPanel.hidden=true;
+  dialog.querySelector('#longSessionAdjust').onclick=()=>{
+    adjustPanel.hidden=false;
+  };
+
+  adjustPanel.querySelectorAll('[data-reduce]').forEach(button=>{
+    button.onclick=()=>{
+      adjustedSeconds=Math.max(
+        0,
+        adjustedSeconds-Number(button.dataset.reduce)*60
+      );
+      refresh();
+    };
+  });
+
+  dialog.querySelector('#longSessionRecord').onclick=()=>{
+    const end=Date.now();
+    const start=end-adjustedSeconds*1000;
+    addElapsedSeconds(start,end);
+    state.sessionStartSeconds=state.totalSeconds;
+    save();
+    dialog.close();
+    longSessionDialogOpen=false;
+    renderAll();
+    if(Math.floor(state.pendingStudySeconds/60)>0)syncPendingMinutes();
+  };
+
+  dialog.querySelector('#longSessionDiscard').onclick=()=>{
+    dialog.close();
+    longSessionDialogOpen=false;
+    state.sessionStartSeconds=state.totalSeconds;
+    save();
+    renderAll();
+    toast('長時間の計測を記録せず終了しました');
+  };
+
+  dialog.addEventListener('cancel',event=>{
+    event.preventDefault();
+  },{once:true});
+
+  dialog.showModal();
 }
 function startTimerLoop(){
   clearInterval(interval);
@@ -299,3 +507,141 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&state.run
 window.addEventListener('pageshow',()=>{if(state.running){reconcileRunningTime();renderAll();startTimerLoop();}});
 window.addEventListener('beforeunload',()=>{if(state.running)reconcileRunningTime();});
 updateProfileUI();renderAll();showScreen('home');if(!profile)setTimeout(openProfile,400);else{loadCloudState(false).finally(()=>{loadRanking();loadCalendar(false);syncPendingMinutes();});}
+
+
+/* Ver.2.2.0 Timer Correction β2 */
+let correctionRecords=[],correctionCurrentDate='',correctionCurrentSeconds=0,correctionSelectedSeconds=0;
+function correctionHaptic(n=6){try{if(navigator.vibrate)navigator.vibrate(n)}catch(e){}document.documentElement.classList.remove('correction-pulse');void document.documentElement.offsetWidth;document.documentElement.classList.add('correction-pulse')}
+function correctionFormat(s){s=Math.max(0,Math.floor(Number(s)||0));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=s%60;return `${String(h).padStart(2,'0')}時間${String(m).padStart(2,'0')}分${String(x).padStart(2,'0')}秒`}
+async function loadCorrectionRecords(){const r=await fetch(`${API_URL}?action=correctionRecords&userId=${encodeURIComponent(profile.userId)}&_=${Date.now()}`,{cache:'no-store'});const d=await r.json();if(!d.success)throw new Error(d.message||'取得失敗');correctionRecords=d.records||[];return correctionRecords}
+function applyCorrectionRecord(date){
+  const rec=correctionRecords.find(x=>x.studyDate===date);
+  correctionCurrentDate=date;
+  correctionCurrentSeconds=Number(rec?.seconds)||0;
+  correctionSelectedSeconds=correctionCurrentSeconds;
+  document.getElementById('correctionCurrentTime').textContent=correctionFormat(correctionCurrentSeconds);
+  syncSwipeWheelsFromSeconds(correctionSelectedSeconds,true);
+}
+async function openTimeCorrectionDialog(){if(!profile)return openProfile();document.getElementById('correctionDateSelect').innerHTML='<option>読み込み中…</option>';document.getElementById('timeCorrectionDialog').showModal();try{const rows=await loadCorrectionRecords();document.getElementById('correctionDateSelect').innerHTML='';if(!rows.length){document.getElementById('correctionDateSelect').innerHTML='<option value="">修正できる記録がありません</option>';return}rows.forEach(x=>{const o=document.createElement('option');o.value=x.studyDate;o.textContent=`${x.studyDate}　${correctionFormat(x.seconds)}`;document.getElementById('correctionDateSelect').appendChild(o)});applyCorrectionRecord(rows[0].studyDate)}catch(e){toast(e.message,'error');document.getElementById('timeCorrectionDialog').close()}}
+async function submitCorrection(){if(correctionSelectedSeconds>=correctionCurrentSeconds)return toast('現在より短い時間を指定してください','error');document.getElementById('submitTimeCorrection').disabled=true;try{const result=await apiPost({action:'correctStudyTime',userId:profile.userId,studyDate:correctionCurrentDate,correctedSeconds:String(correctionSelectedSeconds),correctionId:`correction-${profile.userId}-${Date.now()}-${Math.random().toString(36).slice(2,9)}`});state.serverWeeklyMinutes=Number(result.weeklyMinutes)||0;state.serverTotalMinutes=Number(result.totalMinutes)||0;state.medalPoints=Number(result.medalPoints)||0;state.streakPoints=Number(result.streakPoints)||0;state.totalSeconds=state.serverTotalMinutes*60+(Number(state.pendingStudySeconds)||0);save();renderAll();correctionHaptic(35);toast(`✓ ${correctionFormat(correctionSelectedSeconds)}に修正しました`);document.getElementById('timeCorrectionDialog').close();await loadRanking();await loadCalendar(false)}catch(e){toast(e.message||'修正失敗','error')}finally{document.getElementById('submitTimeCorrection').disabled=false}}
+async function openCorrectionHistoryDialog(){if(!profile)return openProfile();document.getElementById('correctionHistoryList').innerHTML='<div class="correction-history-empty">読み込み中…</div>';document.getElementById('correctionHistoryDialog').showModal();try{const r=await fetch(`${API_URL}?action=correctionHistory&userId=${encodeURIComponent(profile.userId)}&_=${Date.now()}`,{cache:'no-store'});const d=await r.json();if(!d.success)throw new Error(d.message||'取得失敗');const h=d.history||[];document.getElementById('correctionHistoryList').innerHTML=h.length?'':'<div class="correction-history-empty">まだ修正履歴はありません。</div>';h.forEach(x=>{const a=document.createElement('article');a.className='correction-history-item';a.innerHTML=`<strong>${escapeHtml(x.studyDate)}</strong><div>${correctionFormat(x.beforeSeconds)}</div><span>↓</span><div>${correctionFormat(x.afterSeconds)}</div><small>修正：−${correctionFormat(x.reducedSeconds)}<br>${escapeHtml(x.correctedAt||'')}</small>`;document.getElementById('correctionHistoryList').appendChild(a)})}catch(e){document.getElementById('correctionHistoryList').innerHTML=`<div class="correction-history-empty">${escapeHtml(e.message)}</div>`}}
+
+
+
+/* Ver.2.2.0 Timer Correction β4 TEST — swipe wheels */
+const SWIPE_WHEEL_ITEM_HEIGHT=48;
+let swipeWheelProgrammatic=false;
+const swipeWheelTimers={};
+
+function buildSwipeWheel(element,max){
+  if(!element)return;
+  element.innerHTML='<div class="swipe-wheel-spacer"></div>';
+  for(let value=0;value<=max;value++){
+    const item=document.createElement('div');
+    item.className='swipe-wheel-item';
+    item.dataset.value=String(value);
+    item.textContent=String(value).padStart(2,'0');
+    element.appendChild(item);
+  }
+  const bottom=document.createElement('div');
+  bottom.className='swipe-wheel-spacer';
+  element.appendChild(bottom);
+
+  element.addEventListener('scroll',()=>{
+    if(swipeWheelProgrammatic)return;
+    const unit=element.dataset.unit;
+    clearTimeout(swipeWheelTimers[unit]);
+    swipeWheelTimers[unit]=setTimeout(()=>settleSwipeWheel(element,true),80);
+  },{passive:true});
+
+  element.addEventListener('pointerdown',()=>element.classList.add('is-touching'));
+  element.addEventListener('pointerup',()=>{
+    element.classList.remove('is-touching');
+    settleSwipeWheel(element,true);
+  });
+  element.addEventListener('pointercancel',()=>element.classList.remove('is-touching'));
+}
+
+function getSwipeWheelValue(element){
+  if(!element)return 0;
+  return Math.max(0,Math.round(element.scrollTop/SWIPE_WHEEL_ITEM_HEIGHT));
+}
+
+function setSwipeWheelValue(element,value,instant=false){
+  if(!element)return;
+  swipeWheelProgrammatic=true;
+  element.scrollTo({
+    top:Math.max(0,Number(value)||0)*SWIPE_WHEEL_ITEM_HEIGHT,
+    behavior:instant?'auto':'smooth'
+  });
+  setTimeout(()=>{swipeWheelProgrammatic=false;},instant?0:180);
+}
+
+function refreshSwipeWheelSelection(){
+  document.querySelectorAll('.swipe-wheel').forEach(wheel=>{
+    const selected=getSwipeWheelValue(wheel);
+    wheel.querySelectorAll('.swipe-wheel-item').forEach(item=>{
+      item.classList.toggle('selected',Number(item.dataset.value)===selected);
+    });
+  });
+}
+
+function readSwipeWheelSeconds(){
+  const h=getSwipeWheelValue(document.getElementById('hoursWheel'));
+  const m=getSwipeWheelValue(document.getElementById('minutesWheel'));
+  const s=getSwipeWheelValue(document.getElementById('secondsWheel'));
+  return h*3600+m*60+s;
+}
+
+function settleSwipeWheel(element,feedback=false){
+  const value=getSwipeWheelValue(element);
+  setSwipeWheelValue(element,value,false);
+
+  const next=readSwipeWheelSeconds();
+  if(next>correctionCurrentSeconds){
+    syncSwipeWheelsFromSeconds(correctionCurrentSeconds,false);
+    if(feedback)toast('現在の記録より長い時間には変更できません','error');
+    return;
+  }
+
+  correctionSelectedSeconds=next;
+  refreshSwipeWheelSelection();
+  document.getElementById('correctionAfterTime').textContent=correctionFormat(next);
+  document.getElementById('submitTimeCorrection').disabled=next>=correctionCurrentSeconds;
+  if(feedback)correctionHaptic(5);
+}
+
+function syncSwipeWheelsFromSeconds(seconds,instant=false){
+  const safe=Math.max(0,Math.floor(Number(seconds)||0));
+  setSwipeWheelValue(document.getElementById('hoursWheel'),Math.floor(safe/3600),instant);
+  setSwipeWheelValue(document.getElementById('minutesWheel'),Math.floor((safe%3600)/60),instant);
+  setSwipeWheelValue(document.getElementById('secondsWheel'),safe%60,instant);
+  correctionSelectedSeconds=safe;
+  document.getElementById('correctionAfterTime').textContent=correctionFormat(safe);
+  document.getElementById('submitTimeCorrection').disabled=safe>=correctionCurrentSeconds;
+  setTimeout(refreshSwipeWheelSelection,instant?0:200);
+}
+
+function initializeSwipeWheels(){
+  buildSwipeWheel(document.getElementById('hoursWheel'),99);
+  buildSwipeWheel(document.getElementById('minutesWheel'),59);
+  buildSwipeWheel(document.getElementById('secondsWheel'),59);
+  refreshSwipeWheelSelection();
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  initializeSwipeWheels();
+ const openBtn=document.getElementById('openTimeCorrection');
+ const closeBtn=document.getElementById('closeTimeCorrection');
+ const histBtn=document.getElementById('openCorrectionHistory');
+ const histClose=document.getElementById('closeCorrectionHistory');
+ const select=document.getElementById('correctionDateSelect');
+ const submit=document.getElementById('submitTimeCorrection');
+ if(openBtn)openBtn.onclick=openTimeCorrectionDialog;
+ if(closeBtn)closeBtn.onclick=()=>document.getElementById('timeCorrectionDialog').close();
+ if(histBtn)histBtn.onclick=openCorrectionHistoryDialog;
+ if(histClose)histClose.onclick=()=>document.getElementById('correctionHistoryDialog').close();
+ if(select)select.onchange=()=>applyCorrectionRecord(select.value);
+ if(submit)submit.onclick=submitCorrection;
+ 
+});
