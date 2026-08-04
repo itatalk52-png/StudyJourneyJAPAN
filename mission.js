@@ -65,23 +65,8 @@ function toggleFavorite(subject,id){
   saveFavorites();
   renderMission();
 }
-function awardedTotal(){
-  let total=0;
-  Object.entries(missionRecords).forEach(([key,rec])=>{
-    if(key.startsWith('_')||!rec||!rec.awarded)return;
-    if(rec.awarded.triangle)total+=5;
-    if(rec.awarded.circle)total+=10;
-    if(rec.awarded.double)total+=20;
-  });
-  const bonuses=missionRecords._bonuses||{};
-  total+=Object.keys(bonuses).filter(key=>bonuses[key]).length*100;
-  return total;
-}
-function restoreMissionPoints(){
-  const total=awardedTotal();
-  state.missionPoints=Math.max(Number(state.missionPoints)||0,total);
-  if(typeof save==='function')save();
-}
+function currentMissionPoints(){let total=0;const keys=new Set();Object.entries(missionRecords).forEach(([key,rec])=>{if(key.startsWith('_')||!rec)return;const [subject,id,roundText]=key.split('|'),round=Number(roundText);if(![1,2,3].includes(round))return;keys.add(`${subject}|${id}`);if(rec.level==='triangle')total+=5;else if(rec.level==='circle')total+=15;else if(rec.level==='double')total+=35;});keys.forEach(key=>{const [subject,id]=key.split('|');if([1,2,3].every(round=>{const rec=recordFor(subject,id,round,false);return rec&&['triangle','circle','double'].includes(rec.level)}))total+=100;});return total;}
+function restoreMissionPoints(){state.missionPoints=currentMissionPoints();if(typeof save==='function')save();}
 function addMissionPoints(amount,message=''){
   if(!amount)return;
   state.missionPoints=(Number(state.missionPoints)||0)+amount;
@@ -104,25 +89,10 @@ function checkThreeRoundBonus(subject,id){
     addMissionPoints(100,'🔥 3回転コンプリート！ +100pt');
   }
 }
-function setUnderstanding(subject,id,round,newLevel){
-  const rec=recordFor(subject,id,round);
-  const normalized=MISSION_LEVELS.includes(newLevel)?newLevel:'none';
-  rec.level=normalized;
-  rec.solved=normalized!=='none';
-  rec.updatedAt=new Date().toISOString();
-
-  const points=awardLevelMilestone(rec,normalized);
-  if(points){
-    const label=MISSION_LEVEL_DISPLAY[normalized];
-    addMissionPoints(points,`${label} 理解度を記録しました！ +${points}pt`);
-  }
-
-  missionLocalSave();
-  checkThreeRoundBonus(subject,id);
-  missionLocalSave();
-  openLevelMenuKey='';
-  renderMission();
-}
+async function syncMissionRecordToCloud(subject,id,round,level){if(!profile?.userId||typeof apiPost!=='function')return;try{const result=await apiPost({action:'saveMission',userId:profile.userId,subject,problemId:id,round:String(round),level});state.missionPoints=Number(result.missionPoints)||0;if(Array.isArray(result.missionRecords))applyMissionCloudRecords(result.missionRecords,false);if(typeof save==='function')save();if(typeof renderAll==='function')renderAll();if(typeof loadRanking==='function')await loadRanking();}catch(error){if(typeof toast==='function')toast('問題ポイントを同期できませんでした：'+(error.message||'通信エラー'),'error')}}
+function setUnderstanding(subject,id,round,newLevel){const before=currentMissionPoints(),rec=recordFor(subject,id,round),normalized=MISSION_LEVELS.includes(newLevel)?newLevel:'none';rec.level=normalized;rec.solved=normalized!=='none';rec.updatedAt=new Date().toISOString();missionLocalSave();state.missionPoints=currentMissionPoints();const diff=state.missionPoints-before;if(typeof save==='function')save();if(typeof renderAll==='function')renderAll();if(diff>0&&typeof toast==='function')toast(`MISSIONが進みました！ +${diff}pt`);else if(diff<0&&typeof toast==='function')toast(`問題ポイントを${Math.abs(diff)}pt修正しました`);openLevelMenuKey='';renderMission();syncMissionRecordToCloud(subject,id,round,normalized);}
+function applyMissionCloudRecords(records,render=true){const next={};(records||[]).forEach(record=>{if(!record||!['commercial','industrial'].includes(record.subject)||!record.problemId||![1,2,3].includes(Number(record.round)))return;const level=MISSION_LEVELS.includes(record.level)?record.level:'none';next[missionKey(record.subject,record.problemId,Number(record.round))]={solved:level!=='none',level,awarded:{},updatedAt:record.updatedAt||''};});missionRecords=next;missionLocalSave();state.missionPoints=currentMissionPoints();if(typeof save==='function')save();if(render){if(typeof renderAll==='function')renderAll();renderMission();}}
+window.applyMissionCloudRecords=applyMissionCloudRecords;
 function missionStats(){
   const list=missionSubjectData();
   const solvedProblems=list.filter(problem=>recordsFor(missionSubject,problem.id).some(rec=>rec.solved)).length;
@@ -133,7 +103,7 @@ function missionStats(){
     solvedRounds,
     remaining:list.length-solvedProblems,
     percent:list.length?Math.round(solvedProblems/list.length*100):0,
-    points:Number(state.missionPoints)||0
+    points:currentMissionPoints()
   };
 }
 function problemMatchesFilter(problem){

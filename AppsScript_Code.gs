@@ -190,30 +190,7 @@ function addStudyTime(params) {
   });
 }
 
-function buildStudyResponse(userId,rowNumber,extra){
-  const sheet=getUserSheet();
-  const row=sheet.getRange(rowNumber,1,1,HEADERS.length).getValues()[0];
-  const weeklyMinutes=cellDateString(row[9])===getCurrentWeekId()?Number(row[5])||0:0;
-  const totalMinutes=Number(row[6])||0;
-  const cheerPoints=Number(row[11])||0;
-  const medalPoints=Number(row[14])||0;
-  const streakPoints=Number(row[15])||0;
-  const streak=calculateCurrentStreak(userId);
-
-  return Object.assign({
-    success:true,
-    weeklyMinutes,
-    totalMinutes,
-    cheerPoints,
-    medalPoints,
-    streakPoints,
-    totalPoints:totalMinutes+cheerPoints+medalPoints+streakPoints,
-    streak,
-    badgeCount:Math.floor(totalMinutes/10),
-    newBadges:[]
-  },extra||{});
-}
-
+function buildStudyResponse(userId,rowNumber,extra){const sheet=getUserSheet(),row=sheet.getRange(rowNumber,1,1,HEADERS.length).getValues()[0],weeklyMinutes=cellDateString(row[9])===getCurrentWeekId()?Number(row[5])||0:0,totalMinutes=Number(row[6])||0,cheerPoints=Number(row[11])||0,medalPoints=Number(row[14])||0,streakPoints=Number(row[15])||0,missionPoints=getMissionPoints(userId),streak=calculateCurrentStreak(userId);return Object.assign({success:true,weeklyMinutes,totalMinutes,cheerPoints,medalPoints,streakPoints,missionPoints,totalPoints:totalMinutes+cheerPoints+medalPoints+streakPoints+missionPoints,streak,badgeCount:Math.floor(totalMinutes/10),newBadges:[]},extra||{});}
 function getStudyRecordSheet(){
   return getSpreadsheet().getSheetByName(STUDY_RECORD_SHEET_NAME);
 }
@@ -371,7 +348,8 @@ function todayString(){return Utilities.formatDate(new Date(),TIMEZONE,'yyyy-MM-
 
 function getMissionSheet(){return getSpreadsheet().getSheetByName(MISSION_SHEET_NAME);}
 function getMissionRecords(userId){if(!userId)return[];const s=getMissionSheet(),last=s.getLastRow();if(last<2)return[];return s.getRange(2,1,last-1,MISSION_HEADERS.length).getValues().filter(r=>String(r[1])===userId).map(r=>({subject:String(r[2]),problemId:String(r[3]),round:Number(r[4])||1,level:String(r[5]||'circle'),points:Number(r[6])||0,updatedAt:formatDate(r[7])}));}
-function getMissionPoints(userId){return getMissionRecords(userId).reduce((n,r)=>n+(Number(r.points)||0),0);}
+function missionLevelPoints(level){if(level==='triangle')return 5;if(level==='circle')return 15;if(level==='double')return 35;return 0;}
+function getMissionPoints(userId){const records=getMissionRecords(userId).filter(r=>r.problemId&&!String(r.problemId).startsWith('__')&&[1,2,3].includes(Number(r.round)));let total=records.reduce((sum,r)=>sum+missionLevelPoints(String(r.level||'')),0);const keys=[...new Set(records.map(r=>`${r.subject}|${r.problemId}`))];keys.forEach(key=>{const [subject,problemId]=key.split('|');const complete=[1,2,3].every(round=>records.some(r=>r.subject===subject&&r.problemId===problemId&&Number(r.round)===round&&['triangle','circle','double'].includes(r.level)));if(complete)total+=100;});return total;}
 function getMissionSync(userId){if(!userId)throw new Error('ユーザー情報がありません。');return{success:true,records:getMissionRecords(userId),missionPoints:getMissionPoints(userId)};}
 function findMissionRow(sheet,userId,subject,problemId,round){const last=sheet.getLastRow();if(last<2)return null;const rows=sheet.getRange(2,1,last-1,5).getDisplayValues();for(let i=0;i<rows.length;i++)if(rows[i][1]===userId&&rows[i][2]===subject&&rows[i][3]===problemId&&Number(rows[i][4])===round)return i+2;return null;}
-function saveMission(params){const userId=cleanText(params.userId),subject=cleanText(params.subject),problemId=cleanText(params.problemId),round=Math.floor(Number(params.round)),level=cleanText(params.level),totalProblems=Math.floor(Number(params.totalProblems));if(!userId||!['commercial','industrial'].includes(subject)||!problemId||round<1||round>5||!['triangle','circle','double'].includes(level))throw new Error('問題演習の記録が正しくありません。');if(!findUserRow(getUserSheet(),userId))throw new Error('ユーザー登録が確認できません。');const s=getMissionSheet(),row=findMissionRow(s,userId,subject,problemId,round),now=new Date();let pointsAdded=0,recordPoints=2,alreadyExisted=!!row;if(row){recordPoints=Number(s.getRange(row,7).getValue())||2;s.getRange(row,6,1,3).setValues([[level,recordPoints,now]]);}else{s.appendRow([Utilities.getUuid(),userId,subject,problemId,round,level,recordPoints,now]);pointsAdded=recordPoints;const records=getMissionRecords(userId).filter(r=>r.subject===subject);const roundCount=records.filter(r=>r.round===round).length;if(totalProblems>0&&roundCount===totalProblems){s.appendRow([Utilities.getUuid(),userId,subject,'__ROUND_BONUS__'+round,round,'bonus',50,now]);pointsAdded+=50;}const allCompleted=[1,2,3,4,5].every(n=>records.filter(r=>r.round===n).length>=totalProblems);if(totalProblems>0&&allCompleted&&!records.some(r=>r.problemId==='__ALL_BONUS__')){s.appendRow([Utilities.getUuid(),userId,subject,'__ALL_BONUS__',5,'bonus',200,now]);pointsAdded+=200;}}return{success:true,alreadyExisted,recordPoints,pointsAdded,missionPoints:getMissionPoints(userId)};}
+function saveMission(params){const userId=cleanText(params.userId),subject=cleanText(params.subject),problemId=cleanText(params.problemId),round=Math.floor(Number(params.round)),level=cleanText(params.level);if(!userId||!['commercial','industrial'].includes(subject)||!problemId||round<1||round>3||!['none','triangle','circle','double'].includes(level))throw new Error('問題演習の記録が正しくありません。');if(!findUserRow(getUserSheet(),userId))throw new Error('ユーザー登録が確認できません。');const sheet=getMissionSheet(),row=findMissionRow(sheet,userId,subject,problemId,round),now=new Date(),recordPoints=missionLevelPoints(level);if(row)sheet.getRange(row,6,1,3).setValues([[level,recordPoints,now]]);else sheet.appendRow([Utilities.getUuid(),userId,subject,problemId,round,level,recordPoints,now]);SpreadsheetApp.flush();return{success:true,missionPoints:getMissionPoints(userId),missionRecords:getMissionRecords(userId)};}
