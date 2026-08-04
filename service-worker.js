@@ -1,6 +1,6 @@
 importScripts("./offline-assets.js");
 
-const CACHE="study-journey-v2-2-1-tokushima-badges-official";
+const CACHE="study-journey-v2-2-2-yamaguchi-badges-official";
 const CORE_ASSETS=[
   "./",
   "./index.html",

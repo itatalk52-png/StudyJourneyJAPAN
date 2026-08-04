@@ -575,9 +575,57 @@
           "file": "10_tsurugi_bizan.png"
         }
       ]
+    },
+    {
+      "id": "13_yamaguchi",
+      "key": "yamaguchi",
+      "name": "山口県",
+      "reading": "やまぐちけん",
+      "badges": [
+        {
+          "name": "錦帯橋",
+          "file": "01_kintaikyo_bridge.png"
+        },
+        {
+          "name": "ふぐ",
+          "file": "02_fugu.png"
+        },
+        {
+          "name": "仙崎の焼き抜きかまぼこ",
+          "file": "03_senzaki_kamaboko.png"
+        },
+        {
+          "name": "瓦そば",
+          "file": "04_kawara_soba.png"
+        },
+        {
+          "name": "長門湯本温泉",
+          "file": "05_nagato_yumoto_onsen.png"
+        },
+        {
+          "name": "秋芳洞",
+          "file": "06_akiyoshido_cave.png"
+        },
+        {
+          "name": "元乃隅神社",
+          "file": "07_motonosumi_shrine.png"
+        },
+        {
+          "name": "萩城下町",
+          "file": "08_hagi_castle_town.png"
+        },
+        {
+          "name": "萩焼",
+          "file": "09_hagi_ware.png"
+        },
+        {
+          "name": "夏みかん",
+          "file": "10_natsumikan.png"
+        }
+      ]
     }
   ],
-  "version": "2.2.1",
-  "availableBadgeCount": 120,
+  "version": "2.2.2",
+  "availableBadgeCount": 130,
   "targetBadgeCount": 470
 }
