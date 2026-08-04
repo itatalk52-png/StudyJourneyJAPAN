@@ -1,5 +1,6 @@
 
-const MISSION_STORAGE_KEY='sjj_mission_cache_v2';
+const MISSION_STORAGE_KEY='sjj_mission_cache_v3';
+const MISSION_PENDING_KEY='sjj_mission_pending_v1';
 const MISSION_FAVORITE_KEY='sjj_mission_favorites_v1';
 const MISSION_LEVELS=['none','triangle','circle','double'];
 const MISSION_LEVEL_DISPLAY={
@@ -14,6 +15,8 @@ let missionSubject='commercial';
 let missionFilter='all';
 let missionRecords={};
 let missionFavorites={};
+let missionPending={};
+let missionSyncing=false;
 let openLevelMenuKey='';
 
 function safeJson(text,fallback={}){
@@ -22,18 +25,41 @@ function safeJson(text,fallback={}){
 function missionKey(subject,id,round){return `${subject}|${id}|${round}`;}
 function favoriteKey(subject,id){return `${subject}|${id}`;}
 function missionSubjectData(){return (window.MISSION_DATA&&MISSION_DATA[missionSubject])||[];}
+function missionUserId(){return (typeof profile!=='undefined'&&profile?.userId)?String(profile.userId):'guest';}
+function missionScopedKey(base){return `${base}:${missionUserId()}`;}
 
 function missionLocalLoad(){
-  missionRecords=safeJson(localStorage.getItem(MISSION_STORAGE_KEY),{});
-  missionFavorites=safeJson(localStorage.getItem(MISSION_FAVORITE_KEY),{});
+  const scoped=missionScopedKey(MISSION_STORAGE_KEY);
+  missionRecords=safeJson(localStorage.getItem(scoped),{});
+  if(!Object.keys(missionRecords).length){
+    const legacy=safeJson(localStorage.getItem('sjj_mission_cache_v2'),{});
+    if(Object.keys(legacy).length){missionRecords=legacy;localStorage.setItem(scoped,JSON.stringify(legacy));}
+  }
+  missionFavorites=safeJson(localStorage.getItem(missionScopedKey(MISSION_FAVORITE_KEY)),safeJson(localStorage.getItem(MISSION_FAVORITE_KEY),{}));
+  missionPending=safeJson(localStorage.getItem(missionScopedKey(MISSION_PENDING_KEY)),{});
   normalizeLegacyRecords();
   restoreMissionPoints();
+  updateMissionSyncStatus();
 }
 function missionLocalSave(){
-  localStorage.setItem(MISSION_STORAGE_KEY,JSON.stringify(missionRecords));
+  localStorage.setItem(missionScopedKey(MISSION_STORAGE_KEY),JSON.stringify(missionRecords));
+}
+function missionPendingSave(){
+  localStorage.setItem(missionScopedKey(MISSION_PENDING_KEY),JSON.stringify(missionPending));
+  updateMissionSyncStatus();
 }
 function saveFavorites(){
-  localStorage.setItem(MISSION_FAVORITE_KEY,JSON.stringify(missionFavorites));
+  localStorage.setItem(missionScopedKey(MISSION_FAVORITE_KEY),JSON.stringify(missionFavorites));
+}
+function pendingMissionCount(){return Object.keys(missionPending||{}).length;}
+function updateMissionSyncStatus(){
+  const node=document.getElementById('missionSyncStatus');
+  if(!node)return;
+  const count=pendingMissionCount();
+  node.classList.remove('synced','pending','syncing');
+  if(missionSyncing){node.textContent='↻ 同期中';node.classList.add('syncing');}
+  else if(count){node.textContent=`⬆ 未同期 ${count}件`;node.classList.add('pending');}
+  else{node.textContent='☁ 同期済み';node.classList.add('synced');}
 }
 function normalizeLegacyRecords(){
   Object.keys(missionRecords).forEach(key=>{
@@ -89,9 +115,74 @@ function checkThreeRoundBonus(subject,id){
     addMissionPoints(100,'🔥 3回転コンプリート！ +100pt');
   }
 }
-async function syncMissionRecordToCloud(subject,id,round,level){if(!profile?.userId||typeof apiPost!=='function')return;try{const result=await apiPost({action:'saveMission',userId:profile.userId,subject,problemId:id,round:String(round),level});state.missionPoints=Number(result.missionPoints)||0;if(Array.isArray(result.missionRecords))applyMissionCloudRecords(result.missionRecords,false);if(typeof save==='function')save();if(typeof renderAll==='function')renderAll();if(typeof loadRanking==='function')await loadRanking();}catch(error){if(typeof toast==='function')toast('問題ポイントを同期できませんでした：'+(error.message||'通信エラー'),'error')}}
-function setUnderstanding(subject,id,round,newLevel){const before=currentMissionPoints(),rec=recordFor(subject,id,round),normalized=MISSION_LEVELS.includes(newLevel)?newLevel:'none';rec.level=normalized;rec.solved=normalized!=='none';rec.updatedAt=new Date().toISOString();missionLocalSave();state.missionPoints=currentMissionPoints();const diff=state.missionPoints-before;if(typeof save==='function')save();if(typeof renderAll==='function')renderAll();if(diff>0&&typeof toast==='function')toast(`MISSIONが進みました！ +${diff}pt`);else if(diff<0&&typeof toast==='function')toast(`問題ポイントを${Math.abs(diff)}pt修正しました`);openLevelMenuKey='';renderMission();syncMissionRecordToCloud(subject,id,round,normalized);}
-function applyMissionCloudRecords(records,render=true){const next={};(records||[]).forEach(record=>{if(!record||!['commercial','industrial'].includes(record.subject)||!record.problemId||![1,2,3].includes(Number(record.round)))return;const level=MISSION_LEVELS.includes(record.level)?record.level:'none';next[missionKey(record.subject,record.problemId,Number(record.round))]={solved:level!=='none',level,awarded:{},updatedAt:record.updatedAt||''};});missionRecords=next;missionLocalSave();state.missionPoints=currentMissionPoints();if(typeof save==='function')save();if(render){if(typeof renderAll==='function')renderAll();renderMission();}}
+function queueMissionChange(subject,id,round,level){
+  const key=missionKey(subject,id,round);
+  missionPending[key]={subject,problemId:id,round:Number(round),level,updatedAt:new Date().toISOString()};
+  missionPendingSave();
+}
+function overlayPendingMissionRecords(target){
+  Object.values(missionPending||{}).forEach(change=>{
+    const level=MISSION_LEVELS.includes(change.level)?change.level:'none';
+    target[missionKey(change.subject,change.problemId,Number(change.round))]={
+      solved:level!=='none',level,awarded:{},updatedAt:change.updatedAt||''
+    };
+  });
+  return target;
+}
+async function flushMissionPending(){
+  if(missionSyncing||!profile?.userId||typeof apiPost!=='function'||!navigator.onLine)return;
+  const entries=Object.entries(missionPending||{});
+  if(!entries.length){updateMissionSyncStatus();return;}
+  missionSyncing=true;updateMissionSyncStatus();
+  try{
+    for(const [key,change] of entries){
+      const result=await apiPost({
+        action:'saveMission',userId:profile.userId,subject:change.subject,
+        problemId:change.problemId,round:String(change.round),level:change.level
+      });
+      delete missionPending[key];
+      missionPendingSave();
+      if(Array.isArray(result.missionRecords))applyMissionCloudRecords(result.missionRecords,false);
+      state.missionPoints=Number(result.missionPoints)||currentMissionPoints();
+    }
+    if(typeof save==='function')save();
+    if(typeof renderAll==='function')renderAll();
+    renderMission();
+    if(typeof loadRanking==='function')await loadRanking();
+  }catch(error){
+    if(typeof toast==='function')toast('MISSIONを端末に保存しました。通信回復後に同期します。','error');
+  }finally{
+    missionSyncing=false;updateMissionSyncStatus();
+  }
+}
+async function syncMissionRecordToCloud(subject,id,round,level){
+  queueMissionChange(subject,id,round,level);
+  await flushMissionPending();
+}
+function setUnderstanding(subject,id,round,newLevel){
+  const before=currentMissionPoints(),rec=recordFor(subject,id,round),normalized=MISSION_LEVELS.includes(newLevel)?newLevel:'none';
+  rec.level=normalized;rec.solved=normalized!=='none';rec.updatedAt=new Date().toISOString();
+  missionLocalSave();state.missionPoints=currentMissionPoints();
+  const diff=state.missionPoints-before;
+  if(typeof save==='function')save();if(typeof renderAll==='function')renderAll();
+  if(diff>0&&typeof toast==='function')toast(`MISSIONが進みました！ +${diff}pt`);
+  else if(diff<0&&typeof toast==='function')toast(`問題ポイントを${Math.abs(diff)}pt修正しました`);
+  openLevelMenuKey='';renderMission();syncMissionRecordToCloud(subject,id,round,normalized);
+}
+function applyMissionCloudRecords(records,render=true){
+  let next={};
+  (records||[]).forEach(record=>{
+    if(!record||!['commercial','industrial'].includes(record.subject)||!record.problemId||![1,2,3].includes(Number(record.round)))return;
+    const level=MISSION_LEVELS.includes(record.level)?record.level:'none';
+    next[missionKey(record.subject,record.problemId,Number(record.round))]={
+      solved:level!=='none',level,awarded:{},updatedAt:record.updatedAt||''
+    };
+  });
+  next=overlayPendingMissionRecords(next);
+  missionRecords=next;missionLocalSave();state.missionPoints=currentMissionPoints();
+  if(typeof save==='function')save();updateMissionSyncStatus();
+  if(render){if(typeof renderAll==='function')renderAll();renderMission();}
+}
 window.applyMissionCloudRecords=applyMissionCloudRecords;
 function missionStats(){
   const list=missionSubjectData();
@@ -321,7 +412,7 @@ function renderMission(){
     root.appendChild(details);
   });
 }
-function openMission(subject){
+async function openMission(subject){
   missionSubject=subject;
   missionFilter='all';
   openLevelMenuKey='';
@@ -329,15 +420,24 @@ function openMission(subject){
     button.classList.toggle('active',button.dataset.missionFilter==='all');
   });
   if(typeof showScreen==='function')showScreen('mission');
+  missionLocalLoad();
   restoreMissionPoints();
   renderMission();
+  if(typeof loadCloudState==='function'&&navigator.onLine)await loadCloudState(false);
+  await flushMissionPending();
 }
 function missionCloudLoad(){
-  restoreMissionPoints();
-  renderMission();
+  missionLocalLoad();restoreMissionPoints();renderMission();flushMissionPending();
 }
 
 missionLocalLoad();
+if(Array.isArray(window.__pendingMissionCloudRecords)){
+  applyMissionCloudRecords(window.__pendingMissionCloudRecords,false);
+  delete window.__pendingMissionCloudRecords;
+}
+window.addEventListener('online',()=>flushMissionPending());
+window.addEventListener('pageshow',()=>{missionLocalLoad();flushMissionPending();});
+setTimeout(()=>flushMissionPending(),500);
 
 document.querySelectorAll('[data-mission]').forEach(button=>{
   button.onclick=()=>openMission(button.dataset.mission);

@@ -124,8 +124,11 @@
     <section class="screen" data-screen="mission">
       <div class="mission-topbar">
         <button class="ghost-btn mission-back" type="button">← 戻る</button>
-        <div class="mission-subject-switch">
-          <button data-mission-switch="commercial">COM.</button><button data-mission-switch="industrial">IND.</button>
+        <div class="mission-topbar-actions">
+          <div id="missionSyncStatus" class="mission-sync-status synced" role="status" aria-live="polite">☁ 同期済み</div>
+          <div class="mission-subject-switch">
+            <button data-mission-switch="commercial">COM.</button><button data-mission-switch="industrial">IND.</button>
+          </div>
         </div>
       </div>
       <div class="mission-hero">
@@ -305,7 +308,7 @@
   </form>
   <section class="manual-update-section" aria-labelledby="manualUpdateHeading">
     <div class="panel-kicker" id="manualUpdateHeading">APP VERSION</div>
-    <div class="current-version">Version <strong id="currentAppVersion">2.2.3 Mission Points Official</strong></div>
+    <div class="current-version">Version <strong id="currentAppVersion">2.2.4 Mission Persistence Official</strong></div>
     <button class="primary-btn manual-update-button" id="manualUpdateButton" type="button">🚀 最新バージョンで旅をする</button>
     <p class="manual-update-help">最新バージョンがあるかもしれません。<br>こちらを押してみてください。</p>
     <div class="manual-update-result" id="manualUpdateResult" role="status" aria-live="polite"></div>
@@ -343,7 +346,7 @@
 <script src="mission.js"></script>
 <script>
 (() => {
-  const APP_VERSION = "2.2.3 Mission Points Official";
+  const APP_VERSION = "2.2.4 Mission Persistence Official";
   document.getElementById("currentAppVersion").textContent = APP_VERSION;
 
   if (!("serviceWorker" in navigator)) {

@@ -1,6 +1,6 @@
 importScripts("./offline-assets.js");
 
-const CACHE="study-journey-v2-2-4-mission-persistence-official";
+const CACHE="study-journey-v2-2-2-yamaguchi-badges-official";
 const CORE_ASSETS=[
   "./",
   "./index.html",
