@@ -1,5 +1,5 @@
 
-const MISSION_STORAGE_KEY='sjj_mission_cache_v3';
+const MISSION_STORAGE_KEY='sjj_mission_cache_v4';
 const MISSION_PENDING_KEY='sjj_mission_pending_v1';
 const MISSION_FAVORITE_KEY='sjj_mission_favorites_v1';
 const MISSION_LEVELS=['none','triangle','circle','double'];
@@ -32,8 +32,20 @@ function missionLocalLoad(){
   const scoped=missionScopedKey(MISSION_STORAGE_KEY);
   missionRecords=safeJson(localStorage.getItem(scoped),{});
   if(!Object.keys(missionRecords).length){
-    const legacy=safeJson(localStorage.getItem('sjj_mission_cache_v2'),{});
-    if(Object.keys(legacy).length){missionRecords=legacy;localStorage.setItem(scoped,JSON.stringify(legacy));}
+    const migrationKeys=[
+      missionScopedKey('sjj_mission_cache_v3'),
+      missionScopedKey('sjj_mission_cache_v2'),
+      'sjj_mission_cache_v3',
+      'sjj_mission_cache_v2'
+    ];
+    for(const key of migrationKeys){
+      const legacy=safeJson(localStorage.getItem(key),{});
+      if(Object.keys(legacy).length){
+        missionRecords=legacy;
+        localStorage.setItem(scoped,JSON.stringify(legacy));
+        break;
+      }
+    }
   }
   missionFavorites=safeJson(localStorage.getItem(missionScopedKey(MISSION_FAVORITE_KEY)),safeJson(localStorage.getItem(MISSION_FAVORITE_KEY),{}));
   missionPending=safeJson(localStorage.getItem(missionScopedKey(MISSION_PENDING_KEY)),{});
@@ -169,18 +181,49 @@ function setUnderstanding(subject,id,round,newLevel){
   else if(diff<0&&typeof toast==='function')toast(`問題ポイントを${Math.abs(diff)}pt修正しました`);
   openLevelMenuKey='';renderMission();syncMissionRecordToCloud(subject,id,round,normalized);
 }
+function missionTimestamp(value){
+  const time=Date.parse(value||'');
+  return Number.isFinite(time)?time:0;
+}
 function applyMissionCloudRecords(records,render=true){
-  let next={};
+  const local={...missionRecords};
+  const cloud={};
   (records||[]).forEach(record=>{
     if(!record||!['commercial','industrial'].includes(record.subject)||!record.problemId||![1,2,3].includes(Number(record.round)))return;
     const level=MISSION_LEVELS.includes(record.level)?record.level:'none';
-    next[missionKey(record.subject,record.problemId,Number(record.round))]={
+    cloud[missionKey(record.subject,record.problemId,Number(record.round))]={
       solved:level!=='none',level,awarded:{},updatedAt:record.updatedAt||''
     };
   });
-  next=overlayPendingMissionRecords(next);
-  missionRecords=next;missionLocalSave();state.missionPoints=currentMissionPoints();
-  if(typeof save==='function')save();updateMissionSyncStatus();
+
+  const merged={...local};
+  Object.entries(cloud).forEach(([key,cloudRecord])=>{
+    const pending=missionPending[key];
+    if(pending)return;
+    const localRecord=local[key];
+    if(!localRecord||missionTimestamp(cloudRecord.updatedAt)>=missionTimestamp(localRecord.updatedAt)){
+      merged[key]=cloudRecord;
+    }
+  });
+
+  // Recover records that exist only on this device by scheduling them for upload.
+  Object.entries(local).forEach(([key,localRecord])=>{
+    if(key.startsWith('_')||cloud[key]||missionPending[key]||!localRecord)return;
+    const [subject,problemId,roundText]=key.split('|');
+    const round=Number(roundText);
+    if(!['commercial','industrial'].includes(subject)||!problemId||![1,2,3].includes(round))return;
+    const level=MISSION_LEVELS.includes(localRecord.level)?localRecord.level:'none';
+    if(level!=='none'){
+      missionPending[key]={subject,problemId,round,level,updatedAt:localRecord.updatedAt||new Date().toISOString()};
+    }
+  });
+
+  missionRecords=overlayPendingMissionRecords(merged);
+  missionLocalSave();
+  missionPendingSave();
+  state.missionPoints=currentMissionPoints();
+  if(typeof save==='function')save();
+  updateMissionSyncStatus();
   if(render){if(typeof renderAll==='function')renderAll();renderMission();}
 }
 window.applyMissionCloudRecords=applyMissionCloudRecords;
@@ -412,6 +455,25 @@ function renderMission(){
     root.appendChild(details);
   });
 }
+async function loadMissionRecordsFromCloud(){
+  if(!profile?.userId||!navigator.onLine)return;
+  missionSyncing=true;updateMissionSyncStatus();
+  try{
+    const response=await fetch(`${API_URL}?action=missionSync&userId=${encodeURIComponent(profile.userId)}&_=${Date.now()}`,{cache:'no-store'});
+    if(!response.ok)throw new Error(`通信エラー (${response.status})`);
+    const data=await response.json();
+    if(!data.success)throw new Error(data.message||'MISSIONの取得に失敗しました');
+    applyMissionCloudRecords(data.records||[],false);
+    state.missionPoints=Number(data.missionPoints)||currentMissionPoints();
+    if(typeof save==='function')save();
+    if(typeof renderAll==='function')renderAll();
+    renderMission();
+  }catch(error){
+    if(typeof toast==='function')toast('端末に保存したMISSIONを表示しています','error');
+  }finally{
+    missionSyncing=false;updateMissionSyncStatus();
+  }
+}
 async function openMission(subject){
   missionSubject=subject;
   missionFilter='all';
@@ -423,7 +485,7 @@ async function openMission(subject){
   missionLocalLoad();
   restoreMissionPoints();
   renderMission();
-  if(typeof loadCloudState==='function'&&navigator.onLine)await loadCloudState(false);
+  await loadMissionRecordsFromCloud();
   await flushMissionPending();
 }
 function missionCloudLoad(){

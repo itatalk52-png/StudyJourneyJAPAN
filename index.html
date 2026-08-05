@@ -139,7 +139,7 @@
         <div class="mission-progress-track"><div id="missionProgressFill"></div></div>
         <div class="mission-summary-grid">
           <div><span>解答記録</span><strong id="missionSolvedCount">0回</strong></div>
-          <div><span>問題演習ポイント</span><strong id="missionPointCount">0 pt</strong></div>
+          <div><span>問題集ポイント</span><strong id="missionPointCount">0 pt</strong></div>
           <div><span>未挑戦</span><strong id="missionRemainingCount">0問</strong></div>
         </div>
       </div>
@@ -229,7 +229,7 @@
           <div class="rank-label">あなたの今週の旅</div>
           <h3 id="myJourneyText">沖縄県・0 Memories</h3>
         </div>
-        <div class="rank-score"><span class="weekly-time-label">今週の簿記勉強時間</span><strong id="myJourneyMinutes">0分</strong><small id="myJourneyPoints" class="my-journey-points">0 pt</small></div>
+        <div class="rank-score"><span class="weekly-time-label">今週の簿記勉強時間</span><strong id="myJourneyMinutes">0分</strong><small id="myJourneyPoints" class="my-journey-points">0 pt</small><span class="today-study-label">今日の簿記勉強時間</span><strong id="myTodayMinutes" class="today-study-time">0分</strong><small id="myTodayRank" class="today-rank">今日ランキング --位</small></div>
       </div>
       <div class="ranking-toolbar"><span id="rankingStatus">ランキングを読み込みます</span><button id="refreshRanking" class="ghost-btn">更新</button></div>
       <div class="friends-list" id="friendsList"></div>
@@ -308,7 +308,7 @@
   </form>
   <section class="manual-update-section" aria-labelledby="manualUpdateHeading">
     <div class="panel-kicker" id="manualUpdateHeading">APP VERSION</div>
-    <div class="current-version">Version <strong id="currentAppVersion">2.2.4 Mission Persistence Official</strong></div>
+    <div class="current-version">Version <strong id="currentAppVersion">2.2.5 Beta TEST</strong></div>
     <button class="primary-btn manual-update-button" id="manualUpdateButton" type="button">🚀 最新バージョンで旅をする</button>
     <p class="manual-update-help">最新バージョンがあるかもしれません。<br>こちらを押してみてください。</p>
     <div class="manual-update-result" id="manualUpdateResult" role="status" aria-live="polite"></div>
@@ -346,7 +346,7 @@
 <script src="mission.js"></script>
 <script>
 (() => {
-  const APP_VERSION = "2.2.4 Mission Persistence Official";
+  const APP_VERSION = "2.2.5 Beta TEST";
   document.getElementById("currentAppVersion").textContent = APP_VERSION;
 
   if (!("serviceWorker" in navigator)) {

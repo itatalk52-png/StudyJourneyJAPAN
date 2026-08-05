@@ -1680,3 +1680,47 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
 .mission-sync-status.pending{background:#f5efe0;color:#8a6b23;border-color:#e6d7ab}
 .mission-sync-status.syncing{background:#eef1f2;color:#64716d;border-color:#d8dddb}
 @media(max-width:390px){.mission-topbar-actions{gap:5px}.mission-sync-status{padding:0 7px;font-size:9px}}
+
+
+/* ============================================================
+   Ver.2.2.5 Beta — persistent MISSION and daily Friends ranking
+   ============================================================ */
+.today-study-label{
+  display:block;
+  margin-top:8px;
+  color:#cf1717;
+  font-size:9px;
+  font-weight:850;
+  line-height:1.25;
+  white-space:nowrap;
+}
+.today-study-time{
+  color:#cf1717 !important;
+  font-size:12px !important;
+  font-weight:900 !important;
+  line-height:1.2 !important;
+  white-space:nowrap;
+}
+.today-rank{
+  color:#cf1717 !important;
+  font-size:9px !important;
+  font-weight:800 !important;
+  line-height:1.2;
+  white-space:nowrap;
+}
+.rank-score .today-study-label,
+.rank-score .today-study-time,
+.rank-score .today-rank,
+.friend-score .today-study-label,
+.friend-score .today-study-time,
+.friend-score .today-rank{
+  justify-self:end;
+  text-align:right;
+}
+.friend-score,.rank-score{min-width:132px}
+@media(max-width:560px){
+  .friend-score,.rank-score{min-width:112px}
+  .today-study-label{font-size:8px;margin-top:7px}
+  .today-study-time{font-size:11px !important}
+  .today-rank{font-size:8px !important}
+}
