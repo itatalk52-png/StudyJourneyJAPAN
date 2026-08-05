@@ -287,10 +287,18 @@ function getRanking(viewerId){
   const todayByUser={};
   const daily=getDailySheet(),dailyLast=daily.getLastRow();
   if(dailyLast>=2){
-    daily.getRange(2,1,dailyLast-1,DAILY_HEADERS.length).getValues().forEach(row=>{
-      if(cellDateString(row[1])===today){
-        const userId=String(row[0]||'');
-        todayByUser[userId]=(Number(todayByUser[userId])||0)+(Number(row[2])||0);
+    const valueRows=daily.getRange(2,1,dailyLast-1,DAILY_HEADERS.length).getValues();
+    const displayRows=daily.getRange(2,1,dailyLast-1,DAILY_HEADERS.length).getDisplayValues();
+
+    valueRows.forEach((row,index)=>{
+      const displayRow=displayRows[index]||[];
+      const userId=cleanText(displayRow[0]||row[0]);
+      const rawDate=displayRow[1]||row[1];
+      const studyDate=cellDateString(rawDate);
+      const minutes=Number(row[2])||Number(displayRow[2])||0;
+
+      if(userId&&studyDate===today){
+        todayByUser[userId]=(Number(todayByUser[userId])||0)+minutes;
       }
     });
   }
@@ -316,7 +324,7 @@ function getRanking(viewerId){
   ranking.forEach(user=>{if(!user.todayRank)user.todayRank=0;});
 
   ranking.sort((a,b)=>b.weeklyMinutes-a.weeklyMinutes||b.totalPoints-a.totalPoints||a.nickname.localeCompare(b.nickname,'ja'));
-  return ranking.map(user=>Object.assign({rank:user.weeklyRank},user));
+  return ranking.map(user=>Object.assign({rank:user.weeklyRank,rankingDate:today},user));
 }
 function getInbox(userId){if(!userId)return[];const cheers=getCheerSheet(),lastRow=cheers.getLastRow();if(lastRow<2)return[];const users=getUserSheet(),rows=cheers.getRange(2,1,lastRow-1,CHEER_HEADERS.length).getValues();return rows.filter(r=>String(r[2])===userId&&!r[5]).sort((a,b)=>b[3]-a[3]).slice(0,20).map(r=>{const senderRow=findUserRow(users,String(r[1]));return{cheerId:String(r[0]),senderNickname:senderRow?String(users.getRange(senderRow,2).getValue()||'仲間'):'仲間',points:Number(r[4])||0.1,sentAt:formatDate(r[3])};});}
 
