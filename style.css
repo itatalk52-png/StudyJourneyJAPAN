@@ -1730,3 +1730,33 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
   min-height:1.4em;
   transition:opacity .15s ease;
 }
+
+/* Ver.2.2.5 Beta4 UI Tweaks */
+#homeStart,
+#timerStart{
+  width:min(78vw,320px)!important;
+  min-width:220px!important;
+  height:58px!important;
+  min-height:58px!important;
+  padding:0 28px!important;
+  border-radius:999px!important;
+  font-size:20px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  letter-spacing:.08em!important;
+  box-sizing:border-box!important;
+}
+
+#homeStart.is-pause,
+#timerStart.is-pause{
+  background:linear-gradient(145deg,#ff7f7f,#d94848)!important;
+  border-color:#c63f3f!important;
+  color:#fff!important;
+  box-shadow:0 9px 22px rgba(201,63,63,.28)!important;
+}
+
+#homeStart.is-pause:active,
+#timerStart.is-pause:active{
+  transform:translateY(1px)!important;
+  box-shadow:0 5px 14px rgba(201,63,63,.24)!important;
+}
