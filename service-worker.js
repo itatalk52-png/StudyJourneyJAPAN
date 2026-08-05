@@ -1,6 +1,6 @@
 importScripts("./offline-assets.js");
 
-const CACHE="study-journey-v2-2-5-beta5-pause-rank-fix";
+const CACHE="study-journey-v2-2-5-beta6-flat-pause-today-ranking";
 const CORE_ASSETS=[
   "./",
   "./index.html",
