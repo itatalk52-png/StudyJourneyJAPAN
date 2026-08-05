@@ -470,7 +470,7 @@ homeStartButton.textContent=state.running?'PAUSE':'START';
 timerStartButton.textContent=state.running?'PAUSE':'START';
 homeStartButton.classList.toggle('is-pause',state.running);
 timerStartButton.classList.toggle('is-pause',state.running);const pref=currentPrefecture();document.getElementById('currentChip').textContent=`現在地：${pref}`;document.getElementById('myJourneyText').textContent=`${pref}・${unlocked} Memories`;document.getElementById('myJourneyMinutes').textContent=formatStudyDuration(weeklyMinutes);document.getElementById('myJourneyPoints').textContent=`${formatPoints(totalPoints)} pt`;const myTodayMinutesEl=document.getElementById('myTodayMinutes');if(myTodayMinutesEl)myTodayMinutesEl.textContent=formatStudyDuration(todayTotal);document.getElementById('pendingSync').textContent=pending>0?`未同期 ${pending}分（${pending}pt）`:'同期済み';renderStreakBanner(todayTotal);renderCollection();updateMap();}
-const FRIENDS_CACHE_KEY='sjj_friends_cache_v1';
+const FRIENDS_CACHE_KEY='sjj_friends_cache_v2_today_all';
 const FRIENDS_CACHE_MAX_AGE_MS=10*60*1000;
 
 function readFriendsCache(){
@@ -516,7 +516,7 @@ async function loadRanking(){
     const inbox=Array.isArray(data.inbox)?data.inbox:[];
     renderRanking(ranking);
     renderInbox(inbox);
-    writeFriendsCache({ranking,inbox});
+    writeFriendsCache({ranking,inbox,apiVersion:data.apiVersion||'2.2.5-beta7'});
     status.textContent=`${ranking.length}人が今週の旅に参加中　✓ 最新`;
   }catch(e){
     if(cached){
@@ -561,7 +561,7 @@ function renderRanking(rows){const list=document.getElementById('friendsList');l
 const div=document.createElement('div');
 div.className='friend-row'+(mine?' mine':'');
 const totalPoints=Number(row.totalPoints)||0;
-const todayMinutes=Math.max(0,Number(row.todayMinutes)||0);
+const todayMinutes=Number.isFinite(Number(row.todayMinutes))?Math.max(0,Number(row.todayMinutes)):0;
 const todayRank=Number(row.todayRank)||0;
 const action=mine?'':`<button type="button" class="cheer-btn ${row.dormant?'dormant':''}" ${row.cheeredToday?'disabled':''}>${row.cheeredToday?'送信済み':`エールを送る🎉 +${row.cheerValue}pt`}</button>`;
 div.innerHTML=`<span class="rank-no">${Number(row.rank)||'-'}</span>${avatarMarkup(row.avatarUrl,row.nickname)}<div><strong>${escapeHtml(row.nickname)}${mine?'（あなた）':''}</strong><small>${escapeHtml(row.currentPrefecture||'沖縄県')} ${row.faculty?'・'+escapeHtml(row.faculty):''}</small><div class="points-breakdown">学習 ${Number(row.totalMinutes)||0}pt・問題集 ${Number(row.missionPoints)||0}pt・メダル ${Number(row.medalPoints)||0}pt・連続 ${Number(row.streakPoints)||0}pt・エール ${formatPoints(row.cheerPoints)}pt</div></div><span class="friend-score"><span class="weekly-time-label">今週の簿記勉強時間</span><strong>${formatStudyDuration(row.weeklyMinutes)}</strong><small>${formatPoints(totalPoints)} pt</small><span class="today-study-label">今日の簿記勉強時間</span><strong class="today-study-time">${formatStudyDuration(todayMinutes)}</strong><span class="today-rank-label">TODAY RANKING</span><small class="today-rank">${todayRank>0?`${todayRank}位`:'―'}</small></span>${action}`;const btn=div.querySelector('.cheer-btn');if(btn&&!btn.disabled)btn.onclick=()=>sendCheer(row.userId,row.nickname,btn);list.appendChild(div);});}

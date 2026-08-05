@@ -326,19 +326,22 @@ function buildTodayMinutesByUser(){
   const last=sheet.getLastRow();
   if(last<2)return result;
 
-  const values=sheet.getRange(2,1,last-1,DAILY_HEADERS.length).getValues();
-  const display=sheet.getRange(2,1,last-1,DAILY_HEADERS.length).getDisplayValues();
+  const range=sheet.getRange(2,1,last-1,DAILY_HEADERS.length);
+  const values=range.getValues();
+  const display=range.getDisplayValues();
   const today=todayString();
 
   values.forEach((row,index)=>{
     const shown=display[index]||[];
     const userId=cleanText(shown[0]||row[0]);
-    const studyDate=cellDateString(shown[1]||row[1]);
+    const rawDate=shown[1]||row[1];
+    const studyDate=cellDateString(rawDate);
     const minutes=Number(row[2])||Number(shown[2])||0;
-    if(userId&&studyDate===today){
-      result[userId]=(Number(result[userId])||0)+minutes;
-    }
+
+    if(!userId||studyDate!==today)return;
+    result[userId]=(Number(result[userId])||0)+minutes;
   });
+
   return result;
 }
 function getViewerCheeredRecipients(viewerId){
@@ -446,7 +449,7 @@ function getRankingBase(){
 }
 function getRanking(viewerId){
   const cheered=getViewerCheeredRecipients(viewerId);
-  return getRankingBase().map(user=>Object.assign({},user,{
+  return getRankingBase().map(user=>Object.assign({},user,{apiVersion:'2.2.5-beta7',
     cheeredToday:!!cheered[user.userId]
   }));
 }
