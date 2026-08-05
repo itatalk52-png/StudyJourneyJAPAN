@@ -1760,3 +1760,50 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
   transform:translateY(1px)!important;
   box-shadow:0 5px 14px rgba(201,63,63,.24)!important;
 }
+
+/* Ver.2.2.5 Beta5 Pause / Daily Rank Fix */
+#homeStart.is-pause,
+#timerStart.is-pause{
+  background:#B30000!important;
+  border-color:#B30000!important;
+  color:#fff!important;
+  box-shadow:0 9px 22px rgba(179,0,0,.28)!important;
+}
+#homeStart.is-pause:active,
+#timerStart.is-pause:active{
+  background:#990000!important;
+  border-color:#990000!important;
+  box-shadow:0 5px 14px rgba(179,0,0,.24)!important;
+}
+
+/* Put the daily ranking on its own line below the label. */
+.friend-score .today-rank{
+  display:block!important;
+  width:100%;
+  margin-top:3px;
+  text-align:right;
+  color:#B30000!important;
+  font-weight:900!important;
+  white-space:nowrap;
+}
+
+.friend-score .today-rank-label,
+.my-today-rank-label{
+  display:block;
+  width:100%;
+  margin-top:5px;
+  text-align:right;
+  color:#B30000;
+  font-size:11px;
+  font-weight:800;
+  line-height:1.2;
+  white-space:nowrap;
+}
+#myTodayRank{
+  display:block!important;
+  width:100%;
+  text-align:right;
+  color:#B30000!important;
+  font-weight:900!important;
+  white-space:nowrap;
+}
