@@ -282,7 +282,7 @@ function getSyncData(userId){
 }
 
 function rankingCacheKey(){
-  return 'ranking-base-'+todayString()+'-'+getCurrentWeekId();
+  return 'ranking-base-v2-all-today-'+todayString()+'-'+getCurrentWeekId();
 }
 function invalidateRankingCache(){
   CacheService.getScriptCache().remove(rankingCacheKey());
@@ -333,9 +333,11 @@ function buildTodayMinutesByUser(){
 
   values.forEach((row,index)=>{
     const shown=display[index]||[];
-    const userId=cleanText(shown[0]||row[0]);
-    const rawDate=shown[1]||row[1];
-    const studyDate=cellDateString(rawDate);
+
+    // Always prefer the raw sheet value. Date cells are returned as Date objects,
+    // so this avoids locale-specific display strings such as "2026年8月6日".
+    const userId=cleanText(row[0]||shown[0]);
+    const studyDate=cellDateString(row[1]||shown[1]);
     const minutes=Number(row[2])||Number(shown[2])||0;
 
     if(!userId||studyDate!==today)return;
@@ -516,7 +518,7 @@ function getWeekIdForDate(dateString){
   date.setDate(date.getDate()-(day-1));
   return Utilities.formatDate(date,TIMEZONE,'yyyy-MM-dd');
 }
-function todayString(){return Utilities.formatDate(new Date(),TIMEZONE,'yyyy-MM-dd');}function cellDateString(v){if(v instanceof Date)return Utilities.formatDate(v,TIMEZONE,'yyyy-MM-dd');const s=String(v||'').trim().replace(/\//g,'-');const m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);return m?m[1]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[3]).padStart(2,'0'):s.slice(0,10);}function normalizeDateString(v){const s=String(v||'');return/^\d{4}-\d{2}-\d{2}$/.test(s)?s:'';}function cleanText(v){return String(v||'').trim().slice(0,200);}function formatDate(v){return v instanceof Date?Utilities.formatDate(v,TIMEZONE,'yyyy-MM-dd HH:mm:ss'):'';}function jsonResponse(data){return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);}function errorResponse(error){return jsonResponse({success:false,message:error&&error.message?error.message:'処理中にエラーが発生しました。'});}
+function todayString(){return Utilities.formatDate(new Date(),TIMEZONE,'yyyy-MM-dd');}function cellDateString(v){if(v instanceof Date)return Utilities.formatDate(v,TIMEZONE,'yyyy-MM-dd');const s=String(v||'').trim().replace(/[年月\/\.]/g,'-').replace(/日/g,'').replace(/-+/g,'-');const m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);return m?m[1]+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[3]).padStart(2,'0'):s.slice(0,10);}function normalizeDateString(v){const s=String(v||'');return/^\d{4}-\d{2}-\d{2}$/.test(s)?s:'';}function cleanText(v){return String(v||'').trim().slice(0,200);}function formatDate(v){return v instanceof Date?Utilities.formatDate(v,TIMEZONE,'yyyy-MM-dd HH:mm:ss'):'';}function jsonResponse(data){return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);}function errorResponse(error){return jsonResponse({success:false,message:error&&error.message?error.message:'処理中にエラーが発生しました。'});}
 
 
 function getMissionSheet(){return getSpreadsheet().getSheetByName(MISSION_SHEET_NAME);}
