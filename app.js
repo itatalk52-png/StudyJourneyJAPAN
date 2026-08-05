@@ -465,7 +465,63 @@ const weeklyRankEl=document.getElementById('weeklyRank');
 if(weeklyRankEl&&!weeklyRankEl.dataset.loaded)weeklyRankEl.textContent='今週の勉強時間ランク --位';document.getElementById('totalPoints').textContent=`${formatPoints(totalPoints)} pt`;
 const pointRankEl=document.getElementById('pointRank');
 if(pointRankEl&&!pointRankEl.dataset.loaded)pointRankEl.textContent='ポイントランク --位';document.getElementById('sessionPoints').textContent=`${todayTotal} pt`;document.getElementById('timerTotalPoints').textContent=`${formatPoints(totalPoints)} pt`;document.getElementById('homeProgressText').textContent=`${unlocked} / 470 Memories`;document.getElementById('mapProgress').textContent=`${unlocked} / 470 Memories`;document.getElementById('homeProgressFill').style.width=`${unlocked/470*100}%`;document.getElementById('nextDestination').textContent=flat[Math.min(unlocked,flat.length-1)];const rem=10-(mins%10||0);document.getElementById('nextBadgeText').textContent=unlocked>=flat.length?'追加バッジを準備中':`あと${rem}分`;document.getElementById('homeStart').textContent=state.running?'PAUSE':'START';document.getElementById('timerStart').textContent=state.running?'PAUSE':'START';const pref=currentPrefecture();document.getElementById('currentChip').textContent=`現在地：${pref}`;document.getElementById('myJourneyText').textContent=`${pref}・${unlocked} Memories`;document.getElementById('myJourneyMinutes').textContent=formatStudyDuration(weeklyMinutes);document.getElementById('myJourneyPoints').textContent=`${formatPoints(totalPoints)} pt`;const myTodayMinutesEl=document.getElementById('myTodayMinutes');if(myTodayMinutesEl)myTodayMinutesEl.textContent=formatStudyDuration(todayTotal);document.getElementById('pendingSync').textContent=pending>0?`未同期 ${pending}分（${pending}pt）`:'同期済み';renderStreakBanner(todayTotal);renderCollection();updateMap();}
-async function loadRanking(){const status=document.getElementById('rankingStatus'),list=document.getElementById('friendsList');status.textContent='読み込み中…';try{const userId=profile?.userId||'';const r=await fetch(`${API_URL}?action=ranking&userId=${encodeURIComponent(userId)}&_=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`通信エラー (${r.status})`);const data=await r.json();if(!data.success)throw new Error(data.message||'取得に失敗しました');renderRanking(data.ranking||[]);renderInbox(data.inbox||[]);status.textContent=`${data.ranking.length}人が今週の旅に参加中`;}catch(e){status.textContent='ランキングを取得できませんでした';list.innerHTML=`<div class="empty-ranking">${escapeHtml(e.message)}<br>Apps Scriptの最新版がデプロイされているか確認してください。</div>`;}}
+const FRIENDS_CACHE_KEY='sjj_friends_cache_v1';
+const FRIENDS_CACHE_MAX_AGE_MS=10*60*1000;
+
+function readFriendsCache(){
+  try{
+    const cached=JSON.parse(localStorage.getItem(FRIENDS_CACHE_KEY)||'null');
+    if(!cached||!Array.isArray(cached.ranking))return null;
+    return cached;
+  }catch(e){return null;}
+}
+function writeFriendsCache(data){
+  try{
+    localStorage.setItem(FRIENDS_CACHE_KEY,JSON.stringify({
+      savedAt:Date.now(),
+      ranking:Array.isArray(data.ranking)?data.ranking:[],
+      inbox:Array.isArray(data.inbox)?data.inbox:[]
+    }));
+  }catch(e){}
+}
+async function loadRanking(){
+  const status=document.getElementById('rankingStatus');
+  const list=document.getElementById('friendsList');
+  const cached=readFriendsCache();
+
+  if(cached){
+    renderRanking(cached.ranking);
+    renderInbox(cached.inbox);
+    const age=Math.max(0,Date.now()-Number(cached.savedAt||0));
+    status.textContent=age<FRIENDS_CACHE_MAX_AGE_MS
+      ? `${cached.ranking.length}人が今週の旅に参加中　↻ 最新情報を取得中`
+      : `前回のFriendsを表示中　↻ 最新情報を取得中`;
+  }else{
+    status.textContent='Friendsを読み込んでいます…';
+  }
+
+  try{
+    const userId=profile?.userId||'';
+    const r=await fetch(`${API_URL}?action=ranking&userId=${encodeURIComponent(userId)}&_=${Date.now()}`,{cache:'no-store'});
+    if(!r.ok)throw new Error(`通信エラー (${r.status})`);
+    const data=await r.json();
+    if(!data.success)throw new Error(data.message||'取得に失敗しました');
+
+    const ranking=Array.isArray(data.ranking)?data.ranking:[];
+    const inbox=Array.isArray(data.inbox)?data.inbox:[];
+    renderRanking(ranking);
+    renderInbox(inbox);
+    writeFriendsCache({ranking,inbox});
+    status.textContent=`${ranking.length}人が今週の旅に参加中　✓ 最新`;
+  }catch(e){
+    if(cached){
+      status.textContent=`${cached.ranking.length}人を表示中（最新情報を取得できませんでした）`;
+    }else{
+      status.textContent='ランキングを取得できませんでした';
+      list.innerHTML=`<div class="empty-ranking">${escapeHtml(e.message)}<br>Apps Scriptの最新版がデプロイされているか確認してください。</div>`;
+    }
+  }
+}
 function renderRanking(rows){const list=document.getElementById('friendsList');list.innerHTML='';if(!rows.length){list.innerHTML='<div class="empty-ranking">まだランキング記録がありません。<br>タイマーを合計1分以上動かして停止すると反映されます。</div>';return;}rows.forEach(row=>{const mine=profile&&row.userId===profile.userId;if(mine){
   state.serverWeeklyMinutes=Number(row.weeklyMinutes)||0;
   state.serverTotalMinutes=Number(row.totalMinutes)||0;

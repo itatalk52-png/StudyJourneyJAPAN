@@ -46,6 +46,9 @@ function doPost(e) {
     setupSheet();
     const params = (e && e.parameter) || {};
     const action = String(params.action || '');
+    if(['register','addStudy','correctStudyTime','sendCheer','thankCheer','saveMission'].includes(action)){
+      invalidateRankingCache();
+    }
     if (action === 'register') return jsonResponse(registerUser(params));
     if (action === 'login') return jsonResponse(getSyncData(cleanText(params.userId)));
     if (action === 'addStudy') return jsonResponse(addStudyTime(params));
@@ -278,55 +281,202 @@ function getSyncData(userId){
   return{success:true,profile:{userId:String(v[0]),nickname:String(v[1]||''),faculty:String(v[2]||''),department:String(v[3]||''),teacherEmail:String(v[4]||'')},sync:{weeklyMinutes:weekly,totalMinutes:total,currentPrefecture:String(v[7]||'沖縄県'),cheerPoints:Number(v[11])||0,medalPoints:Number(v[14])||0,streakPoints:Number(v[15])||0,missionPoints:getMissionPoints(userId),missionRecords:getMissionRecords(userId),currentStreak:calculateCurrentStreak(userId),todayMinutes:(getDailyRecord(userId,todayString())||{}).minutes||0,badgeCount:Math.floor(total/10),badgeHistory:getBadgeHistory(userId),dailyRecords:dailyRows,updatedAt:formatDate(v[8])}};
 }
 
-function getRanking(viewerId){
-  const sheet=getUserSheet(),lastRow=sheet.getLastRow();
-  if(lastRow<2)return[];
-  const currentWeekId=getCurrentWeekId(),now=new Date(),today=todayString();
-  const values=sheet.getRange(2,1,lastRow-1,HEADERS.length).getValues();
+function rankingCacheKey(){
+  return 'ranking-base-'+todayString()+'-'+getCurrentWeekId();
+}
+function invalidateRankingCache(){
+  CacheService.getScriptCache().remove(rankingCacheKey());
+}
+function buildMissionPointsByUser(){
+  const result={};
+  const sheet=getMissionSheet();
+  const last=sheet.getLastRow();
+  if(last<2)return result;
 
-  const todayByUser={};
-  const daily=getDailySheet(),dailyLast=daily.getLastRow();
-  if(dailyLast>=2){
-    const valueRows=daily.getRange(2,1,dailyLast-1,DAILY_HEADERS.length).getValues();
-    const displayRows=daily.getRange(2,1,dailyLast-1,DAILY_HEADERS.length).getDisplayValues();
+  const rows=sheet.getRange(2,1,last-1,MISSION_HEADERS.length).getValues();
+  const problemRounds={};
 
-    valueRows.forEach((row,index)=>{
-      const displayRow=displayRows[index]||[];
-      const userId=cleanText(displayRow[0]||row[0]);
-      const rawDate=displayRow[1]||row[1];
-      const studyDate=cellDateString(rawDate);
-      const minutes=Number(row[2])||Number(displayRow[2])||0;
+  rows.forEach(row=>{
+    const userId=cleanText(row[1]);
+    const subject=cleanText(row[2]);
+    const problemId=cleanText(row[3]);
+    const round=Number(row[4])||0;
+    const level=cleanText(row[5]);
 
-      if(userId&&studyDate===today){
-        todayByUser[userId]=(Number(todayByUser[userId])||0)+minutes;
-      }
-    });
+    if(!userId||!problemId||problemId.startsWith('__')||![1,2,3].includes(round))return;
+    result[userId]=(Number(result[userId])||0)+missionLevelPoints(level);
+
+    const key=userId+'|'+subject+'|'+problemId;
+    if(!problemRounds[key])problemRounds[key]={};
+    problemRounds[key][round]=level;
+  });
+
+  Object.keys(problemRounds).forEach(key=>{
+    const rounds=problemRounds[key];
+    if([1,2,3].every(round=>['triangle','circle','double'].includes(rounds[round]))){
+      const userId=key.split('|')[0];
+      result[userId]=(Number(result[userId])||0)+100;
+    }
+  });
+  return result;
+}
+function buildTodayMinutesByUser(){
+  const result={};
+  const sheet=getDailySheet();
+  const last=sheet.getLastRow();
+  if(last<2)return result;
+
+  const values=sheet.getRange(2,1,last-1,DAILY_HEADERS.length).getValues();
+  const display=sheet.getRange(2,1,last-1,DAILY_HEADERS.length).getDisplayValues();
+  const today=todayString();
+
+  values.forEach((row,index)=>{
+    const shown=display[index]||[];
+    const userId=cleanText(shown[0]||row[0]);
+    const studyDate=cellDateString(shown[1]||row[1]);
+    const minutes=Number(row[2])||Number(shown[2])||0;
+    if(userId&&studyDate===today){
+      result[userId]=(Number(result[userId])||0)+minutes;
+    }
+  });
+  return result;
+}
+function getViewerCheeredRecipients(viewerId){
+  const result={};
+  if(!viewerId)return result;
+  const sheet=getCheerSheet();
+  const last=sheet.getLastRow();
+  if(last<2)return result;
+
+  const today=todayString();
+  const rows=sheet.getRange(2,1,last-1,CHEER_HEADERS.length).getValues();
+  rows.forEach(row=>{
+    const senderId=cleanText(row[1]);
+    const recipientId=cleanText(row[2]);
+    const date=cellDateString(row[3]);
+    if(senderId===viewerId&&recipientId&&date===today)result[recipientId]=true;
+  });
+  return result;
+}
+function getRankingBase(){
+  const cache=CacheService.getScriptCache();
+  const key=rankingCacheKey();
+  const cached=cache.get(key);
+  if(cached){
+    try{return JSON.parse(cached);}catch(e){}
   }
 
-  const ranking=values.filter(r=>String(r[0]||'')).map(r=>{
-    const userId=String(r[0]),weekly=cellDateString(r[9])===currentWeekId?Number(r[5])||0:0;
-    const cheerPoints=Number(r[11])||0,medalPoints=Number(r[14])||0,streakPoints=Number(r[15])||0;
-    const missionPoints=getMissionPoints(userId),todayMinutes=Number(todayByUser[userId])||0,dormant=isDormantRow(r,now);
-    return{userId,nickname:String(r[1]||''),faculty:String(r[2]||''),department:String(r[3]||''),weeklyMinutes:weekly,todayMinutes,totalMinutes:Number(r[6])||0,totalPoints:(Number(r[6])||0)+cheerPoints+medalPoints+streakPoints+missionPoints,cheerPoints,medalPoints,streakPoints,missionPoints,currentPrefecture:String(r[7]||'沖縄県'),updatedAt:formatDate(r[8]),avatarUrl:String(r[10]||''),dormant,cheerValue:dormant?0.2:0.1,cheeredToday:viewerId?hasCheeredToday(viewerId,userId):false};
+  const sheet=getUserSheet();
+  const lastRow=sheet.getLastRow();
+  if(lastRow<2)return[];
+
+  const currentWeekId=getCurrentWeekId();
+  const now=new Date();
+  const today=todayString();
+  const values=sheet.getRange(2,1,lastRow-1,HEADERS.length).getValues();
+  const missionPointsByUser=buildMissionPointsByUser();
+  const todayByUser=buildTodayMinutesByUser();
+
+  const ranking=values.filter(row=>cleanText(row[0])).map(row=>{
+    const userId=cleanText(row[0]);
+    const weekly=cellDateString(row[9])===currentWeekId?Number(row[5])||0:0;
+    const totalMinutes=Number(row[6])||0;
+    const cheerPoints=Number(row[11])||0;
+    const medalPoints=Number(row[14])||0;
+    const streakPoints=Number(row[15])||0;
+    const missionPoints=Number(missionPointsByUser[userId])||0;
+    const todayMinutes=Number(todayByUser[userId])||0;
+    const dormant=isDormantRow(row,now);
+
+    return{
+      userId,
+      nickname:String(row[1]||''),
+      faculty:String(row[2]||''),
+      department:String(row[3]||''),
+      weeklyMinutes:weekly,
+      todayMinutes,
+      totalMinutes,
+      totalPoints:totalMinutes+cheerPoints+medalPoints+streakPoints+missionPoints,
+      cheerPoints,
+      medalPoints,
+      streakPoints,
+      missionPoints,
+      currentPrefecture:String(row[7]||'沖縄県'),
+      updatedAt:formatDate(row[8]),
+      avatarUrl:String(row[10]||''),
+      dormant,
+      cheerValue:dormant?0.2:0.1,
+      rankingDate:today
+    };
   });
 
   const pointOrder=ranking.slice().sort((a,b)=>b.totalPoints-a.totalPoints||a.nickname.localeCompare(b.nickname,'ja'));
   let previousPoints=null,previousRank=0;
-  pointOrder.forEach((user,index)=>{const rank=previousPoints!==null&&user.totalPoints===previousPoints?previousRank:index+1;user.pointRank=rank;previousPoints=user.totalPoints;previousRank=rank;});
+  pointOrder.forEach((user,index)=>{
+    const rank=previousPoints!==null&&user.totalPoints===previousPoints?previousRank:index+1;
+    user.pointRank=rank;
+    previousPoints=user.totalPoints;
+    previousRank=rank;
+  });
 
   const weeklyOrder=ranking.slice().sort((a,b)=>b.weeklyMinutes-a.weeklyMinutes||b.totalPoints-a.totalPoints||a.nickname.localeCompare(b.nickname,'ja'));
   let previousWeekly=null,previousWeeklyRank=0;
-  weeklyOrder.forEach((user,index)=>{const rank=previousWeekly!==null&&user.weeklyMinutes===previousWeekly?previousWeeklyRank:index+1;user.weeklyRank=rank;previousWeekly=user.weeklyMinutes;previousWeeklyRank=rank;});
+  weeklyOrder.forEach((user,index)=>{
+    const rank=previousWeekly!==null&&user.weeklyMinutes===previousWeekly?previousWeeklyRank:index+1;
+    user.weeklyRank=rank;
+    previousWeekly=user.weeklyMinutes;
+    previousWeeklyRank=rank;
+  });
 
   const todayOrder=ranking.filter(user=>user.todayMinutes>0).sort((a,b)=>b.todayMinutes-a.todayMinutes||b.totalPoints-a.totalPoints||a.nickname.localeCompare(b.nickname,'ja'));
   let previousToday=null,previousTodayRank=0;
-  todayOrder.forEach((user,index)=>{const rank=previousToday!==null&&user.todayMinutes===previousToday?previousTodayRank:index+1;user.todayRank=rank;previousToday=user.todayMinutes;previousTodayRank=rank;});
+  todayOrder.forEach((user,index)=>{
+    const rank=previousToday!==null&&user.todayMinutes===previousToday?previousTodayRank:index+1;
+    user.todayRank=rank;
+    previousToday=user.todayMinutes;
+    previousTodayRank=rank;
+  });
   ranking.forEach(user=>{if(!user.todayRank)user.todayRank=0;});
 
   ranking.sort((a,b)=>b.weeklyMinutes-a.weeklyMinutes||b.totalPoints-a.totalPoints||a.nickname.localeCompare(b.nickname,'ja'));
-  return ranking.map(user=>Object.assign({rank:user.weeklyRank,rankingDate:today},user));
+  const base=ranking.map(user=>Object.assign({rank:user.weeklyRank},user));
+
+  try{cache.put(key,JSON.stringify(base),30);}catch(e){}
+  return base;
 }
-function getInbox(userId){if(!userId)return[];const cheers=getCheerSheet(),lastRow=cheers.getLastRow();if(lastRow<2)return[];const users=getUserSheet(),rows=cheers.getRange(2,1,lastRow-1,CHEER_HEADERS.length).getValues();return rows.filter(r=>String(r[2])===userId&&!r[5]).sort((a,b)=>b[3]-a[3]).slice(0,20).map(r=>{const senderRow=findUserRow(users,String(r[1]));return{cheerId:String(r[0]),senderNickname:senderRow?String(users.getRange(senderRow,2).getValue()||'仲間'):'仲間',points:Number(r[4])||0.1,sentAt:formatDate(r[3])};});}
+function getRanking(viewerId){
+  const cheered=getViewerCheeredRecipients(viewerId);
+  return getRankingBase().map(user=>Object.assign({},user,{
+    cheeredToday:!!cheered[user.userId]
+  }));
+}
+function getInbox(userId){
+  if(!userId)return[];
+  const cheers=getCheerSheet();
+  const lastRow=cheers.getLastRow();
+  if(lastRow<2)return[];
+
+  const userSheet=getUserSheet();
+  const userLast=userSheet.getLastRow();
+  const nicknameById={};
+  if(userLast>=2){
+    userSheet.getRange(2,1,userLast-1,2).getDisplayValues().forEach(row=>{
+      const id=cleanText(row[0]);
+      if(id)nicknameById[id]=String(row[1]||'仲間');
+    });
+  }
+
+  return cheers.getRange(2,1,lastRow-1,CHEER_HEADERS.length).getValues()
+    .filter(row=>cleanText(row[2])===userId&&!row[5])
+    .sort((a,b)=>new Date(b[3]).getTime()-new Date(a[3]).getTime())
+    .slice(0,20)
+    .map(row=>({
+      cheerId:String(row[0]),
+      senderNickname:nicknameById[cleanText(row[1])]||'仲間',
+      points:Number(row[4])||0.1,
+      sentAt:formatDate(row[3])
+    }));
+}
 
 function getCalendar(userId,month){
   if(!userId)throw new Error('ユーザー情報がありません。');const normalized=/^\d{4}-\d{2}$/.test(month)?month:todayString().slice(0,7),daily=getDailySheet(),lastRow=daily.getLastRow(),records=[];

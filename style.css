@@ -1724,3 +1724,9 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
   .today-study-time{font-size:11px !important}
   .today-rank{font-size:8px !important}
 }
+
+/* Ver.2.2.5 Beta3 Friends Speed */
+#rankingStatus{
+  min-height:1.4em;
+  transition:opacity .15s ease;
+}
