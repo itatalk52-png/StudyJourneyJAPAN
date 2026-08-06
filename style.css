@@ -1859,3 +1859,21 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
   font-weight:900!important;
   white-space:nowrap;
 }
+
+/* Ver.2.2.5 Beta12 */
+#homeStart.is-pause,
+#timerStart.is-pause,
+#homeStart.is-pause:hover,
+#timerStart.is-pause:hover,
+#homeStart.is-pause:focus,
+#timerStart.is-pause:focus,
+#homeStart.is-pause:active,
+#timerStart.is-pause:active{
+  background:#B30000!important;
+  background-image:none!important;
+  border-color:#B30000!important;
+  color:#fff!important;
+  box-shadow:none!important;
+  filter:none!important;
+  text-shadow:none!important;
+}

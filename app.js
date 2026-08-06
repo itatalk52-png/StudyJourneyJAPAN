@@ -470,7 +470,7 @@ homeStartButton.textContent=state.running?'PAUSE':'START';
 timerStartButton.textContent=state.running?'PAUSE':'START';
 homeStartButton.classList.toggle('is-pause',state.running);
 timerStartButton.classList.toggle('is-pause',state.running);const pref=currentPrefecture();document.getElementById('currentChip').textContent=`現在地：${pref}`;document.getElementById('myJourneyText').textContent=`${pref}・${unlocked} Memories`;document.getElementById('myJourneyMinutes').textContent=formatStudyDuration(weeklyMinutes);document.getElementById('myJourneyPoints').textContent=`${formatPoints(totalPoints)} pt`;const myTodayMinutesEl=document.getElementById('myTodayMinutes');if(myTodayMinutesEl)myTodayMinutesEl.textContent=formatStudyDuration(todayTotal);document.getElementById('pendingSync').textContent=pending>0?`未同期 ${pending}分（${pending}pt）`:'同期済み';renderStreakBanner(todayTotal);renderCollection();updateMap();}
-const FRIENDS_CACHE_KEY='sjj_friends_cache_v6_beta11_final';
+const FRIENDS_CACHE_KEY='sjj_friends_cache_v7_beta12';
 const FRIENDS_CACHE_MAX_AGE_MS=10*60*1000;
 
 function readFriendsCache(){
