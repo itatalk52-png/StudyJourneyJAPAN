@@ -346,6 +346,51 @@ function buildTodayMinutesByUser(){
 
   return result;
 }
+
+function buildTodayMinutesFromStudyRecords(){
+  const result={};
+  const sheet=getStudyRecordSheet();
+  if(!sheet)return result;
+
+  const last=sheet.getLastRow();
+  if(last<2)return result;
+
+  const range=sheet.getRange(2,1,last-1,STUDY_RECORD_HEADERS.length);
+  const values=range.getValues();
+  const display=range.getDisplayValues();
+  const today=todayString();
+
+  values.forEach((row,index)=>{
+    const shown=display[index]||[];
+    const userId=cleanText(row[1]||shown[1]);
+    const studyDate=cellDateString(row[2]||shown[2]);
+    const minutes=Number(row[3])||Number(shown[3])||0;
+
+    if(!userId||studyDate!==today||minutes<=0)return;
+    result[userId]=(Number(result[userId])||0)+minutes;
+  });
+
+  return result;
+}
+
+function buildAuthoritativeTodayMinutesByUser(){
+  const daily=buildTodayMinutesByUser();
+  const records=buildTodayMinutesFromStudyRecords();
+  const result={};
+  const ids=new Set(Object.keys(daily).concat(Object.keys(records)));
+
+  ids.forEach(userId=>{
+    const dailyMinutes=Number(daily[userId])||0;
+    const recordMinutes=Number(records[userId])||0;
+
+    // The daily aggregate reflects corrections, so prefer it when present.
+    // Study records are used as a reliable fallback for users missing from the daily table.
+    result[userId]=dailyMinutes>0?dailyMinutes:recordMinutes;
+  });
+
+  return result;
+}
+
 function getViewerCheeredRecipients(viewerId){
   const result={};
   if(!viewerId)return result;
@@ -364,13 +409,6 @@ function getViewerCheeredRecipients(viewerId){
   return result;
 }
 function getRankingBase(){
-  const cache=CacheService.getScriptCache();
-  const key=rankingCacheKey();
-  const cached=cache.get(key);
-  if(cached){
-    try{return JSON.parse(cached);}catch(e){}
-  }
-
   const sheet=getUserSheet();
   const lastRow=sheet.getLastRow();
   if(lastRow<2)return[];
@@ -380,7 +418,7 @@ function getRankingBase(){
   const today=todayString();
   const values=sheet.getRange(2,1,lastRow-1,HEADERS.length).getValues();
   const missionPointsByUser=buildMissionPointsByUser();
-  const todayByUser=buildTodayMinutesByUser();
+  const todayByUser=buildAuthoritativeTodayMinutesByUser();
 
   const ranking=values.filter(row=>cleanText(row[0])).map(row=>{
     const userId=cleanText(row[0]);
@@ -445,13 +483,11 @@ function getRankingBase(){
 
   ranking.sort((a,b)=>b.weeklyMinutes-a.weeklyMinutes||b.totalPoints-a.totalPoints||a.nickname.localeCompare(b.nickname,'ja'));
   const base=ranking.map(user=>Object.assign({rank:user.weeklyRank},user));
-
-  try{cache.put(key,JSON.stringify(base),30);}catch(e){}
   return base;
 }
 function getRanking(viewerId){
   const cheered=getViewerCheeredRecipients(viewerId);
-  return getRankingBase().map(user=>Object.assign({},user,{apiVersion:'2.2.5-beta7',
+  return getRankingBase().map(user=>Object.assign({},user,{apiVersion:'2.2.5-beta9-database-today',
     cheeredToday:!!cheered[user.userId]
   }));
 }
