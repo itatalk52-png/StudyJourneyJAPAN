@@ -1877,3 +1877,55 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
   filter:none!important;
   text-shadow:none!important;
 }
+
+/* Ver.2.2.5 Beta13: Friends today block */
+.friend-score{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+  gap:2px!important;
+}
+
+.friend-score .today-study-label,
+.friend-score .today-study-time,
+.friend-score .today-rank,
+.my-today-study-label,
+#myTodayMinutes,
+#myTodayRank{
+  color:#B30000!important;
+}
+
+.friend-score .today-study-label,
+.my-today-study-label{
+  margin-top:4px!important;
+  margin-bottom:0!important;
+  line-height:1.15!important;
+}
+
+.friend-score .today-study-time,
+#myTodayMinutes{
+  margin:0!important;
+  line-height:1.1!important;
+}
+
+.friend-score .today-rank,
+#myTodayRank{
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  text-align:right!important;
+  line-height:1.1!important;
+  font-size:inherit!important;
+  font-weight:900!important;
+}
+
+.friend-score .today-study-time,
+.friend-score .today-rank{
+  font-size:inherit!important;
+}
+
+.today-rank-label,
+.my-today-rank-label{
+  display:none!important;
+}
