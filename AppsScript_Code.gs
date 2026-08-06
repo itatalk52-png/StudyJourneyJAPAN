@@ -28,7 +28,17 @@ function doGet(e) {
     setupSheet();
     const p = (e && e.parameter) || {};
     const action = String(p.action || 'ranking');
-    if (action === 'ranking') return jsonResponse({success:true, ranking:getRanking(cleanText(p.userId)), inbox:getInbox(cleanText(p.userId))});
+    if (action === 'rankingV2') {
+      const ranking=getRankingV2(cleanText(p.userId));
+      return jsonResponse({
+        success:true,
+        apiVersion:'2.2.5-beta10-ranking-v2',
+        ranking,
+        inbox:getInbox(cleanText(p.userId)),
+        rankingDate:todayString()
+      });
+    }
+    if (action === 'ranking') return jsonResponse({success:true, apiVersion:'legacy-ranking', ranking:getRanking(cleanText(p.userId)), inbox:getInbox(cleanText(p.userId))});
     if (action === 'calendar') return jsonResponse(getCalendar(cleanText(p.userId), cleanText(p.month)));
     if (action === 'correctionRecords') return jsonResponse(getCorrectionRecords(cleanText(p.userId)));
     if (action === 'correctionHistory') return jsonResponse(getCorrectionHistory(cleanText(p.userId)));
@@ -491,6 +501,98 @@ function getRanking(viewerId){
     cheeredToday:!!cheered[user.userId]
   }));
 }
+
+function getRankingV2(viewerId){
+  const usersSheet=getUserSheet();
+  const lastRow=usersSheet.getLastRow();
+  if(lastRow<2)return[];
+
+  const currentWeekId=getCurrentWeekId();
+  const today=todayString();
+  const now=new Date();
+  const users=usersSheet.getRange(2,1,lastRow-1,HEADERS.length).getValues();
+
+  const todayByUser=buildAuthoritativeTodayMinutesByUser();
+  const missionByUser=buildMissionPointsByUser();
+  const cheeredByUser=getViewerCheeredRecipients(viewerId);
+
+  const ranking=users
+    .filter(row=>cleanText(row[0]))
+    .map(row=>{
+      const userId=cleanText(row[0]);
+      const weeklyMinutes=cellDateString(row[9])===currentWeekId?Number(row[5])||0:0;
+      const totalMinutes=Number(row[6])||0;
+      const cheerPoints=Number(row[11])||0;
+      const medalPoints=Number(row[14])||0;
+      const streakPoints=Number(row[15])||0;
+      const missionPoints=Number(missionByUser[userId])||0;
+      const todayMinutes=Number(todayByUser[userId])||0;
+      const dormant=isDormantRow(row,now);
+
+      return{
+        userId,
+        nickname:String(row[1]||''),
+        faculty:String(row[2]||''),
+        department:String(row[3]||''),
+        weeklyMinutes,
+        todayMinutes,
+        totalMinutes,
+        totalPoints:totalMinutes+cheerPoints+medalPoints+streakPoints+missionPoints,
+        cheerPoints,
+        medalPoints,
+        streakPoints,
+        missionPoints,
+        currentPrefecture:String(row[7]||'沖縄県'),
+        updatedAt:formatDate(row[8]),
+        avatarUrl:String(row[10]||''),
+        dormant,
+        cheerValue:dormant?0.2:0.1,
+        cheeredToday:!!cheeredByUser[userId],
+        rankingDate:today,
+        apiVersion:'2.2.5-beta10-ranking-v2'
+      };
+    });
+
+  const assignRanks=(rows,valueKey,rankKey,filterFn)=>{
+    const ordered=rows.filter(filterFn||(()=>true)).slice().sort((a,b)=>{
+      const valueDiff=(Number(b[valueKey])||0)-(Number(a[valueKey])||0);
+      if(valueDiff!==0)return valueDiff;
+      const pointDiff=(Number(b.totalPoints)||0)-(Number(a.totalPoints)||0);
+      if(pointDiff!==0)return pointDiff;
+      return String(a.nickname).localeCompare(String(b.nickname),'ja');
+    });
+
+    let previousValue=null;
+    let previousRank=0;
+    ordered.forEach((user,index)=>{
+      const value=Number(user[valueKey])||0;
+      const rank=previousValue!==null&&value===previousValue?previousRank:index+1;
+      user[rankKey]=rank;
+      previousValue=value;
+      previousRank=rank;
+    });
+  };
+
+  assignRanks(ranking,'totalPoints','pointRank');
+  assignRanks(ranking,'weeklyMinutes','weeklyRank');
+  assignRanks(ranking,'todayMinutes','todayRank',user=>(Number(user.todayMinutes)||0)>0);
+
+  ranking.forEach(user=>{
+    if(!user.todayRank)user.todayRank=0;
+    user.rank=user.weeklyRank||0;
+  });
+
+  ranking.sort((a,b)=>{
+    const weeklyDiff=(Number(b.weeklyMinutes)||0)-(Number(a.weeklyMinutes)||0);
+    if(weeklyDiff!==0)return weeklyDiff;
+    const pointDiff=(Number(b.totalPoints)||0)-(Number(a.totalPoints)||0);
+    if(pointDiff!==0)return pointDiff;
+    return String(a.nickname).localeCompare(String(b.nickname),'ja');
+  });
+
+  return ranking;
+}
+
 function getInbox(userId){
   if(!userId)return[];
   const cheers=getCheerSheet();
