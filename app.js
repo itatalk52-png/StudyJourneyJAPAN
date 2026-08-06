@@ -470,13 +470,15 @@ homeStartButton.textContent=state.running?'PAUSE':'START';
 timerStartButton.textContent=state.running?'PAUSE':'START';
 homeStartButton.classList.toggle('is-pause',state.running);
 timerStartButton.classList.toggle('is-pause',state.running);const pref=currentPrefecture();document.getElementById('currentChip').textContent=`現在地：${pref}`;document.getElementById('myJourneyText').textContent=`${pref}・${unlocked} Memories`;document.getElementById('myJourneyMinutes').textContent=formatStudyDuration(weeklyMinutes);document.getElementById('myJourneyPoints').textContent=`${formatPoints(totalPoints)} pt`;const myTodayMinutesEl=document.getElementById('myTodayMinutes');if(myTodayMinutesEl)myTodayMinutesEl.textContent=formatStudyDuration(todayTotal);document.getElementById('pendingSync').textContent=pending>0?`未同期 ${pending}分（${pending}pt）`:'同期済み';renderStreakBanner(todayTotal);renderCollection();updateMap();}
-const FRIENDS_CACHE_KEY='sjj_friends_cache_v5_ranking_v2_today';
+const FRIENDS_CACHE_KEY='sjj_friends_cache_v6_beta11_final';
 const FRIENDS_CACHE_MAX_AGE_MS=10*60*1000;
 
 function readFriendsCache(){
   try{
     const cached=JSON.parse(localStorage.getItem(FRIENDS_CACHE_KEY)||'null');
     if(!cached||!Array.isArray(cached.ranking))return null;
+    if(cached.apiVersion!=='2.2.5-beta10-ranking-v2')return null;
+    if(cached.ranking.some(row=>!Object.prototype.hasOwnProperty.call(row,'todayMinutes')||!Object.prototype.hasOwnProperty.call(row,'todayRank')))return null;
     return cached;
   }catch(e){return null;}
 }
@@ -484,7 +486,8 @@ function writeFriendsCache(data){
   try{
     localStorage.setItem(FRIENDS_CACHE_KEY,JSON.stringify({
       savedAt:Date.now(),
-      ranking:Array.isArray(data.ranking)?data.ranking:[],
+      apiVersion:data.apiVersion||'',
+      ranking:Array.isArray(data.ranking)?data.ranking.map(normalizeRankingRow):[],
       inbox:Array.isArray(data.inbox)?data.inbox:[]
     }));
   }catch(e){}
@@ -520,9 +523,9 @@ async function loadRanking(){
       throw new Error('今日の学習時間を含まない古いランキングデータが返されました。');
     }
     const inbox=Array.isArray(data.inbox)?data.inbox:[];
-    renderRanking(ranking);
+    renderRanking(ranking.map(normalizeRankingRow));
     renderInbox(inbox);
-    writeFriendsCache({ranking,inbox,apiVersion:data.apiVersion||'2.2.5-beta9-database-today'});
+    writeFriendsCache({ranking,inbox,apiVersion:data.apiVersion});
     status.textContent=`${ranking.length}人が今週の旅に参加中　✓ 最新`;
   }catch(e){
     if(cached){
@@ -533,7 +536,16 @@ async function loadRanking(){
     }
   }
 }
-function renderRanking(rows){const list=document.getElementById('friendsList');list.innerHTML='';if(!rows.length){list.innerHTML='<div class="empty-ranking">まだランキング記録がありません。<br>タイマーを合計1分以上動かして停止すると反映されます。</div>';return;}rows.forEach(row=>{const mine=profile&&row.userId===profile.userId;if(mine){
+function normalizeRankingRow(row){
+  const normalized=Object.assign({},row||{});
+  normalized.weeklyMinutes=Math.max(0,Number(normalized.weeklyMinutes)||0);
+  normalized.todayMinutes=Math.max(0,Number(normalized.todayMinutes)||0);
+  normalized.todayRank=Math.max(0,Number(normalized.todayRank)||0);
+  normalized.totalMinutes=Math.max(0,Number(normalized.totalMinutes)||0);
+  normalized.totalPoints=Number(normalized.totalPoints)||0;
+  return normalized;
+}
+function renderRanking(rows){rows=(Array.isArray(rows)?rows:[]).map(normalizeRankingRow);const list=document.getElementById('friendsList');list.innerHTML='';if(!rows.length){list.innerHTML='<div class="empty-ranking">まだランキング記録がありません。<br>タイマーを合計1分以上動かして停止すると反映されます。</div>';return;}rows.forEach(row=>{const mine=profile&&row.userId===profile.userId;if(mine){
   state.serverWeeklyMinutes=Number(row.weeklyMinutes)||0;
   state.serverTotalMinutes=Number(row.totalMinutes)||0;
   state.cheerPoints=Number(row.cheerPoints)||0;
