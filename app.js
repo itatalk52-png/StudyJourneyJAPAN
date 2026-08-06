@@ -577,7 +577,7 @@ function renderRanking(rows){rows=(Array.isArray(rows)?rows:[]).map(normalizeRan
   }
 }
 const div=document.createElement('div');
-div.className='friend-row'+(mine?' mine':'');
+div.className='friend-row'+(mine?' mine my-friend-card':'');
 const totalPoints=Number(row.totalPoints)||0;
 const todayMinutes=Number.isFinite(Number(row.todayMinutes))?Math.max(0,Number(row.todayMinutes)):0;
 const todayRank=Number(row.todayRank)||0;

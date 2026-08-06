@@ -1930,13 +1930,15 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
   display:none!important;
 }
 
-/* Beta14 tweaks */
+/* Ver.2.2.5 Beta14 regenerated */
 .friend-score .today-study-time,
 .friend-score .today-rank{
   font-size:50%!important;
+  line-height:1.1!important;
 }
-#myCard .point-value,
-.my-point-value,
-#myPoints{
+.my-friend-card .friend-score > small:not(.today-rank),
+.my-friend-card .friend-score .point-value,
+.friend-row.mine .friend-score > small:not(.today-rank),
+.friend-row.mine .friend-score .point-value{
   color:#B30000!important;
 }
