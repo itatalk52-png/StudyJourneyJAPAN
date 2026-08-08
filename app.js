@@ -469,7 +469,29 @@ const timerStartButton=document.getElementById('timerStart');
 homeStartButton.textContent=state.running?'PAUSE':'START';
 timerStartButton.textContent=state.running?'PAUSE':'START';
 homeStartButton.classList.toggle('is-pause',state.running);
-timerStartButton.classList.toggle('is-pause',state.running);const pref=currentPrefecture();document.getElementById('currentChip').textContent=`現在地：${pref}`;document.getElementById('myJourneyText').textContent=`${pref}・${unlocked} Memories`;document.getElementById('myJourneyMinutes').textContent=formatStudyDuration(weeklyMinutes);document.getElementById('myJourneyPoints').textContent=`${formatPoints(totalPoints)} pt`;const myTodayMinutesEl=document.getElementById('myTodayMinutes');if(myTodayMinutesEl)myTodayMinutesEl.textContent=formatStudyDuration(todayTotal);document.getElementById('pendingSync').textContent=pending>0?`未同期 ${pending}分（${pending}pt）`:'同期済み';renderStreakBanner(todayTotal);renderCollection();updateMap();}
+timerStartButton.classList.toggle('is-pause',state.running);
+const pref=currentPrefecture();
+const currentChipEl=document.getElementById('currentChip');
+if(currentChipEl)currentChipEl.textContent=`現在地：${pref}`;
+
+// Beta21: old self-card IDs were removed when the top Friends card was unified.
+// Guard them so renderAll never stops Friends/Calendar rendering.
+const myJourneyTextEl=document.getElementById('myJourneyText');
+if(myJourneyTextEl)myJourneyTextEl.textContent=`${pref}・${unlocked} Memories`;
+const myJourneyMinutesEl=document.getElementById('myJourneyMinutes');
+if(myJourneyMinutesEl)myJourneyMinutesEl.textContent=formatStudyDuration(weeklyMinutes);
+const myJourneyPointsEl=document.getElementById('myJourneyPoints');
+if(myJourneyPointsEl)myJourneyPointsEl.textContent=`${formatPoints(totalPoints)} pt`;
+const myTodayMinutesEl=document.getElementById('myTodayMinutes');
+if(myTodayMinutesEl)myTodayMinutesEl.textContent=formatStudyDuration(todayTotal);
+
+const pendingSyncEl=document.getElementById('pendingSync');
+if(pendingSyncEl)pendingSyncEl.textContent=pending>0?`未同期 ${pending}分（${pending}pt）`:'同期済み';
+
+renderStreakBanner(todayTotal);
+renderCollection();
+updateMap();
+}
 const FRIENDS_CACHE_KEY='sjj_friends_cache_v7_beta12';
 const FRIENDS_CACHE_MAX_AGE_MS=10*60*1000;
 
@@ -570,15 +592,22 @@ async function loadRanking(){
   const list=document.getElementById('friendsList');
   const cached=readFriendsCache();
 
+  let cacheRendered=false;
   if(cached){
-    renderRanking(cached.ranking);
-    renderInbox(cached.inbox);
-    const age=Math.max(0,Date.now()-Number(cached.savedAt||0));
-    status.textContent=age<FRIENDS_CACHE_MAX_AGE_MS
-      ? `${cached.ranking.length}人を表示中　✓ キャッシュ表示`
-      : `前回のFriendsを表示中　↻ 最新情報を取得中`;
-    if(Date.now()-friendsLastNetworkRefreshAt<FRIENDS_NETWORK_REFRESH_GUARD_MS){
-      return;
+    try{
+      renderRanking(cached.ranking);
+      renderInbox(cached.inbox);
+      cacheRendered=true;
+      const age=Math.max(0,Date.now()-Number(cached.savedAt||0));
+      status.textContent=age<FRIENDS_CACHE_MAX_AGE_MS
+        ? `${cached.ranking.length}人を表示中　✓ キャッシュ表示`
+        : `前回のFriendsを表示中　↻ 最新情報を取得中`;
+      if(Date.now()-friendsLastNetworkRefreshAt<FRIENDS_NETWORK_REFRESH_GUARD_MS){
+        return;
+      }
+    }catch(cacheError){
+      // Ignore a stale/broken cache and immediately fall back to live ranking.
+      status.textContent='Friendsを読み込んでいます…';
     }
   }else{
     status.textContent='Friendsを読み込んでいます…';
@@ -587,7 +616,7 @@ async function loadRanking(){
   try{
     const userId=profile?.userId||'';
     const controller=new AbortController();
-    const rankingTimer=setTimeout(()=>controller.abort(),12000);
+    const rankingTimer=setTimeout(()=>controller.abort(),10000);
     const r=await fetch(`${API_URL}?action=rankingV2&userId=${encodeURIComponent(userId)}&_=${Date.now()}`,{cache:'no-store',signal:controller.signal});
     clearTimeout(rankingTimer);
     if(!r.ok)throw new Error(`通信エラー (${r.status})`);
@@ -608,7 +637,7 @@ async function loadRanking(){
     friendsLastNetworkRefreshAt=Date.now();
     status.textContent=`${ranking.length}人が今週の旅に参加中　✓ 最新`;
   }catch(e){
-    if(cached){
+    if(cached&&cacheRendered){
       status.textContent=`${cached.ranking.length}人を表示中（最新情報を取得できませんでした）`;
     }else{
       status.textContent='ランキングを取得できませんでした';
