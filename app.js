@@ -700,11 +700,11 @@ function renderRanking(rows){
 
   if(topSelfCard){
     if(selfRow){
-      topSelfCard.classList.remove('friends-mode-total','friends-mode-today');
-      topSelfCard.classList.add('friends-mode-'+friendsRankingMode);
+      topSelfCard.className='friend-row mine my-friend-card top-self-card friends-mode-'+friendsRankingMode;
       topSelfCard.innerHTML=buildFriendCardMarkup(selfRow,true);
     }else{
-      topSelfCard.innerHTML='<div class="empty-ranking">自分の情報を取得できませんでした。</div>';
+      topSelfCard.className='top-self-card self-card-loading';
+      topSelfCard.innerHTML='<div class="self-card-loading-message">自分の情報を取得できませんでした。</div>';
     }
   }
 }

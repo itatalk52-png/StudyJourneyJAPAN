@@ -226,9 +226,7 @@
           <button type="button" data-friends-ranking="today">TODAY</button>
         </div>
       </div>
-      <div id="topSelfCard" class="friend-row mine my-friend-card top-self-card">
-        <div class="empty-ranking">自分の最新情報を読み込んでいます…</div>
-      </div>
+      <div id="topSelfCard" class="top-self-card self-card-loading"><div class="self-card-loading-message">自分の最新情報を読み込んでいます…</div></div>
       <div class="ranking-toolbar"><span id="rankingStatus">ランキングを読み込みます</span><button id="refreshRanking" class="ghost-btn">更新</button></div>
       <div class="friends-list" id="friendsList"></div>
     </section>
@@ -306,7 +304,7 @@
   </form>
   <section class="manual-update-section" aria-labelledby="manualUpdateHeading">
     <div class="panel-kicker" id="manualUpdateHeading">APP VERSION</div>
-    <div class="current-version">Version <strong id="currentAppVersion">2.2.5 Beta16</strong></div>
+    <div class="current-version">Version <strong id="currentAppVersion">2.2.5 Beta17</strong></div>
     <button class="primary-btn manual-update-button" id="manualUpdateButton" type="button">🚀 最新バージョンで旅をする</button>
     <p class="manual-update-help">最新バージョンがあるかもしれません。<br>こちらを押してみてください。</p>
     <div class="manual-update-result" id="manualUpdateResult" role="status" aria-live="polite"></div>
@@ -344,7 +342,7 @@
 <script src="mission.js"></script>
 <script>
 (() => {
-  const APP_VERSION = "2.2.5 Beta16";
+  const APP_VERSION = "2.2.5 Beta17";
   document.getElementById("currentAppVersion").textContent = APP_VERSION;
 
   if (!("serviceWorker" in navigator)) {

@@ -2024,3 +2024,32 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
     font-size:11px;
   }
 }
+
+/* ============================================================
+   Ver.2.2.5 Beta17 — Friends self-card loading layout fix
+   ============================================================ */
+.top-self-card.self-card-loading{
+  display:block!important;
+  min-height:110px!important;
+  padding:24px!important;
+  margin-bottom:18px!important;
+  border:1px solid var(--line)!important;
+  border-radius:20px!important;
+  background:rgba(255,255,255,.88)!important;
+  box-shadow:var(--shadow)!important;
+}
+.self-card-loading-message{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:100%!important;
+  min-height:62px!important;
+  padding:0 12px!important;
+  color:var(--muted)!important;
+  font-size:14px!important;
+  line-height:1.5!important;
+  text-align:center!important;
+  white-space:normal!important;
+  word-break:normal!important;
+  writing-mode:horizontal-tb!important;
+}
