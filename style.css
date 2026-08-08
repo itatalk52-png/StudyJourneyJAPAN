@@ -1942,3 +1942,85 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
 .friend-row.mine .friend-score .point-value{
   color:#B30000!important;
 }
+
+/* Ver.2.2.5 Beta15 — unified top self card */
+.top-self-card{
+  margin-bottom:18px;
+  border:2px solid rgba(29,91,64,.20)!important;
+}
+.top-self-card .avatar,
+.top-self-card .avatar-img{
+  width:44px;
+  height:44px;
+}
+.weekly-card-rank{
+  display:block!important;
+  margin:0!important;
+  color:var(--forest)!important;
+  font-size:10px!important;
+  font-weight:850!important;
+  line-height:1.15!important;
+  white-space:nowrap;
+}
+.friend-total-points{
+  color:var(--forest)!important;
+}
+.top-self-card .friend-total-points{
+  color:var(--forest)!important;
+}
+@media(max-width:560px){
+  .weekly-card-rank{font-size:9px!important;}
+}
+
+/* ============================================================
+   Ver.2.2.5 Beta16 — Friends TOTAL / TODAY ranking switch
+   ============================================================ */
+.friends-section-head{
+  align-items:center;
+}
+.friends-ranking-switch{
+  display:flex;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:4px;
+  flex:0 0 auto;
+}
+.friends-ranking-switch button{
+  border:0;
+  background:transparent;
+  border-radius:999px;
+  padding:8px 14px;
+  color:var(--muted);
+  font-weight:800;
+  cursor:pointer;
+  transition:background .18s ease,color .18s ease;
+}
+.friends-ranking-switch button.active{
+  background:var(--forest);
+  color:#fff;
+}
+
+/* TOTALは累計ポイント、TODAYは今日の時間を自然に主役表示 */
+.friend-row.friends-mode-total .friend-total-points{
+  font-weight:900!important;
+}
+.friend-row.friends-mode-today .today-study-label,
+.friend-row.friends-mode-today .today-study-time,
+.friend-row.friends-mode-today .today-rank{
+  font-weight:900!important;
+}
+.friend-row.friends-mode-today .today-study-time{
+  transform:scale(1.04);
+  transform-origin:right center;
+}
+
+@media(max-width:560px){
+  .friends-ranking-switch{
+    padding:3px;
+  }
+  .friends-ranking-switch button{
+    padding:7px 11px;
+    font-size:11px;
+  }
+}

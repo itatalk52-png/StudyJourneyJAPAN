@@ -492,6 +492,70 @@ function writeFriendsCache(data){
     }));
   }catch(e){}
 }
+
+let friendsRankingMode='total';
+let friendsRankingRows=[];
+
+try{
+  const savedFriendsRankingMode=localStorage.getItem('sjj_friends_ranking_mode');
+  if(savedFriendsRankingMode==='today'||savedFriendsRankingMode==='total'){
+    friendsRankingMode=savedFriendsRankingMode;
+  }
+}catch(e){}
+
+function updateFriendsRankingSwitch(){
+  document.querySelectorAll('[data-friends-ranking]').forEach(button=>{
+    button.classList.toggle('active',button.dataset.friendsRanking===friendsRankingMode);
+  });
+}
+
+function rankRowsForFriends(rows){
+  const source=(Array.isArray(rows)?rows:[]).map(normalizeRankingRow);
+  const mode=friendsRankingMode;
+
+  const sorted=source.slice().sort((a,b)=>{
+    if(mode==='today'){
+      const timeDiff=(Number(b.todayMinutes)||0)-(Number(a.todayMinutes)||0);
+      if(timeDiff!==0)return timeDiff;
+      const pointsDiff=(Number(b.totalPoints)||0)-(Number(a.totalPoints)||0);
+      if(pointsDiff!==0)return pointsDiff;
+    }else{
+      const pointsDiff=(Number(b.totalPoints)||0)-(Number(a.totalPoints)||0);
+      if(pointsDiff!==0)return pointsDiff;
+      const weekDiff=(Number(b.weeklyMinutes)||0)-(Number(a.weeklyMinutes)||0);
+      if(weekDiff!==0)return weekDiff;
+    }
+    return String(a.nickname||'').localeCompare(String(b.nickname||''),'ja');
+  });
+
+  let previousValue=null;
+  let previousRank=0;
+  sorted.forEach((row,index)=>{
+    const value=mode==='today'?(Number(row.todayMinutes)||0):(Number(row.totalPoints)||0);
+    let rank;
+    if(mode==='today'&&value<=0){
+      rank=0;
+    }else if(previousValue!==null&&value===previousValue){
+      rank=previousRank;
+    }else{
+      rank=index+1;
+    }
+    row.displayRank=rank;
+    previousValue=value;
+    previousRank=rank;
+  });
+
+  return sorted;
+}
+
+function setFriendsRankingMode(mode){
+  if(mode!=='total'&&mode!=='today')return;
+  friendsRankingMode=mode;
+  try{localStorage.setItem('sjj_friends_ranking_mode',mode);}catch(e){}
+  updateFriendsRankingSwitch();
+  if(friendsRankingRows.length)renderRanking(friendsRankingRows);
+}
+
 async function loadRanking(){
   const status=document.getElementById('rankingStatus');
   const list=document.getElementById('friendsList');
@@ -545,44 +609,105 @@ function normalizeRankingRow(row){
   normalized.totalPoints=Number(normalized.totalPoints)||0;
   return normalized;
 }
-function renderRanking(rows){rows=(Array.isArray(rows)?rows:[]).map(normalizeRankingRow);const list=document.getElementById('friendsList');list.innerHTML='';if(!rows.length){list.innerHTML='<div class="empty-ranking">まだランキング記録がありません。<br>タイマーを合計1分以上動かして停止すると反映されます。</div>';return;}rows.forEach(row=>{const mine=profile&&row.userId===profile.userId;if(mine){
-  state.serverWeeklyMinutes=Number(row.weeklyMinutes)||0;
-  state.serverTotalMinutes=Number(row.totalMinutes)||0;
-  state.cheerPoints=Number(row.cheerPoints)||0;
-  state.medalPoints=Number(row.medalPoints)||0;
-  state.streakPoints=Number(row.streakPoints)||0;
-  state.missionPoints=Number(row.missionPoints)||0;
-  {
-    const rankingToday=Number(row.todayMinutes)||0;
-    const currentToday=Number(state.todayServerMinutes)||0;
-    const pendingToday=Math.floor(Number((state.pendingDailySeconds||{})[localDateKey()]||0)/60);
-    state.todayServerMinutes=rankingToday>0
-      ? rankingToday
-      : Math.max(0,currentToday-pendingToday);
+function buildFriendCardMarkup(row,mine){
+  const totalPoints=Number(row.totalPoints)||0;
+  const todayMinutes=Math.max(0,Number(row.todayMinutes)||0);
+  const todayRank=Number(row.todayRank)||0;
+  const weeklyRank=Number(row.weeklyRank)||0;
+
+  const displayRank=Number(row.displayRank)||0;
+  return `<span class="rank-no">${displayRank>0?displayRank:'―'}</span>
+    ${avatarMarkup(row.avatarUrl,row.nickname)}
+    <div class="friend-main">
+      <strong>${escapeHtml(row.nickname)}${mine?'（あなた）':''}</strong>
+      <small>${escapeHtml(row.currentPrefecture||'沖縄県')} ${row.faculty?'・'+escapeHtml(row.faculty):''}</small>
+      <div class="points-breakdown">学習 ${Number(row.totalMinutes)||0}pt・問題集 ${Number(row.missionPoints)||0}pt・メダル ${Number(row.medalPoints)||0}pt・連続 ${Number(row.streakPoints)||0}pt・エール ${formatPoints(row.cheerPoints)}pt</div>
+    </div>
+    <span class="friend-score">
+      <span class="weekly-time-label">今週の簿記勉強時間</span>
+      <strong>${formatStudyDuration(row.weeklyMinutes)}</strong>
+      <small class="weekly-card-rank">${weeklyRank>0?`今週 ${weeklyRank}位`:'今週 ―'}</small>
+      <small class="friend-total-points">${formatPoints(totalPoints)} pt</small>
+      <span class="today-study-label">今日の簿記勉強時間</span>
+      <strong class="today-study-time">${formatStudyDuration(todayMinutes)}</strong>
+      <small class="today-rank">${todayRank>0?`${todayRank}位`:'―'}</small>
+    </span>`;
+}
+
+function renderRanking(rows){
+  friendsRankingRows=(Array.isArray(rows)?rows:[]).map(normalizeRankingRow);
+  rows=rankRowsForFriends(friendsRankingRows);
+  updateFriendsRankingSwitch();
+  const list=document.getElementById('friendsList');
+  const topSelfCard=document.getElementById('topSelfCard');
+  list.innerHTML='';
+
+  if(!rows.length){
+    list.innerHTML='<div class="empty-ranking">まだランキング記録がありません。<br>タイマーを合計1分以上動かして停止すると反映されます。</div>';
+    if(topSelfCard)topSelfCard.innerHTML='<div class="empty-ranking">自分のランキング記録はまだありません。</div>';
+    return;
   }
-  const myTodayRankEl=document.getElementById('myTodayRank');
-  if(myTodayRankEl){const rank=Number(row.todayRank)||0;myTodayRankEl.textContent=rank>0?`${rank}位`:'―';}
-  if(!state.running)state.totalSeconds=state.serverTotalMinutes*60+(Number(state.pendingStudySeconds)||0);
-  save();
-  renderAll();
-  const weeklyRankEl=document.getElementById('weeklyRank');
-  if(weeklyRankEl){
-    weeklyRankEl.textContent=`今週の勉強時間ランク ${Number(row.weeklyRank)||'-'}位`;
-    weeklyRankEl.dataset.loaded='true';
-  }
-  const pointRankEl=document.getElementById('pointRank');
-  if(pointRankEl){
-    pointRankEl.textContent=`ポイントランク ${Number(row.pointRank)||'-'}位`;
-    pointRankEl.dataset.loaded='true';
+
+  let selfRow=null;
+
+  rows.forEach(row=>{
+    const mine=!!(profile&&row.userId===profile.userId);
+    if(mine){
+      selfRow=row;
+      state.serverWeeklyMinutes=Number(row.weeklyMinutes)||0;
+      state.serverTotalMinutes=Number(row.totalMinutes)||0;
+      state.cheerPoints=Number(row.cheerPoints)||0;
+      state.medalPoints=Number(row.medalPoints)||0;
+      state.streakPoints=Number(row.streakPoints)||0;
+      state.missionPoints=Number(row.missionPoints)||0;
+
+      const rankingToday=Number(row.todayMinutes)||0;
+      const currentToday=Number(state.todayServerMinutes)||0;
+      const pendingToday=Math.floor(Number((state.pendingDailySeconds||{})[localDateKey()]||0)/60);
+      state.todayServerMinutes=rankingToday>0?rankingToday:Math.max(0,currentToday-pendingToday);
+
+      if(!state.running)state.totalSeconds=state.serverTotalMinutes*60+(Number(state.pendingStudySeconds)||0);
+      save();
+      renderAll();
+
+      const weeklyRankEl=document.getElementById('weeklyRank');
+      if(weeklyRankEl){
+        weeklyRankEl.textContent=`今週の勉強時間ランク ${Number(row.weeklyRank)||'-'}位`;
+        weeklyRankEl.dataset.loaded='true';
+      }
+      const pointRankEl=document.getElementById('pointRank');
+      if(pointRankEl){
+        pointRankEl.textContent=`ポイントランク ${Number(row.pointRank)||'-'}位`;
+        pointRankEl.dataset.loaded='true';
+      }
+    }
+
+    const div=document.createElement('div');
+    div.className='friend-row friends-mode-'+friendsRankingMode+(mine?' mine my-friend-card':'');
+    div.innerHTML=buildFriendCardMarkup(row,mine);
+
+    if(!mine){
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className=`cheer-btn ${row.dormant?'dormant':''}`;
+      btn.disabled=!!row.cheeredToday;
+      btn.textContent=row.cheeredToday?'送信済み':`エールを送る🎉 +${row.cheerValue}pt`;
+      if(!btn.disabled)btn.onclick=()=>sendCheer(row.userId,row.nickname,btn);
+      div.appendChild(btn);
+    }
+    list.appendChild(div);
+  });
+
+  if(topSelfCard){
+    if(selfRow){
+      topSelfCard.classList.remove('friends-mode-total','friends-mode-today');
+      topSelfCard.classList.add('friends-mode-'+friendsRankingMode);
+      topSelfCard.innerHTML=buildFriendCardMarkup(selfRow,true);
+    }else{
+      topSelfCard.innerHTML='<div class="empty-ranking">自分の情報を取得できませんでした。</div>';
+    }
   }
 }
-const div=document.createElement('div');
-div.className='friend-row'+(mine?' mine my-friend-card':'');
-const totalPoints=Number(row.totalPoints)||0;
-const todayMinutes=Number.isFinite(Number(row.todayMinutes))?Math.max(0,Number(row.todayMinutes)):0;
-const todayRank=Number(row.todayRank)||0;
-const action=mine?'':`<button type="button" class="cheer-btn ${row.dormant?'dormant':''}" ${row.cheeredToday?'disabled':''}>${row.cheeredToday?'送信済み':`エールを送る🎉 +${row.cheerValue}pt`}</button>`;
-div.innerHTML=`<span class="rank-no">${Number(row.rank)||'-'}</span>${avatarMarkup(row.avatarUrl,row.nickname)}<div><strong>${escapeHtml(row.nickname)}${mine?'（あなた）':''}</strong><small>${escapeHtml(row.currentPrefecture||'沖縄県')} ${row.faculty?'・'+escapeHtml(row.faculty):''}</small><div class="points-breakdown">学習 ${Number(row.totalMinutes)||0}pt・問題集 ${Number(row.missionPoints)||0}pt・メダル ${Number(row.medalPoints)||0}pt・連続 ${Number(row.streakPoints)||0}pt・エール ${formatPoints(row.cheerPoints)}pt</div></div><span class="friend-score"><span class="weekly-time-label">今週の簿記勉強時間</span><strong>${formatStudyDuration(row.weeklyMinutes)}</strong><small>${formatPoints(totalPoints)} pt</small><span class="today-study-label">今日の簿記勉強時間</span><strong class="today-study-time">${formatStudyDuration(todayMinutes)}</strong><small class="today-rank">${todayRank>0?`${todayRank}位`:'―'}</small></span>${action}`;const btn=div.querySelector('.cheer-btn');if(btn&&!btn.disabled)btn.onclick=()=>sendCheer(row.userId,row.nickname,btn);list.appendChild(div);});}
 function medalLabel(medal){return medal==='gold'?'金メダル':medal==='silver'?'銀メダル':medal==='bronze'?'銅メダル':'メダル';}
 function medalImage(medal){return medal?`Assets/medals/${medal}.png`:'';}
 function renderStreakBanner(todayMinutes){const el=document.getElementById('streakBanner'),streak=Number(state.currentStreak)||0;if(todayMinutes>=10)el.textContent=`連続学習 ${Math.max(1,streak)}日目🎉`;else if(streak>0)el.textContent=`あと${Math.max(0,10-todayMinutes)}分で連続学習 ${streak+1}日目`;else el.textContent=`あと${Math.max(0,10-todayMinutes)}分で連続学習1日目`;}
@@ -742,3 +867,8 @@ document.addEventListener('DOMContentLoaded',()=>{
  if(submit)submit.onclick=submitCorrection;
  
 });
+
+document.querySelectorAll('[data-friends-ranking]').forEach(button=>{
+  button.addEventListener('click',()=>setFriendsRankingMode(button.dataset.friendsRanking));
+});
+updateFriendsRankingSwitch();
