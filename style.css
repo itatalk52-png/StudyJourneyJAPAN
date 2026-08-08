@@ -2140,3 +2140,13 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
     font-size:9px!important;
   }
 }
+
+/* Ver.2.2.5 Beta20 — loading states */
+.calendar-loading,.calendar-error{
+  grid-column:1/-1;
+  padding:28px 12px;
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.7;
+}

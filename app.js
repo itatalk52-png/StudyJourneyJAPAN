@@ -586,7 +586,10 @@ async function loadRanking(){
 
   try{
     const userId=profile?.userId||'';
-    const r=await fetch(`${API_URL}?action=rankingV2&userId=${encodeURIComponent(userId)}&_=${Date.now()}`,{cache:'no-store'});
+    const controller=new AbortController();
+    const rankingTimer=setTimeout(()=>controller.abort(),12000);
+    const r=await fetch(`${API_URL}?action=rankingV2&userId=${encodeURIComponent(userId)}&_=${Date.now()}`,{cache:'no-store',signal:controller.signal});
+    clearTimeout(rankingTimer);
     if(!r.ok)throw new Error(`通信エラー (${r.status})`);
     const data=await r.json();
     if(!data.success)throw new Error(data.message||'取得に失敗しました');
@@ -724,8 +727,81 @@ function renderRanking(rows){
 function medalLabel(medal){return medal==='gold'?'金メダル':medal==='silver'?'銀メダル':medal==='bronze'?'銅メダル':'メダル';}
 function medalImage(medal){return medal?`Assets/medals/${medal}.png`:'';}
 function renderStreakBanner(todayMinutes){const el=document.getElementById('streakBanner'),streak=Number(state.currentStreak)||0;if(todayMinutes>=10)el.textContent=`連続学習 ${Math.max(1,streak)}日目🎉`;else if(streak>0)el.textContent=`あと${Math.max(0,10-todayMinutes)}分で連続学習 ${streak+1}日目`;else el.textContent=`あと${Math.max(0,10-todayMinutes)}分で連続学習1日目`;}
-async function openCalendar(){if(!profile){openProfile();return;}calendarMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);document.getElementById('calendarDialog').showModal();await syncPendingMinutes();await loadCalendar(true);}
-async function loadCalendar(showLoading=true){if(!profile)return;const grid=document.getElementById('calendarGrid');if(showLoading)grid.innerHTML='<div class="calendar-loading">読み込み中…</div>';try{const r=await fetch(`${API_URL}?action=calendar&userId=${encodeURIComponent(profile.userId)}&month=${monthKey(calendarMonth)}&_=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error(`通信エラー (${r.status})`);const data=await r.json();if(!data.success)throw new Error(data.message||'取得に失敗しました');state.currentStreak=Number(data.currentStreak)||0;state.todayQualified=!!data.todayQualified;state.todayServerMinutes=Number(data.todayMinutes)||0;state.medalPoints=Number(data.medalPoints)||0;state.streakPoints=Number(data.streakPoints)||0;save();renderCalendar(data);renderAll();}catch(e){grid.innerHTML=`<div class="calendar-error">${escapeHtml(e.message)}</div>`;}}
+
+const CALENDAR_CACHE_PREFIX='sjj_calendar_cache_v1_';
+function calendarCacheKey(month=monthKey(calendarMonth)){
+  return `${CALENDAR_CACHE_PREFIX}${profile?.userId||'guest'}_${month}`;
+}
+function readCalendarCache(month=monthKey(calendarMonth)){
+  try{
+    const data=JSON.parse(localStorage.getItem(calendarCacheKey(month))||'null');
+    return data&&data.month===month?data:null;
+  }catch(e){return null;}
+}
+function writeCalendarCache(data){
+  try{
+    if(data&&data.month)localStorage.setItem(calendarCacheKey(data.month),JSON.stringify(data));
+  }catch(e){}
+}
+function withTimeout(promise,ms=5000){
+  return Promise.race([
+    promise,
+    new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),ms))
+  ]);
+}
+
+async function openCalendar(){
+  if(!profile){openProfile();return;}
+  calendarMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+  document.getElementById('calendarDialog').showModal();
+
+  const cached=readCalendarCache();
+  if(cached)renderCalendar(cached);
+
+  // Calendar display takes priority. Pending sync runs in background.
+  loadCalendar(!cached);
+  withTimeout(syncPendingMinutes(),4000).then(()=>loadCalendar(false)).catch(()=>{});
+}
+async function loadCalendar(showLoading=true){
+  if(!profile)return;
+  const grid=document.getElementById('calendarGrid');
+  const requestedMonth=monthKey(calendarMonth);
+  const cached=readCalendarCache(requestedMonth);
+
+  if(cached){
+    renderCalendar(cached);
+    showLoading=false;
+  }else if(showLoading){
+    grid.innerHTML='<div class="calendar-loading">読み込み中…</div>';
+  }
+
+  try{
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),12000);
+    const r=await fetch(`${API_URL}?action=calendar&userId=${encodeURIComponent(profile.userId)}&month=${requestedMonth}&_=${Date.now()}`,{
+      cache:'no-store',
+      signal:controller.signal
+    });
+    clearTimeout(timer);
+    if(!r.ok)throw new Error(`通信エラー (${r.status})`);
+    const data=await r.json();
+    if(!data.success)throw new Error(data.message||'取得に失敗しました');
+
+    writeCalendarCache(data);
+    state.currentStreak=Number(data.currentStreak)||0;
+    state.todayQualified=!!data.todayQualified;
+    state.todayServerMinutes=Number(data.todayMinutes)||0;
+    state.medalPoints=Number(data.medalPoints)||0;
+    state.streakPoints=Number(data.streakPoints)||0;
+    save();
+    renderCalendar(data);
+    renderAll();
+  }catch(e){
+    if(!cached){
+      grid.innerHTML=`<div class="calendar-error">カレンダーを取得できませんでした。<br>もう一度開いてください。</div>`;
+    }
+  }
+}
 function renderCalendar(data){const [year,month]=data.month.split('-').map(Number),first=new Date(year,month-1,1),days=Number(data.daysInMonth)||new Date(year,month,0).getDate(),byDate=Object.fromEntries((data.records||[]).map(r=>[r.date,r])),monthNames=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];document.getElementById('calendarTitle').innerHTML=`<span class="calendar-month-en">${monthNames[month-1]}</span><span class="calendar-year-number">${year}</span><span class="calendar-month-number">${String(month).padStart(2,'0')}</span>`;const grid=document.getElementById('calendarGrid');grid.innerHTML='';const mondayOffset=(first.getDay()+6)%7;for(let i=0;i<mondayOffset;i++){const blank=document.createElement('div');blank.className='calendar-day empty';grid.appendChild(blank);}for(let day=1;day<=days;day++){const date=`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`,rec=byDate[date],cell=document.createElement('div'),weekday=(new Date(year,month-1,day).getDay()+6)%7;cell.className='calendar-day'+(weekday===5?' saturday':'')+(weekday===6?' sunday':'')+(date===localDateKey()?' today':'');cell.innerHTML=`<span class="calendar-date">${day}</span>${rec&&rec.medal?`<img class="calendar-medal" src="${medalImage(rec.medal)}" alt="${medalLabel(rec.medal)}"><small class="calendar-minutes">${rec.minutes}分</small>`:''}`;grid.appendChild(cell);}const todayMinutes=Number(data.todayMinutes)||0,streak=Number(data.currentStreak)||0,todayQualified=!!data.todayQualified;document.getElementById('calendarStreak').textContent=todayQualified?`連続学習 ${Math.max(1,streak)}日目🎉`:streak>0?`あと${Math.max(0,10-todayMinutes)}分で連続学習 ${streak+1}日目`:`あと${Math.max(0,10-todayMinutes)}分で連続学習1日目`;let goal='';if(todayMinutes<10)goal=`今日はあと${10-todayMinutes}分で銅メダル🥉`;else if(todayMinutes<60)goal=`今日はあと${60-todayMinutes}分で銀メダル🥈`;else if(todayMinutes<120)goal=`今日はあと${120-todayMinutes}分で金メダル🥇`;else goal='今日は金メダルを獲得しました🥇';document.getElementById('calendarTodayGoal').textContent=goal;const c=data.counts||{};document.getElementById('calendarSummary').innerHTML=`<div><span>金メダル</span><strong>${Number(c.gold)||0}枚</strong></div><div><span>銀メダル</span><strong>${Number(c.silver)||0}枚</strong></div><div><span>銅メダル</span><strong>${Number(c.bronze)||0}枚</strong></div><div><span>連続ボーナス</span><strong>${Number(data.streakPoints)||0}pt</strong></div>`;const complete=document.getElementById('calendarComplete');complete.hidden=!data.complete;complete.textContent=data.complete?`🏆 ${month}月コンプリート！` : '';}
 function changeCalendarMonth(delta){calendarMonth=new Date(calendarMonth.getFullYear(),calendarMonth.getMonth()+delta,1);loadCalendar();}
 function escapeHtml(s=''){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
@@ -739,7 +815,10 @@ document.querySelectorAll('[data-friends-ranking]').forEach(button=>{
   };
 });
 updateFriendsRankingSwitch();
-document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>showScreen(b.dataset.target));document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>showScreen(b.dataset.nav));document.getElementById('homeStart').onclick=toggleTimer;document.getElementById('timerStart').onclick=toggleTimer;document.getElementById('profileBtn').onclick=openProfile;document.getElementById('calendarBtn').onclick=openCalendar;document.getElementById('calendarPrev').onclick=()=>changeCalendarMonth(-1);document.getElementById('calendarNext').onclick=()=>changeCalendarMonth(1);document.querySelector('.calendar-close').onclick=()=>document.getElementById('calendarDialog').close();document.getElementById('registerForm').addEventListener('submit',register);document.getElementById('profileKeepButton').onclick=()=>{document.getElementById('registerDialog').close();showScreen('home');toast('プロフィールはそのまま引き継がれています');};document.getElementById('loginSubmit').onclick=loginWithId;document.getElementById('loginIdInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();loginWithId();}});document.getElementById('copyIdButton').onclick=async()=>{try{await navigator.clipboard.writeText(profile.userId);toast('IDをコピーしました');}catch(e){toast('IDを長押ししてコピーしてください','error');}};document.getElementById('closeIdButton').onclick=()=>document.getElementById('idDialog').close();document.getElementById('avatarInput').addEventListener('change',handleAvatarFile);document.getElementById('avatarClearButton').addEventListener('click',clearAvatarSelection);document.getElementById('refreshRanking').onclick=async()=>{await syncPendingMinutes();await loadRanking();};
+document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>showScreen(b.dataset.target));document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>showScreen(b.dataset.nav));document.getElementById('homeStart').onclick=toggleTimer;document.getElementById('timerStart').onclick=toggleTimer;document.getElementById('profileBtn').onclick=openProfile;document.getElementById('calendarBtn').onclick=openCalendar;document.getElementById('calendarPrev').onclick=()=>changeCalendarMonth(-1);document.getElementById('calendarNext').onclick=()=>changeCalendarMonth(1);document.querySelector('.calendar-close').onclick=()=>document.getElementById('calendarDialog').close();document.getElementById('registerForm').addEventListener('submit',register);document.getElementById('profileKeepButton').onclick=()=>{document.getElementById('registerDialog').close();showScreen('home');toast('プロフィールはそのまま引き継がれています');};document.getElementById('loginSubmit').onclick=loginWithId;document.getElementById('loginIdInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();loginWithId();}});document.getElementById('copyIdButton').onclick=async()=>{try{await navigator.clipboard.writeText(profile.userId);toast('IDをコピーしました');}catch(e){toast('IDを長押ししてコピーしてください','error');}};document.getElementById('closeIdButton').onclick=()=>document.getElementById('idDialog').close();document.getElementById('avatarInput').addEventListener('change',handleAvatarFile);document.getElementById('avatarClearButton').addEventListener('click',clearAvatarSelection);document.getElementById('refreshRanking').onclick=()=>{
+  loadRanking();
+  withTimeout(syncPendingMinutes(),4000).then(()=>loadRanking()).catch(()=>{});
+};
 const tabs=document.getElementById('prefTabs');DATA.prefectures.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p.name;b.onclick=()=>{selectedPref=i;renderCollection(true);};tabs.appendChild(b);});
 document.querySelector('.dialog-close').onclick=()=>dialog.close();dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});document.getElementById('mapViewToggle').onclick=()=>{mapViewMode=mapViewMode==='current'?'national':'current';updateMap();};
 if(state.running){
@@ -749,7 +828,21 @@ if(state.running){
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&state.running){reconcileRunningTime();renderAll();startTimerLoop();}});
 window.addEventListener('pageshow',()=>{if(state.running){reconcileRunningTime();renderAll();startTimerLoop();}});
 window.addEventListener('beforeunload',()=>{if(state.running)reconcileRunningTime();});
-updateProfileUI();renderAll();showScreen('home');if(!profile)setTimeout(openProfile,400);else{loadCloudState(false).finally(()=>{loadRanking();loadCalendar(false);syncPendingMinutes();});}
+updateProfileUI();
+renderAll();
+showScreen('home');
+if(!profile){
+  setTimeout(openProfile,400);
+}else{
+  // Beta20: Friends and Calendar must not wait for the heavy cloud-state sync.
+  loadRanking();
+  loadCalendar(false);
+  loadCloudState(false).catch(()=>{});
+  withTimeout(syncPendingMinutes(),4000).then(()=>{
+    loadRanking();
+    loadCalendar(false);
+  }).catch(()=>{});
+}
 
 
 /* Ver.2.2.0 Timer Correction β2 */
