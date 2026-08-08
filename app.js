@@ -493,12 +493,12 @@ function writeFriendsCache(data){
   }catch(e){}
 }
 
-let friendsRankingMode='total';
+let friendsRankingMode='time';
 let friendsRankingRows=[];
 
 try{
   const savedFriendsRankingMode=localStorage.getItem('sjj_friends_ranking_mode');
-  if(savedFriendsRankingMode==='today'||savedFriendsRankingMode==='total'){
+  if(['today','time','points'].includes(savedFriendsRankingMode)){
     friendsRankingMode=savedFriendsRankingMode;
   }
 }catch(e){}
@@ -507,54 +507,63 @@ function updateFriendsRankingSwitch(){
   document.querySelectorAll('[data-friends-ranking]').forEach(button=>{
     button.classList.toggle('active',button.dataset.friendsRanking===friendsRankingMode);
   });
+  const caption=document.getElementById('friendsRankingCaption');
+  if(caption){
+    caption.textContent=friendsRankingMode==='today'
+      ? '今日の勉強時間ランキング'
+      : friendsRankingMode==='points'
+        ? '累計ポイントランキング'
+        : '累計勉強時間ランキング';
+  }
 }
 
 function rankRowsForFriends(rows){
   const source=(Array.isArray(rows)?rows:[]).map(normalizeRankingRow);
   const mode=friendsRankingMode;
-
+  const metric=row=>{
+    if(mode==='today')return Number(row.todayMinutes)||0;
+    if(mode==='points')return Number(row.totalPoints)||0;
+    return Number(row.totalMinutes)||0;
+  };
   const sorted=source.slice().sort((a,b)=>{
+    const d=metric(b)-metric(a);
+    if(d!==0)return d;
     if(mode==='today'){
-      const timeDiff=(Number(b.todayMinutes)||0)-(Number(a.todayMinutes)||0);
-      if(timeDiff!==0)return timeDiff;
-      const pointsDiff=(Number(b.totalPoints)||0)-(Number(a.totalPoints)||0);
-      if(pointsDiff!==0)return pointsDiff;
+      const w=(Number(b.weeklyMinutes)||0)-(Number(a.weeklyMinutes)||0);
+      if(w!==0)return w;
+    }else if(mode==='time'){
+      const p=(Number(b.totalPoints)||0)-(Number(a.totalPoints)||0);
+      if(p!==0)return p;
     }else{
-      const pointsDiff=(Number(b.totalPoints)||0)-(Number(a.totalPoints)||0);
-      if(pointsDiff!==0)return pointsDiff;
-      const weekDiff=(Number(b.weeklyMinutes)||0)-(Number(a.weeklyMinutes)||0);
-      if(weekDiff!==0)return weekDiff;
+      const t=(Number(b.totalMinutes)||0)-(Number(a.totalMinutes)||0);
+      if(t!==0)return t;
     }
     return String(a.nickname||'').localeCompare(String(b.nickname||''),'ja');
   });
-
-  let previousValue=null;
-  let previousRank=0;
+  let prev=null, prevRank=0;
   sorted.forEach((row,index)=>{
-    const value=mode==='today'?(Number(row.todayMinutes)||0):(Number(row.totalPoints)||0);
-    let rank;
-    if(mode==='today'&&value<=0){
-      rank=0;
-    }else if(previousValue!==null&&value===previousValue){
-      rank=previousRank;
-    }else{
-      rank=index+1;
+    const value=metric(row);
+    let rank=0;
+    if(value>0){
+      rank=(prev!==null&&value===prev)?prevRank:index+1;
     }
     row.displayRank=rank;
-    previousValue=value;
-    previousRank=rank;
+    prev=value;
+    prevRank=rank;
   });
-
   return sorted;
 }
 
 function setFriendsRankingMode(mode){
-  if(mode!=='total'&&mode!=='today')return;
+  if(!['today','time','points'].includes(mode))return;
   friendsRankingMode=mode;
   try{localStorage.setItem('sjj_friends_ranking_mode',mode);}catch(e){}
   updateFriendsRankingSwitch();
   if(friendsRankingRows.length)renderRanking(friendsRankingRows);
 }
+
+let friendsLastNetworkRefreshAt=0;
+const FRIENDS_NETWORK_REFRESH_GUARD_MS=30000;
 
 async function loadRanking(){
   const status=document.getElementById('rankingStatus');
@@ -566,8 +575,11 @@ async function loadRanking(){
     renderInbox(cached.inbox);
     const age=Math.max(0,Date.now()-Number(cached.savedAt||0));
     status.textContent=age<FRIENDS_CACHE_MAX_AGE_MS
-      ? `${cached.ranking.length}人が今週の旅に参加中　↻ 最新情報を取得中`
+      ? `${cached.ranking.length}人を表示中　✓ キャッシュ表示`
       : `前回のFriendsを表示中　↻ 最新情報を取得中`;
+    if(Date.now()-friendsLastNetworkRefreshAt<FRIENDS_NETWORK_REFRESH_GUARD_MS){
+      return;
+    }
   }else{
     status.textContent='Friendsを読み込んでいます…';
   }
@@ -590,6 +602,7 @@ async function loadRanking(){
     renderRanking(ranking.map(normalizeRankingRow));
     renderInbox(inbox);
     writeFriendsCache({ranking,inbox,apiVersion:data.apiVersion});
+    friendsLastNetworkRefreshAt=Date.now();
     status.textContent=`${ranking.length}人が今週の旅に参加中　✓ 最新`;
   }catch(e){
     if(cached){

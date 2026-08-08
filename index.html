@@ -222,10 +222,12 @@
           <h2>一緒に旅する仲間</h2>
         </div>
         <div class="friends-ranking-switch" role="group" aria-label="Friendsランキング切替">
-          <button type="button" data-friends-ranking="total" class="active">TOTAL</button>
           <button type="button" data-friends-ranking="today">TODAY</button>
+          <button type="button" data-friends-ranking="time" class="active">TIME</button>
+          <button type="button" data-friends-ranking="points">POINTS</button>
         </div>
       </div>
+      <div class="friends-ranking-caption" id="friendsRankingCaption">累計勉強時間ランキング</div>
       <div id="topSelfCard" class="top-self-card self-card-loading"><div class="self-card-loading-message">自分の最新情報を読み込んでいます…</div></div>
       <div class="ranking-toolbar"><span id="rankingStatus">ランキングを読み込みます</span><button id="refreshRanking" class="ghost-btn">更新</button></div>
       <div class="friends-list" id="friendsList"></div>
@@ -304,7 +306,7 @@
   </form>
   <section class="manual-update-section" aria-labelledby="manualUpdateHeading">
     <div class="panel-kicker" id="manualUpdateHeading">APP VERSION</div>
-    <div class="current-version">Version <strong id="currentAppVersion">2.2.5 Beta17</strong></div>
+    <div class="current-version">Version <strong id="currentAppVersion">2.2.5 Beta18</strong></div>
     <button class="primary-btn manual-update-button" id="manualUpdateButton" type="button">🚀 最新バージョンで旅をする</button>
     <p class="manual-update-help">最新バージョンがあるかもしれません。<br>こちらを押してみてください。</p>
     <div class="manual-update-result" id="manualUpdateResult" role="status" aria-live="polite"></div>
@@ -342,7 +344,7 @@
 <script src="mission.js"></script>
 <script>
 (() => {
-  const APP_VERSION = "2.2.5 Beta17";
+  const APP_VERSION = "2.2.5 Beta18";
   document.getElementById("currentAppVersion").textContent = APP_VERSION;
 
   if (!("serviceWorker" in navigator)) {
