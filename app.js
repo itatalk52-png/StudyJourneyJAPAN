@@ -625,10 +625,16 @@ function normalizeRankingRow(row){
 function buildFriendCardMarkup(row,mine){
   const totalPoints=Number(row.totalPoints)||0;
   const todayMinutes=Math.max(0,Number(row.todayMinutes)||0);
-  const todayRank=Number(row.todayRank)||0;
   const weeklyRank=Number(row.weeklyRank)||0;
-
   const displayRank=Number(row.displayRank)||0;
+  const totalMinutes=Math.max(0,Number(row.totalMinutes)||0);
+
+  const modeScore=friendsRankingMode==='today'
+    ? `<span class="ranking-primary-label">今日の簿記勉強時間</span><strong class="ranking-primary-value">${formatStudyDuration(todayMinutes)}</strong>`
+    : friendsRankingMode==='points'
+      ? `<span class="ranking-primary-label">累計ポイント</span><strong class="ranking-primary-value">${formatPoints(totalPoints)} pt</strong>`
+      : `<span class="ranking-primary-label">累計勉強時間</span><strong class="ranking-primary-value">${formatStudyDuration(totalMinutes)}</strong>`;
+
   return `<span class="rank-no">${displayRank>0?displayRank:'―'}</span>
     ${avatarMarkup(row.avatarUrl,row.nickname)}
     <div class="friend-main">
@@ -637,16 +643,10 @@ function buildFriendCardMarkup(row,mine){
       <div class="points-breakdown">学習 ${Number(row.totalMinutes)||0}pt・問題集 ${Number(row.missionPoints)||0}pt・メダル ${Number(row.medalPoints)||0}pt・連続 ${Number(row.streakPoints)||0}pt・エール ${formatPoints(row.cheerPoints)}pt</div>
     </div>
     <span class="friend-score">
-      <span class="weekly-time-label">今週の簿記勉強時間</span>
-      <strong>${formatStudyDuration(row.weeklyMinutes)}</strong>
-      <small class="weekly-card-rank">${weeklyRank>0?`今週 ${weeklyRank}位`:'今週 ―'}</small>
-      <small class="friend-total-points">${formatPoints(totalPoints)} pt</small>
-      <span class="today-study-label">今日の簿記勉強時間</span>
-      <strong class="today-study-time">${formatStudyDuration(todayMinutes)}</strong>
-      <small class="today-rank">${todayRank>0?`${todayRank}位`:'―'}</small>
+      ${modeScore}
+      <span class="ranking-secondary">今週 ${formatStudyDuration(row.weeklyMinutes)}${weeklyRank>0?`・${weeklyRank}位`:''}</span>
     </span>`;
 }
-
 function renderRanking(rows){
   friendsRankingRows=(Array.isArray(rows)?rows:[]).map(normalizeRankingRow);
   rows=rankRowsForFriends(friendsRankingRows);
@@ -731,6 +731,14 @@ function changeCalendarMonth(delta){calendarMonth=new Date(calendarMonth.getFull
 function escapeHtml(s=''){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
 function escapeAttr(s=''){return escapeHtml(s);}
 
+document.querySelectorAll('[data-friends-ranking]').forEach(button=>{
+  button.onclick=event=>{
+    event.preventDefault();
+    event.stopPropagation();
+    setFriendsRankingMode(button.dataset.friendsRanking);
+  };
+});
+updateFriendsRankingSwitch();
 document.querySelectorAll('.bottom-nav button').forEach(b=>b.onclick=()=>showScreen(b.dataset.target));document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>showScreen(b.dataset.nav));document.getElementById('homeStart').onclick=toggleTimer;document.getElementById('timerStart').onclick=toggleTimer;document.getElementById('profileBtn').onclick=openProfile;document.getElementById('calendarBtn').onclick=openCalendar;document.getElementById('calendarPrev').onclick=()=>changeCalendarMonth(-1);document.getElementById('calendarNext').onclick=()=>changeCalendarMonth(1);document.querySelector('.calendar-close').onclick=()=>document.getElementById('calendarDialog').close();document.getElementById('registerForm').addEventListener('submit',register);document.getElementById('profileKeepButton').onclick=()=>{document.getElementById('registerDialog').close();showScreen('home');toast('プロフィールはそのまま引き継がれています');};document.getElementById('loginSubmit').onclick=loginWithId;document.getElementById('loginIdInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();loginWithId();}});document.getElementById('copyIdButton').onclick=async()=>{try{await navigator.clipboard.writeText(profile.userId);toast('IDをコピーしました');}catch(e){toast('IDを長押ししてコピーしてください','error');}};document.getElementById('closeIdButton').onclick=()=>document.getElementById('idDialog').close();document.getElementById('avatarInput').addEventListener('change',handleAvatarFile);document.getElementById('avatarClearButton').addEventListener('click',clearAvatarSelection);document.getElementById('refreshRanking').onclick=async()=>{await syncPendingMinutes();await loadRanking();};
 const tabs=document.getElementById('prefTabs');DATA.prefectures.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p.name;b.onclick=()=>{selectedPref=i;renderCollection(true);};tabs.appendChild(b);});
 document.querySelector('.dialog-close').onclick=()=>dialog.close();dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});document.getElementById('mapViewToggle').onclick=()=>{mapViewMode=mapViewMode==='current'?'national':'current';updateMap();};
@@ -881,7 +889,4 @@ document.addEventListener('DOMContentLoaded',()=>{
  
 });
 
-document.querySelectorAll('[data-friends-ranking]').forEach(button=>{
-  button.addEventListener('click',()=>setFriendsRankingMode(button.dataset.friendsRanking));
-});
 updateFriendsRankingSwitch();

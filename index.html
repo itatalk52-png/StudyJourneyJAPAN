@@ -221,13 +221,15 @@
           <div class="panel-kicker">JOURNEY FRIENDS</div>
           <h2>一緒に旅する仲間</h2>
         </div>
-        <div class="friends-ranking-switch" role="group" aria-label="Friendsランキング切替">
-          <button type="button" data-friends-ranking="today">TODAY</button>
-          <button type="button" data-friends-ranking="time" class="active">TIME</button>
-          <button type="button" data-friends-ranking="points">POINTS</button>
+        <div class="friends-ranking-control">
+          <div class="friends-ranking-switch" role="group" aria-label="Friendsランキング切替">
+            <button type="button" data-friends-ranking="today">TODAY</button>
+            <button type="button" data-friends-ranking="time" class="active">TIME</button>
+            <button type="button" data-friends-ranking="points">POINTS</button>
+          </div>
+          <div class="friends-ranking-caption" id="friendsRankingCaption">累計勉強時間ランキング</div>
         </div>
       </div>
-      <div class="friends-ranking-caption" id="friendsRankingCaption">累計勉強時間ランキング</div>
       <div id="topSelfCard" class="top-self-card self-card-loading"><div class="self-card-loading-message">自分の最新情報を読み込んでいます…</div></div>
       <div class="ranking-toolbar"><span id="rankingStatus">ランキングを読み込みます</span><button id="refreshRanking" class="ghost-btn">更新</button></div>
       <div class="friends-list" id="friendsList"></div>

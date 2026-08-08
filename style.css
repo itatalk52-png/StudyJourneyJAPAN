@@ -2073,3 +2073,70 @@ dialog::backdrop{background:rgba(20,29,25,.58);backdrop-filter:blur(6px)}dialog 
   .friends-ranking-switch button{padding:7px 9px!important;font-size:10px!important;}
   .friends-ranking-caption{margin:-22px 0 12px auto;font-size:9px;}
 }
+
+
+/* ============================================================
+   Ver.2.2.5 Beta19 — Friends ranking controls
+   ============================================================ */
+.friends-section-head{
+  align-items:flex-start!important;
+}
+.friends-section-head h2{
+  font-size:14px!important; /* previous 28px -> 1/2 */
+  line-height:1.35!important;
+  margin-top:5px!important;
+}
+.friends-ranking-control{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  flex:0 0 auto;
+}
+.friends-ranking-caption{
+  margin:5px 0 0 4px!important;
+  width:auto!important;
+  max-width:none!important;
+  text-align:left!important;
+  font-size:10px!important;
+  line-height:1.25!important;
+}
+.friends-ranking-switch button{
+  position:relative;
+  z-index:2;
+  pointer-events:auto!important;
+  touch-action:manipulation;
+}
+.ranking-primary-label{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.ranking-primary-value{
+  display:block;
+  font-size:14px!important;
+  font-weight:900!important;
+  color:var(--forest);
+  white-space:nowrap;
+}
+.ranking-secondary{
+  display:block;
+  color:var(--muted);
+  font-size:9px;
+  font-weight:700;
+  white-space:nowrap;
+}
+@media(max-width:560px){
+  .friends-section-head{
+    align-items:flex-start!important;
+    gap:8px;
+  }
+  .friends-section-head h2{
+    font-size:14px!important;
+  }
+  .friends-ranking-caption{
+    margin:4px 0 0 3px!important;
+    font-size:9px!important;
+  }
+}
