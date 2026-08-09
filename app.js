@@ -994,21 +994,26 @@ function initializeSwipeWheels(){
   refreshSwipeWheelSelection();
 }
 
-document.addEventListener('DOMContentLoaded',()=>{
+function bindTimerCorrectionControls(){
   initializeSwipeWheels();
- const openBtn=document.getElementById('openTimeCorrection');
- const closeBtn=document.getElementById('closeTimeCorrection');
- const histBtn=document.getElementById('openCorrectionHistory');
- const histClose=document.getElementById('closeCorrectionHistory');
- const select=document.getElementById('correctionDateSelect');
- const submit=document.getElementById('submitTimeCorrection');
- if(openBtn)openBtn.onclick=openTimeCorrectionDialog;
- if(closeBtn)closeBtn.onclick=()=>document.getElementById('timeCorrectionDialog').close();
- if(histBtn)histBtn.onclick=openCorrectionHistoryDialog;
- if(histClose)histClose.onclick=()=>document.getElementById('correctionHistoryDialog').close();
- if(select)select.onchange=()=>applyCorrectionRecord(select.value);
- if(submit)submit.onclick=submitCorrection;
- 
-});
+  const openBtn=document.getElementById('openTimeCorrection');
+  const closeBtn=document.getElementById('closeTimeCorrection');
+  const histBtn=document.getElementById('openCorrectionHistory');
+  const histClose=document.getElementById('closeCorrectionHistory');
+  const select=document.getElementById('correctionDateSelect');
+  const submit=document.getElementById('submitTimeCorrection');
+  if(openBtn)openBtn.onclick=openTimeCorrectionDialog;
+  if(closeBtn)closeBtn.onclick=()=>document.getElementById('timeCorrectionDialog')?.close();
+  if(histBtn)histBtn.onclick=openCorrectionHistoryDialog;
+  if(histClose)histClose.onclick=()=>document.getElementById('correctionHistoryDialog')?.close();
+  if(select)select.onchange=()=>applyCorrectionRecord(select.value);
+  if(submit)submit.onclick=submitCorrection;
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',bindTimerCorrectionControls,{once:true});
+}else{
+  bindTimerCorrectionControls();
+}
 
 updateFriendsRankingSwitch();
