@@ -33,6 +33,43 @@ function normalizeJourneyId(value=''){return value.trim().toUpperCase().replace(
 function initials(name=''){return [...name.trim()].slice(0,2).join('').toUpperCase()||'SJ';}
 function localDateKey(d=new Date()){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
 function monthKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}
+function currentWeekRange(){
+  const now=new Date();
+  const offset=(now.getDay()+6)%7;
+  const monday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-offset);
+  return {start:localDateKey(monday),end:localDateKey(now),startMonth:monthKey(monday),endMonth:monthKey(now)};
+}
+function isDateInCurrentWeek(dateKey){
+  const r=currentWeekRange();
+  return String(dateKey||'')>=r.start&&String(dateKey||'')<=r.end;
+}
+function currentWeekPendingMinutes(){
+  const seconds=Object.entries(state.pendingDailySeconds||{}).reduce((sum,[date,value])=>sum+(isDateInCurrentWeek(date)?Number(value||0):0),0);
+  return Math.floor(Math.max(0,seconds)/60);
+}
+function weeklyMinutesFromRecords(records=[]){
+  const r=currentWeekRange();
+  return (records||[]).reduce((sum,row)=>{
+    const date=String(row?.date||row?.studyDate||'');
+    return sum+(date>=r.start&&date<=r.end?Math.max(0,Number(row?.minutes)||0):0);
+  },0);
+}
+async function applyAuthoritativeWeeklyMinutesFromDaily(primaryData){
+  if(!primaryData||!Array.isArray(primaryData.records))return false;
+  const r=currentWeekRange();
+  let total=weeklyMinutesFromRecords(primaryData.records);
+  if(r.startMonth!==r.endMonth){
+    const otherMonth=primaryData.month===r.endMonth?r.startMonth:r.endMonth;
+    try{
+      const response=await fetch(`${API_URL}?action=calendar&userId=${encodeURIComponent(profile.userId)}&month=${otherMonth}&_=${Date.now()}`,{cache:'no-store'});
+      const extra=await response.json();
+      if(extra&&extra.success&&Array.isArray(extra.records))total+=weeklyMinutesFromRecords(extra.records);
+    }catch(e){return false;}
+  }
+  state.serverWeeklyMinutes=Math.max(0,total);
+  save();
+  return true;
+}
 function formatTime(s){const h=String(Math.floor(s/3600)).padStart(2,'0'),m=String(Math.floor((s%3600)/60)).padStart(2,'0'),sec=String(s%60).padStart(2,'0');return `${h}:${m}:${sec}`;}
 function formatStudyDuration(minutes){const total=Math.max(0,Math.floor(Number(minutes)||0));const hours=Math.floor(total/60),mins=total%60;return hours>0?`${hours}時間${String(mins).padStart(2,'0')}分`:`${mins}分`;}
 function formatPoints(value){const n=Math.round((Number(value)||0)*10)/10;return Number.isInteger(n)?String(n):n.toFixed(1);}
@@ -460,7 +497,7 @@ function updateMap(){
   document.getElementById('homeMapPrefProgress').textContent=`${prefProgress} / 10`;
   document.getElementById('homeMapCaption').textContent=`現在地：${currentPref}`;
 }
-function renderAll(){const unlocked=unlockedCount(),mins=Math.floor(state.totalSeconds/60),pending=Math.floor((state.pendingStudySeconds||0)/60),todayPending=Math.floor(Number((state.pendingDailySeconds||{})[localDateKey()]||0)/60),todayTotal=(Number(state.todayServerMinutes)||0)+todayPending,weeklyMinutes=(Number(state.serverWeeklyMinutes)||0)+pending,studyPoints=(Number(state.serverTotalMinutes)||0)+pending,cheerPoints=Number(state.cheerPoints)||0,medalPoints=Number(state.medalPoints)||0,streakPoints=Number(state.streakPoints)||0,missionPoints=Number(state.missionPoints)||0,totalPoints=studyPoints+cheerPoints+medalPoints+streakPoints+missionPoints,flat=DATA.prefectures.flatMap(p=>p.badges.map(b=>b.name));document.getElementById('homeTimer').textContent=formatTime(state.totalSeconds);document.getElementById('timerDisplay').textContent=formatTime(state.totalSeconds);document.getElementById('todayMinutes').textContent=`${todayTotal} min`;document.getElementById('weekMinutes').textContent=`${weeklyMinutes} min`;
+function renderAll(){const unlocked=unlockedCount(),mins=Math.floor(state.totalSeconds/60),pending=Math.floor((state.pendingStudySeconds||0)/60),todayPending=Math.floor(Number((state.pendingDailySeconds||{})[localDateKey()]||0)/60),todayTotal=(Number(state.todayServerMinutes)||0)+todayPending,weeklyMinutes=(Number(state.serverWeeklyMinutes)||0)+currentWeekPendingMinutes(),studyPoints=(Number(state.serverTotalMinutes)||0)+pending,cheerPoints=Number(state.cheerPoints)||0,medalPoints=Number(state.medalPoints)||0,streakPoints=Number(state.streakPoints)||0,missionPoints=Number(state.missionPoints)||0,totalPoints=studyPoints+cheerPoints+medalPoints+streakPoints+missionPoints,flat=DATA.prefectures.flatMap(p=>p.badges.map(b=>b.name));document.getElementById('homeTimer').textContent=formatTime(state.totalSeconds);document.getElementById('timerDisplay').textContent=formatTime(state.totalSeconds);document.getElementById('todayMinutes').textContent=`${todayTotal} min`;document.getElementById('weekMinutes').textContent=`${weeklyMinutes} min`;
 const weeklyRankEl=document.getElementById('weeklyRank');
 if(weeklyRankEl&&!weeklyRankEl.dataset.loaded)weeklyRankEl.textContent='今週の勉強時間ランク --位';document.getElementById('totalPoints').textContent=`${formatPoints(totalPoints)} pt`;
 const pointRankEl=document.getElementById('pointRank');
@@ -950,7 +987,7 @@ function renderRanking(rows){
     const mine=!!(profile&&row.userId===profile.userId);
     if(mine){
       selfRow=row;
-      state.serverWeeklyMinutes=Number(row.weeklyMinutes)||0;
+      // Beta27: This Week is derived from Daily records, not the cached ranking total.
       state.serverTotalMinutes=Number(row.totalMinutes)||0;
       state.cheerPoints=Number(row.cheerPoints)||0;
       state.medalPoints=Number(row.medalPoints)||0;
@@ -1071,6 +1108,7 @@ async function loadCalendar(showLoading=true){
     state.currentStreak=Number(data.currentStreak)||0;
     state.todayQualified=!!data.todayQualified;
     state.todayServerMinutes=Number(data.todayMinutes)||0;
+    if(requestedMonth===monthKey(new Date()))await applyAuthoritativeWeeklyMinutesFromDaily(data);
     state.medalPoints=Number(data.medalPoints)||0;
     state.streakPoints=Number(data.streakPoints)||0;
     save();
@@ -1130,3 +1168,5 @@ if(!profile){
 /* Timer correction module moved earlier in Beta26. */
 
 updateFriendsRankingSwitch();
+const friendsHeading=document.querySelector('.friends-section-head h2');
+if(friendsHeading)friendsHeading.style.fontSize='42px';

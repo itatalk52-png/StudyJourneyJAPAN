@@ -1,6 +1,6 @@
 importScripts("./offline-assets.js");
 
-const CACHE="study-journey-v2-2-5-beta26";
+const CACHE="study-journey-v2-2-5-beta27";
 const CORE_ASSETS=[
   "./",
   "./index.html",
