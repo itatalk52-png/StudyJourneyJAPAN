@@ -874,6 +874,28 @@ if(!profile){
 }
 
 
+
+function safeOpenDialog(dialogId){
+  const el=document.getElementById(dialogId);
+  if(!el)throw new Error(`画面を開けませんでした（${dialogId}）`);
+  try{
+    if(typeof el.showModal==='function'){
+      if(!el.open)el.showModal();
+    }else{
+      el.setAttribute('open','');
+    }
+  }catch(e){
+    el.setAttribute('open','');
+  }
+  return el;
+}
+function safeCloseDialog(dialogId){
+  const el=document.getElementById(dialogId);
+  if(!el)return;
+  try{if(typeof el.close==='function'&&el.open)el.close();else el.removeAttribute('open');}
+  catch(e){el.removeAttribute('open');}
+}
+
 /* Ver.2.2.0 Timer Correction β2 */
 let correctionRecords=[],correctionCurrentDate='',correctionCurrentSeconds=0,correctionSelectedSeconds=0;
 function correctionHaptic(n=6){try{if(navigator.vibrate)navigator.vibrate(n)}catch(e){}document.documentElement.classList.remove('correction-pulse');void document.documentElement.offsetWidth;document.documentElement.classList.add('correction-pulse')}
@@ -887,9 +909,9 @@ function applyCorrectionRecord(date){
   document.getElementById('correctionCurrentTime').textContent=correctionFormat(correctionCurrentSeconds);
   syncSwipeWheelsFromSeconds(correctionSelectedSeconds,true);
 }
-async function openTimeCorrectionDialog(){if(!profile)return openProfile();document.getElementById('correctionDateSelect').innerHTML='<option>読み込み中…</option>';document.getElementById('timeCorrectionDialog').showModal();try{const rows=await loadCorrectionRecords();document.getElementById('correctionDateSelect').innerHTML='';if(!rows.length){document.getElementById('correctionDateSelect').innerHTML='<option value="">修正できる記録がありません</option>';return}rows.forEach(x=>{const o=document.createElement('option');o.value=x.studyDate;o.textContent=`${x.studyDate}　${correctionFormat(x.seconds)}`;document.getElementById('correctionDateSelect').appendChild(o)});applyCorrectionRecord(rows[0].studyDate)}catch(e){toast(e.message,'error');document.getElementById('timeCorrectionDialog').close()}}
-async function submitCorrection(){if(correctionSelectedSeconds>=correctionCurrentSeconds)return toast('現在より短い時間を指定してください','error');document.getElementById('submitTimeCorrection').disabled=true;try{const result=await apiPost({action:'correctStudyTime',userId:profile.userId,studyDate:correctionCurrentDate,correctedSeconds:String(correctionSelectedSeconds),correctionId:`correction-${profile.userId}-${Date.now()}-${Math.random().toString(36).slice(2,9)}`});state.serverWeeklyMinutes=Number(result.weeklyMinutes)||0;state.serverTotalMinutes=Number(result.totalMinutes)||0;state.medalPoints=Number(result.medalPoints)||0;state.streakPoints=Number(result.streakPoints)||0;state.missionPoints=Number(result.missionPoints)||0;state.totalSeconds=state.serverTotalMinutes*60+(Number(state.pendingStudySeconds)||0);save();renderAll();correctionHaptic(35);toast(`✓ ${correctionFormat(correctionSelectedSeconds)}に修正しました`);document.getElementById('timeCorrectionDialog').close();await loadRanking();await loadCalendar(false)}catch(e){toast(e.message||'修正失敗','error')}finally{document.getElementById('submitTimeCorrection').disabled=false}}
-async function openCorrectionHistoryDialog(){if(!profile)return openProfile();document.getElementById('correctionHistoryList').innerHTML='<div class="correction-history-empty">読み込み中…</div>';document.getElementById('correctionHistoryDialog').showModal();try{const r=await fetch(`${API_URL}?action=correctionHistory&userId=${encodeURIComponent(profile.userId)}&_=${Date.now()}`,{cache:'no-store'});const d=await r.json();if(!d.success)throw new Error(d.message||'取得失敗');const h=d.history||[];document.getElementById('correctionHistoryList').innerHTML=h.length?'':'<div class="correction-history-empty">まだ修正履歴はありません。</div>';h.forEach(x=>{const a=document.createElement('article');a.className='correction-history-item';a.innerHTML=`<strong>${escapeHtml(x.studyDate)}</strong><div>${correctionFormat(x.beforeSeconds)}</div><span>↓</span><div>${correctionFormat(x.afterSeconds)}</div><small>修正：−${correctionFormat(x.reducedSeconds)}<br>${escapeHtml(x.correctedAt||'')}</small>`;document.getElementById('correctionHistoryList').appendChild(a)})}catch(e){document.getElementById('correctionHistoryList').innerHTML=`<div class="correction-history-empty">${escapeHtml(e.message)}</div>`}}
+async function openTimeCorrectionDialog(){if(!profile)return openProfile();document.getElementById('correctionDateSelect').innerHTML='<option>読み込み中…</option>';safeOpenDialog('timeCorrectionDialog');try{const rows=await loadCorrectionRecords();document.getElementById('correctionDateSelect').innerHTML='';if(!rows.length){document.getElementById('correctionDateSelect').innerHTML='<option value="">修正できる記録がありません</option>';return}rows.forEach(x=>{const o=document.createElement('option');o.value=x.studyDate;o.textContent=`${x.studyDate}　${correctionFormat(x.seconds)}`;document.getElementById('correctionDateSelect').appendChild(o)});applyCorrectionRecord(rows[0].studyDate)}catch(e){toast(e.message,'error');safeCloseDialog('timeCorrectionDialog')}}
+async function submitCorrection(){if(correctionSelectedSeconds>=correctionCurrentSeconds)return toast('現在より短い時間を指定してください','error');document.getElementById('submitTimeCorrection').disabled=true;try{const result=await apiPost({action:'correctStudyTime',userId:profile.userId,studyDate:correctionCurrentDate,correctedSeconds:String(correctionSelectedSeconds),correctionId:`correction-${profile.userId}-${Date.now()}-${Math.random().toString(36).slice(2,9)}`});state.serverWeeklyMinutes=Number(result.weeklyMinutes)||0;state.serverTotalMinutes=Number(result.totalMinutes)||0;state.medalPoints=Number(result.medalPoints)||0;state.streakPoints=Number(result.streakPoints)||0;state.missionPoints=Number(result.missionPoints)||0;state.totalSeconds=state.serverTotalMinutes*60+(Number(state.pendingStudySeconds)||0);save();renderAll();correctionHaptic(35);toast(`✓ ${correctionFormat(correctionSelectedSeconds)}に修正しました`);safeCloseDialog('timeCorrectionDialog');await loadRanking();await loadCalendar(false)}catch(e){toast(e.message||'修正失敗','error')}finally{document.getElementById('submitTimeCorrection').disabled=false}}
+async function openCorrectionHistoryDialog(){if(!profile)return openProfile();document.getElementById('correctionHistoryList').innerHTML='<div class="correction-history-empty">読み込み中…</div>';safeOpenDialog('correctionHistoryDialog');try{const r=await fetch(`${API_URL}?action=correctionHistory&userId=${encodeURIComponent(profile.userId)}&_=${Date.now()}`,{cache:'no-store'});const d=await r.json();if(!d.success)throw new Error(d.message||'取得失敗');const h=d.history||[];document.getElementById('correctionHistoryList').innerHTML=h.length?'':'<div class="correction-history-empty">まだ修正履歴はありません。</div>';h.forEach(x=>{const a=document.createElement('article');a.className='correction-history-item';a.innerHTML=`<strong>${escapeHtml(x.studyDate)}</strong><div>${correctionFormat(x.beforeSeconds)}</div><span>↓</span><div>${correctionFormat(x.afterSeconds)}</div><small>修正：−${correctionFormat(x.reducedSeconds)}<br>${escapeHtml(x.correctedAt||'')}</small>`;document.getElementById('correctionHistoryList').appendChild(a)})}catch(e){document.getElementById('correctionHistoryList').innerHTML=`<div class="correction-history-empty">${escapeHtml(e.message)}</div>`}}
 
 
 
@@ -994,20 +1016,26 @@ function initializeSwipeWheels(){
   refreshSwipeWheelSelection();
 }
 
+
+window.SJJOpenTimeCorrection=()=>{
+  try{return openTimeCorrectionDialog();}
+  catch(e){console.error('Time correction open failed',e);toast('時間の修正画面を開けませんでした','error');}
+};
+window.SJJOpenCorrectionHistory=()=>{
+  try{return openCorrectionHistoryDialog();}
+  catch(e){console.error('Correction history open failed',e);toast('修正履歴を開けませんでした','error');}
+};
+
 function bindTimerCorrectionControls(){
   initializeSwipeWheels();
-  const openBtn=document.getElementById('openTimeCorrection');
   const closeBtn=document.getElementById('closeTimeCorrection');
-  const histBtn=document.getElementById('openCorrectionHistory');
   const histClose=document.getElementById('closeCorrectionHistory');
   const select=document.getElementById('correctionDateSelect');
   const submit=document.getElementById('submitTimeCorrection');
-  if(openBtn)openBtn.onclick=openTimeCorrectionDialog;
-  if(closeBtn)closeBtn.onclick=()=>document.getElementById('timeCorrectionDialog')?.close();
-  if(histBtn)histBtn.onclick=openCorrectionHistoryDialog;
-  if(histClose)histClose.onclick=()=>document.getElementById('correctionHistoryDialog')?.close();
-  if(select)select.onchange=()=>applyCorrectionRecord(select.value);
-  if(submit)submit.onclick=submitCorrection;
+  if(closeBtn&&!closeBtn.dataset.correctionBound){closeBtn.addEventListener('click',()=>safeCloseDialog('timeCorrectionDialog'));closeBtn.dataset.correctionBound='1';}
+  if(histClose&&!histClose.dataset.correctionBound){histClose.addEventListener('click',()=>safeCloseDialog('correctionHistoryDialog'));histClose.dataset.correctionBound='1';}
+  if(select&&!select.dataset.correctionBound){select.addEventListener('change',()=>applyCorrectionRecord(select.value));select.dataset.correctionBound='1';}
+  if(submit&&!submit.dataset.correctionBound){submit.addEventListener('click',submitCorrection);submit.dataset.correctionBound='1';}
 }
 
 if(document.readyState==='loading'){

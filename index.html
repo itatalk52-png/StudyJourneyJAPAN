@@ -105,14 +105,14 @@
         <div class="timer-display" id="timerDisplay">00:00:00</div>
         <div class="timer-controls timer-controls-single">
           <button class="primary-btn wide" id="timerStart">START</button>
-<button type="button" id="openTimeCorrection" class="timer-correction-button">時間の修正</button>
+<button type="button" id="openTimeCorrection" class="timer-correction-button" onclick="if(window.SJJOpenTimeCorrection){window.SJJOpenTimeCorrection()}else{const d=document.getElementById('timeCorrectionDialog');if(d){try{d.showModal()}catch(e){d.setAttribute('open','')}}}">時間の修正</button>
         </div>
         <div class="timer-points-grid">
           <div><span>本日の勉強時間ポイント</span><strong id="sessionPoints">0 pt</strong></div>
           <div><span>累計獲得ポイント</span><strong id="timerTotalPoints">0 pt</strong></div>
         </div>
         <div class="timer-note">1分 = 1ポイント / 10分 = 1バッジ</div><div class="sync-state" id="pendingSync">同期済み</div>
-<button type="button" id="openCorrectionHistory" class="correction-history-button">修正履歴を確認する</button>
+<button type="button" id="openCorrectionHistory" class="correction-history-button" onclick="if(window.SJJOpenCorrectionHistory){window.SJJOpenCorrectionHistory()}else{const d=document.getElementById('correctionHistoryDialog');if(d){try{d.showModal()}catch(e){d.setAttribute('open','')}}}">修正履歴を確認する</button>
 
       </div>
       <div class="mission-launch-grid timer-mission-launch">
@@ -369,7 +369,7 @@
 <script src="mission.js"></script>
 <script>
 (() => {
-  const APP_VERSION = "2.2.5 Beta23";
+  const APP_VERSION = "2.2.5 Beta24";
   document.getElementById("currentAppVersion").textContent = APP_VERSION;
 
   if (!("serviceWorker" in navigator)) {
