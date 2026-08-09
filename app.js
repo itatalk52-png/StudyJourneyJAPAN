@@ -526,7 +526,258 @@ try{
 }catch(e){}
 
 function updateFriendsRankingSwitch(){
-  document.querySelectorAll('[data-friends-ranking]').forEach(button=>{
+  
+/* Ver.2.2.5 Beta26 — startup safety
+   Initialize timer correction before the rest of the UI startup so a later UI error
+   cannot leave the correction dialog as an empty shell. */
+function safeOpenDialog(dialogId){
+  const el=document.getElementById(dialogId);
+  if(!el)throw new Error(`画面を開けませんでした（${dialogId}）`);
+  try{
+    if(typeof el.showModal==='function'){
+      if(!el.open)el.showModal();
+    }else{
+      el.setAttribute('open','');
+    }
+  }catch(e){
+    el.setAttribute('open','');
+  }
+  return el;
+}
+function safeCloseDialog(dialogId){
+  const el=document.getElementById(dialogId);
+  if(!el)return;
+  try{if(typeof el.close==='function'&&el.open)el.close();else el.removeAttribute('open');}
+  catch(e){el.removeAttribute('open');}
+}
+
+/* Ver.2.2.0 Timer Correction β2 */
+let correctionRecords=[],correctionCurrentDate='',correctionCurrentSeconds=0,correctionSelectedSeconds=0;
+function correctionHaptic(n=6){try{if(navigator.vibrate)navigator.vibrate(n)}catch(e){}document.documentElement.classList.remove('correction-pulse');void document.documentElement.offsetWidth;document.documentElement.classList.add('correction-pulse')}
+function correctionFormat(s){s=Math.max(0,Math.floor(Number(s)||0));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=s%60;return `${String(h).padStart(2,'0')}時間${String(m).padStart(2,'0')}分${String(x).padStart(2,'0')}秒`}
+async function loadCorrectionRecords(){
+  const userId=profile?.userId||'';
+  if(!userId)throw new Error('ユーザーIDを確認できませんでした');
+  const url=`${API_URL}?action=correctionRecords&userId=${encodeURIComponent(userId)}&_=${Date.now()}`;
+  const r=await fetch(url,{cache:'no-store'});
+  if(!r.ok)throw new Error(`学習記録の取得に失敗しました（${r.status}）`);
+  const text=await r.text();
+  let d;
+  try{d=JSON.parse(text)}catch(e){throw new Error('学習記録の応答形式を確認できませんでした');}
+  if(!d.success)throw new Error(d.message||'学習記録を取得できませんでした');
+  correctionRecords=Array.isArray(d.records)?d.records:[];
+  return correctionRecords;
+}
+function applyCorrectionRecord(date){
+  const rec=correctionRecords.find(x=>x.studyDate===date);
+  correctionCurrentDate=date;
+  correctionCurrentSeconds=Number(rec?.seconds)||0;
+  correctionSelectedSeconds=correctionCurrentSeconds;
+  document.getElementById('correctionCurrentTime').textContent=correctionFormat(correctionCurrentSeconds);
+  syncSwipeWheelsFromSeconds(correctionSelectedSeconds,true);
+}
+async function openTimeCorrectionDialog(){
+  if(!profile)return openProfile();
+  initializeSwipeWheels(true);
+  const select=document.getElementById('correctionDateSelect');
+  select.innerHTML='';
+  select.add(new Option('読み込み中…',''));
+  document.getElementById('correctionCurrentTime').textContent='00時間00分00秒';
+  syncSwipeWheelsFromSeconds(0,true);
+  safeOpenDialog('timeCorrectionDialog');
+  try{
+    const rows=await Promise.race([
+      loadCorrectionRecords(),
+      new Promise((_,reject)=>setTimeout(()=>reject(new Error('学習記録の取得に時間がかかっています。通信環境を確認して、もう一度お試しください。')),8000))
+    ]);
+    select.innerHTML='';
+    if(!rows.length){
+      select.add(new Option('修正できる学習記録がありません',''));
+      toast('修正できる学習記録が見つかりませんでした','error');
+      document.getElementById('correctionCurrentTime').textContent='00時間00分00秒';
+      syncSwipeWheelsFromSeconds(0,true);
+      return;
+    }
+    rows.forEach(x=>select.add(new Option(`${x.studyDate}　${correctionFormat(x.seconds)}`,x.studyDate)));
+    select.selectedIndex=0;
+    applyCorrectionRecord(rows[0].studyDate);
+  }catch(e){
+    select.innerHTML='';
+    select.add(new Option('学習記録を取得できませんでした',''));
+    document.getElementById('correctionCurrentTime').textContent='取得エラー';
+    toast(e.message||'学習記録を取得できませんでした','error');
+  }
+}
+async function submitCorrection(){if(correctionSelectedSeconds>=correctionCurrentSeconds)return toast('現在より短い時間を指定してください','error');document.getElementById('submitTimeCorrection').disabled=true;try{const result=await apiPost({action:'correctStudyTime',userId:profile.userId,studyDate:correctionCurrentDate,correctedSeconds:String(correctionSelectedSeconds),correctionId:`correction-${profile.userId}-${Date.now()}-${Math.random().toString(36).slice(2,9)}`});state.serverWeeklyMinutes=Number(result.weeklyMinutes)||0;state.serverTotalMinutes=Number(result.totalMinutes)||0;state.medalPoints=Number(result.medalPoints)||0;state.streakPoints=Number(result.streakPoints)||0;state.missionPoints=Number(result.missionPoints)||0;state.totalSeconds=state.serverTotalMinutes*60+(Number(state.pendingStudySeconds)||0);save();renderAll();correctionHaptic(35);toast(`✓ ${correctionFormat(correctionSelectedSeconds)}に修正しました`);safeCloseDialog('timeCorrectionDialog');await loadRanking();await loadCalendar(false)}catch(e){toast(e.message||'修正失敗','error')}finally{document.getElementById('submitTimeCorrection').disabled=false}}
+async function openCorrectionHistoryDialog(){if(!profile)return openProfile();document.getElementById('correctionHistoryList').innerHTML='<div class="correction-history-empty">読み込み中…</div>';safeOpenDialog('correctionHistoryDialog');try{const r=await fetch(`${API_URL}?action=correctionHistory&userId=${encodeURIComponent(profile.userId)}&_=${Date.now()}`,{cache:'no-store'});const d=await r.json();if(!d.success)throw new Error(d.message||'取得失敗');const h=d.history||[];document.getElementById('correctionHistoryList').innerHTML=h.length?'':'<div class="correction-history-empty">まだ修正履歴はありません。</div>';h.forEach(x=>{const a=document.createElement('article');a.className='correction-history-item';a.innerHTML=`<strong>${escapeHtml(x.studyDate)}</strong><div>${correctionFormat(x.beforeSeconds)}</div><span>↓</span><div>${correctionFormat(x.afterSeconds)}</div><small>修正：−${correctionFormat(x.reducedSeconds)}<br>${escapeHtml(x.correctedAt||'')}</small>`;document.getElementById('correctionHistoryList').appendChild(a)})}catch(e){document.getElementById('correctionHistoryList').innerHTML=`<div class="correction-history-empty">${escapeHtml(e.message)}</div>`}}
+
+
+
+/* Ver.2.2.0 Timer Correction β4 TEST — swipe wheels */
+const SWIPE_WHEEL_ITEM_HEIGHT=48;
+let swipeWheelProgrammatic=false;
+const swipeWheelTimers={};
+
+function buildSwipeWheel(element,max){
+  if(!element)return;
+  element.innerHTML='<div class="swipe-wheel-spacer"></div>';
+  for(let value=0;value<=max;value++){
+    const item=document.createElement('div');
+    item.className='swipe-wheel-item';
+    item.dataset.value=String(value);
+    item.textContent=String(value).padStart(2,'0');
+    element.appendChild(item);
+  }
+  const bottom=document.createElement('div');
+  bottom.className='swipe-wheel-spacer';
+  element.appendChild(bottom);
+
+  element.addEventListener('scroll',()=>{
+    if(swipeWheelProgrammatic)return;
+    const unit=element.dataset.unit;
+    clearTimeout(swipeWheelTimers[unit]);
+    swipeWheelTimers[unit]=setTimeout(()=>settleSwipeWheel(element,true),80);
+  },{passive:true});
+
+  element.addEventListener('pointerdown',()=>element.classList.add('is-touching'));
+  element.addEventListener('pointerup',()=>{
+    element.classList.remove('is-touching');
+    settleSwipeWheel(element,true);
+  });
+  element.addEventListener('pointercancel',()=>element.classList.remove('is-touching'));
+}
+
+function getSwipeWheelValue(element){
+  if(!element)return 0;
+  return Math.max(0,Math.round(element.scrollTop/SWIPE_WHEEL_ITEM_HEIGHT));
+}
+
+function setSwipeWheelValue(element,value,instant=false){
+  if(!element)return;
+  swipeWheelProgrammatic=true;
+  element.scrollTo({
+    top:Math.max(0,Number(value)||0)*SWIPE_WHEEL_ITEM_HEIGHT,
+    behavior:instant?'auto':'smooth'
+  });
+  setTimeout(()=>{swipeWheelProgrammatic=false;},instant?0:180);
+}
+
+function refreshSwipeWheelSelection(){
+  document.querySelectorAll('.swipe-wheel').forEach(wheel=>{
+    const selected=getSwipeWheelValue(wheel);
+    wheel.querySelectorAll('.swipe-wheel-item').forEach(item=>{
+      const isSelected=Number(item.dataset.value)===selected;
+      item.classList.toggle('selected',isSelected);
+      item.style.color=isSelected?'#29463c':'#87918d';
+      item.style.fontSize=isSelected?'30px':'20px';
+      item.style.fontWeight=isSelected?'900':'800';
+      item.style.opacity=isSelected?'1':'0.66';
+    });
+  });
+}
+
+function readSwipeWheelSeconds(){
+  const h=getSwipeWheelValue(document.getElementById('hoursWheel'));
+  const m=getSwipeWheelValue(document.getElementById('minutesWheel'));
+  const s=getSwipeWheelValue(document.getElementById('secondsWheel'));
+  return h*3600+m*60+s;
+}
+
+function settleSwipeWheel(element,feedback=false){
+  const value=getSwipeWheelValue(element);
+  setSwipeWheelValue(element,value,false);
+
+  const next=readSwipeWheelSeconds();
+  if(next>correctionCurrentSeconds){
+    syncSwipeWheelsFromSeconds(correctionCurrentSeconds,false);
+    if(feedback)toast('現在の記録より長い時間には変更できません','error');
+    return;
+  }
+
+  correctionSelectedSeconds=next;
+  refreshSwipeWheelSelection();
+  document.getElementById('correctionAfterTime').textContent=correctionFormat(next);
+  document.getElementById('submitTimeCorrection').disabled=next>=correctionCurrentSeconds;
+  if(feedback)correctionHaptic(5);
+}
+
+function syncSwipeWheelsFromSeconds(seconds,instant=false){
+  const safe=Math.max(0,Math.floor(Number(seconds)||0));
+  setSwipeWheelValue(document.getElementById('hoursWheel'),Math.floor(safe/3600),instant);
+  setSwipeWheelValue(document.getElementById('minutesWheel'),Math.floor((safe%3600)/60),instant);
+  setSwipeWheelValue(document.getElementById('secondsWheel'),safe%60,instant);
+  correctionSelectedSeconds=safe;
+  document.getElementById('correctionAfterTime').textContent=correctionFormat(safe);
+  document.getElementById('submitTimeCorrection').disabled=safe>=correctionCurrentSeconds;
+  setTimeout(refreshSwipeWheelSelection,instant?0:200);
+}
+
+function initializeSwipeWheels(force=false){
+  const specs=[['hoursWheel',99],['minutesWheel',59],['secondsWheel',59]];
+  specs.forEach(([id,max])=>{
+    const wheel=document.getElementById(id);
+    if(!wheel)return;
+    if(force||!wheel.querySelector('.swipe-wheel-item'))buildSwipeWheel(wheel,max);
+    // iOS Safari: scrolling + mask on a dialog can hide the wheel text.
+    wheel.style.webkitMaskImage='none';
+    wheel.style.maskImage='none';
+    wheel.style.color='#29463c';
+    wheel.querySelectorAll('.swipe-wheel-item').forEach(item=>{
+      item.style.display='flex';
+      item.style.alignItems='center';
+      item.style.justifyContent='center';
+      item.style.minHeight='48px';
+      item.style.color='#66736e';
+      item.style.opacity='1';
+      item.style.visibility='visible';
+    });
+  });
+  refreshSwipeWheelSelection();
+}
+
+
+window.SJJOpenTimeCorrection=()=>{
+  try{return openTimeCorrectionDialog();}
+  catch(e){console.error('Time correction open failed',e);toast('時間の修正画面を開けませんでした','error');}
+};
+window.SJJOpenCorrectionHistory=()=>{
+  try{return openCorrectionHistoryDialog();}
+  catch(e){console.error('Correction history open failed',e);toast('修正履歴を開けませんでした','error');}
+};
+
+function bindTimerCorrectionControls(){
+  // Wheels are initialized when the dialog opens so iOS renders them reliably.
+  const closeBtn=document.getElementById('closeTimeCorrection');
+  const histClose=document.getElementById('closeCorrectionHistory');
+  const select=document.getElementById('correctionDateSelect');
+  const submit=document.getElementById('submitTimeCorrection');
+  if(closeBtn&&!closeBtn.dataset.correctionBound){closeBtn.addEventListener('click',()=>safeCloseDialog('timeCorrectionDialog'));closeBtn.dataset.correctionBound='1';}
+  if(histClose&&!histClose.dataset.correctionBound){histClose.addEventListener('click',()=>safeCloseDialog('correctionHistoryDialog'));histClose.dataset.correctionBound='1';}
+  if(select&&!select.dataset.correctionBound){select.addEventListener('change',()=>applyCorrectionRecord(select.value));select.dataset.correctionBound='1';}
+  if(submit&&!submit.dataset.correctionBound){submit.addEventListener('click',submitCorrection);submit.dataset.correctionBound='1';}
+}
+
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',bindTimerCorrectionControls,{once:true});
+}else{
+  bindTimerCorrectionControls();
+}
+
+
+/* Show the saved cumulative study time immediately on launch.
+   The cloud refresh can still update it afterward. */
+try{
+  const savedTotal=Math.max(0,Number(state.totalSeconds)||0);
+  const derivedTotal=Math.max(0,(Number(state.serverTotalMinutes)||0)*60+(Number(state.pendingStudySeconds)||0));
+  if(!state.running && derivedTotal>savedTotal) state.totalSeconds=derivedTotal;
+  const bootTime=formatTime(state.totalSeconds);
+  const homeTimerBoot=document.getElementById('homeTimer');
+  const timerDisplayBoot=document.getElementById('timerDisplay');
+  if(homeTimerBoot)homeTimerBoot.textContent=bootTime;
+  if(timerDisplayBoot)timerDisplayBoot.textContent=bootTime;
+}catch(e){console.warn('Initial timer display failed',e);}
+
+document.querySelectorAll('[data-friends-ranking]').forEach(button=>{
     button.classList.toggle('active',button.dataset.friendsRanking===friendsRankingMode);
   });
   const caption=document.getElementById('friendsRankingCaption');
@@ -875,224 +1126,7 @@ if(!profile){
 
 
 
-function safeOpenDialog(dialogId){
-  const el=document.getElementById(dialogId);
-  if(!el)throw new Error(`画面を開けませんでした（${dialogId}）`);
-  try{
-    if(typeof el.showModal==='function'){
-      if(!el.open)el.showModal();
-    }else{
-      el.setAttribute('open','');
-    }
-  }catch(e){
-    el.setAttribute('open','');
-  }
-  return el;
-}
-function safeCloseDialog(dialogId){
-  const el=document.getElementById(dialogId);
-  if(!el)return;
-  try{if(typeof el.close==='function'&&el.open)el.close();else el.removeAttribute('open');}
-  catch(e){el.removeAttribute('open');}
-}
 
-/* Ver.2.2.0 Timer Correction β2 */
-let correctionRecords=[],correctionCurrentDate='',correctionCurrentSeconds=0,correctionSelectedSeconds=0;
-function correctionHaptic(n=6){try{if(navigator.vibrate)navigator.vibrate(n)}catch(e){}document.documentElement.classList.remove('correction-pulse');void document.documentElement.offsetWidth;document.documentElement.classList.add('correction-pulse')}
-function correctionFormat(s){s=Math.max(0,Math.floor(Number(s)||0));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=s%60;return `${String(h).padStart(2,'0')}時間${String(m).padStart(2,'0')}分${String(x).padStart(2,'0')}秒`}
-async function loadCorrectionRecords(){const r=await fetch(`${API_URL}?action=correctionRecords&userId=${encodeURIComponent(profile.userId)}&_=${Date.now()}`,{cache:'no-store'});const d=await r.json();if(!d.success)throw new Error(d.message||'取得失敗');correctionRecords=d.records||[];return correctionRecords}
-function applyCorrectionRecord(date){
-  const rec=correctionRecords.find(x=>x.studyDate===date);
-  correctionCurrentDate=date;
-  correctionCurrentSeconds=Number(rec?.seconds)||0;
-  correctionSelectedSeconds=correctionCurrentSeconds;
-  document.getElementById('correctionCurrentTime').textContent=correctionFormat(correctionCurrentSeconds);
-  syncSwipeWheelsFromSeconds(correctionSelectedSeconds,true);
-}
-async function openTimeCorrectionDialog(){
-  if(!profile)return openProfile();
-  initializeSwipeWheels(true);
-  const select=document.getElementById('correctionDateSelect');
-  select.innerHTML='';
-  select.add(new Option('読み込み中…',''));
-  document.getElementById('correctionCurrentTime').textContent='00時間00分00秒';
-  syncSwipeWheelsFromSeconds(0,true);
-  safeOpenDialog('timeCorrectionDialog');
-  try{
-    const rows=await Promise.race([
-      loadCorrectionRecords(),
-      new Promise((_,reject)=>setTimeout(()=>reject(new Error('学習記録の取得に時間がかかっています。通信環境を確認して、もう一度お試しください。')),8000))
-    ]);
-    select.innerHTML='';
-    if(!rows.length){
-      select.add(new Option('修正できる学習記録がありません',''));
-      document.getElementById('correctionCurrentTime').textContent='00時間00分00秒';
-      syncSwipeWheelsFromSeconds(0,true);
-      return;
-    }
-    rows.forEach(x=>select.add(new Option(`${x.studyDate}　${correctionFormat(x.seconds)}`,x.studyDate)));
-    select.selectedIndex=0;
-    applyCorrectionRecord(rows[0].studyDate);
-  }catch(e){
-    select.innerHTML='';
-    select.add(new Option('学習記録を取得できませんでした',''));
-    document.getElementById('correctionCurrentTime').textContent='取得エラー';
-    toast(e.message||'学習記録を取得できませんでした','error');
-  }
-}
-async function submitCorrection(){if(correctionSelectedSeconds>=correctionCurrentSeconds)return toast('現在より短い時間を指定してください','error');document.getElementById('submitTimeCorrection').disabled=true;try{const result=await apiPost({action:'correctStudyTime',userId:profile.userId,studyDate:correctionCurrentDate,correctedSeconds:String(correctionSelectedSeconds),correctionId:`correction-${profile.userId}-${Date.now()}-${Math.random().toString(36).slice(2,9)}`});state.serverWeeklyMinutes=Number(result.weeklyMinutes)||0;state.serverTotalMinutes=Number(result.totalMinutes)||0;state.medalPoints=Number(result.medalPoints)||0;state.streakPoints=Number(result.streakPoints)||0;state.missionPoints=Number(result.missionPoints)||0;state.totalSeconds=state.serverTotalMinutes*60+(Number(state.pendingStudySeconds)||0);save();renderAll();correctionHaptic(35);toast(`✓ ${correctionFormat(correctionSelectedSeconds)}に修正しました`);safeCloseDialog('timeCorrectionDialog');await loadRanking();await loadCalendar(false)}catch(e){toast(e.message||'修正失敗','error')}finally{document.getElementById('submitTimeCorrection').disabled=false}}
-async function openCorrectionHistoryDialog(){if(!profile)return openProfile();document.getElementById('correctionHistoryList').innerHTML='<div class="correction-history-empty">読み込み中…</div>';safeOpenDialog('correctionHistoryDialog');try{const r=await fetch(`${API_URL}?action=correctionHistory&userId=${encodeURIComponent(profile.userId)}&_=${Date.now()}`,{cache:'no-store'});const d=await r.json();if(!d.success)throw new Error(d.message||'取得失敗');const h=d.history||[];document.getElementById('correctionHistoryList').innerHTML=h.length?'':'<div class="correction-history-empty">まだ修正履歴はありません。</div>';h.forEach(x=>{const a=document.createElement('article');a.className='correction-history-item';a.innerHTML=`<strong>${escapeHtml(x.studyDate)}</strong><div>${correctionFormat(x.beforeSeconds)}</div><span>↓</span><div>${correctionFormat(x.afterSeconds)}</div><small>修正：−${correctionFormat(x.reducedSeconds)}<br>${escapeHtml(x.correctedAt||'')}</small>`;document.getElementById('correctionHistoryList').appendChild(a)})}catch(e){document.getElementById('correctionHistoryList').innerHTML=`<div class="correction-history-empty">${escapeHtml(e.message)}</div>`}}
-
-
-
-/* Ver.2.2.0 Timer Correction β4 TEST — swipe wheels */
-const SWIPE_WHEEL_ITEM_HEIGHT=48;
-let swipeWheelProgrammatic=false;
-const swipeWheelTimers={};
-
-function buildSwipeWheel(element,max){
-  if(!element)return;
-  element.innerHTML='<div class="swipe-wheel-spacer"></div>';
-  for(let value=0;value<=max;value++){
-    const item=document.createElement('div');
-    item.className='swipe-wheel-item';
-    item.dataset.value=String(value);
-    item.textContent=String(value).padStart(2,'0');
-    element.appendChild(item);
-  }
-  const bottom=document.createElement('div');
-  bottom.className='swipe-wheel-spacer';
-  element.appendChild(bottom);
-
-  element.addEventListener('scroll',()=>{
-    if(swipeWheelProgrammatic)return;
-    const unit=element.dataset.unit;
-    clearTimeout(swipeWheelTimers[unit]);
-    swipeWheelTimers[unit]=setTimeout(()=>settleSwipeWheel(element,true),80);
-  },{passive:true});
-
-  element.addEventListener('pointerdown',()=>element.classList.add('is-touching'));
-  element.addEventListener('pointerup',()=>{
-    element.classList.remove('is-touching');
-    settleSwipeWheel(element,true);
-  });
-  element.addEventListener('pointercancel',()=>element.classList.remove('is-touching'));
-}
-
-function getSwipeWheelValue(element){
-  if(!element)return 0;
-  return Math.max(0,Math.round(element.scrollTop/SWIPE_WHEEL_ITEM_HEIGHT));
-}
-
-function setSwipeWheelValue(element,value,instant=false){
-  if(!element)return;
-  swipeWheelProgrammatic=true;
-  element.scrollTo({
-    top:Math.max(0,Number(value)||0)*SWIPE_WHEEL_ITEM_HEIGHT,
-    behavior:instant?'auto':'smooth'
-  });
-  setTimeout(()=>{swipeWheelProgrammatic=false;},instant?0:180);
-}
-
-function refreshSwipeWheelSelection(){
-  document.querySelectorAll('.swipe-wheel').forEach(wheel=>{
-    const selected=getSwipeWheelValue(wheel);
-    wheel.querySelectorAll('.swipe-wheel-item').forEach(item=>{
-      const isSelected=Number(item.dataset.value)===selected;
-      item.classList.toggle('selected',isSelected);
-      item.style.color=isSelected?'#29463c':'#87918d';
-      item.style.fontSize=isSelected?'30px':'20px';
-      item.style.fontWeight=isSelected?'900':'800';
-      item.style.opacity=isSelected?'1':'0.66';
-    });
-  });
-}
-
-function readSwipeWheelSeconds(){
-  const h=getSwipeWheelValue(document.getElementById('hoursWheel'));
-  const m=getSwipeWheelValue(document.getElementById('minutesWheel'));
-  const s=getSwipeWheelValue(document.getElementById('secondsWheel'));
-  return h*3600+m*60+s;
-}
-
-function settleSwipeWheel(element,feedback=false){
-  const value=getSwipeWheelValue(element);
-  setSwipeWheelValue(element,value,false);
-
-  const next=readSwipeWheelSeconds();
-  if(next>correctionCurrentSeconds){
-    syncSwipeWheelsFromSeconds(correctionCurrentSeconds,false);
-    if(feedback)toast('現在の記録より長い時間には変更できません','error');
-    return;
-  }
-
-  correctionSelectedSeconds=next;
-  refreshSwipeWheelSelection();
-  document.getElementById('correctionAfterTime').textContent=correctionFormat(next);
-  document.getElementById('submitTimeCorrection').disabled=next>=correctionCurrentSeconds;
-  if(feedback)correctionHaptic(5);
-}
-
-function syncSwipeWheelsFromSeconds(seconds,instant=false){
-  const safe=Math.max(0,Math.floor(Number(seconds)||0));
-  setSwipeWheelValue(document.getElementById('hoursWheel'),Math.floor(safe/3600),instant);
-  setSwipeWheelValue(document.getElementById('minutesWheel'),Math.floor((safe%3600)/60),instant);
-  setSwipeWheelValue(document.getElementById('secondsWheel'),safe%60,instant);
-  correctionSelectedSeconds=safe;
-  document.getElementById('correctionAfterTime').textContent=correctionFormat(safe);
-  document.getElementById('submitTimeCorrection').disabled=safe>=correctionCurrentSeconds;
-  setTimeout(refreshSwipeWheelSelection,instant?0:200);
-}
-
-function initializeSwipeWheels(force=false){
-  const specs=[['hoursWheel',99],['minutesWheel',59],['secondsWheel',59]];
-  specs.forEach(([id,max])=>{
-    const wheel=document.getElementById(id);
-    if(!wheel)return;
-    if(force||!wheel.querySelector('.swipe-wheel-item'))buildSwipeWheel(wheel,max);
-    // iOS Safari: scrolling + mask on a dialog can hide the wheel text.
-    wheel.style.webkitMaskImage='none';
-    wheel.style.maskImage='none';
-    wheel.style.color='#29463c';
-    wheel.querySelectorAll('.swipe-wheel-item').forEach(item=>{
-      item.style.display='flex';
-      item.style.alignItems='center';
-      item.style.justifyContent='center';
-      item.style.minHeight='48px';
-      item.style.color='#66736e';
-      item.style.opacity='1';
-      item.style.visibility='visible';
-    });
-  });
-  refreshSwipeWheelSelection();
-}
-
-
-window.SJJOpenTimeCorrection=()=>{
-  try{return openTimeCorrectionDialog();}
-  catch(e){console.error('Time correction open failed',e);toast('時間の修正画面を開けませんでした','error');}
-};
-window.SJJOpenCorrectionHistory=()=>{
-  try{return openCorrectionHistoryDialog();}
-  catch(e){console.error('Correction history open failed',e);toast('修正履歴を開けませんでした','error');}
-};
-
-function bindTimerCorrectionControls(){
-  // Wheels are initialized when the dialog opens so iOS renders them reliably.
-  const closeBtn=document.getElementById('closeTimeCorrection');
-  const histClose=document.getElementById('closeCorrectionHistory');
-  const select=document.getElementById('correctionDateSelect');
-  const submit=document.getElementById('submitTimeCorrection');
-  if(closeBtn&&!closeBtn.dataset.correctionBound){closeBtn.addEventListener('click',()=>safeCloseDialog('timeCorrectionDialog'));closeBtn.dataset.correctionBound='1';}
-  if(histClose&&!histClose.dataset.correctionBound){histClose.addEventListener('click',()=>safeCloseDialog('correctionHistoryDialog'));histClose.dataset.correctionBound='1';}
-  if(select&&!select.dataset.correctionBound){select.addEventListener('change',()=>applyCorrectionRecord(select.value));select.dataset.correctionBound='1';}
-  if(submit&&!submit.dataset.correctionBound){submit.addEventListener('click',submitCorrection);submit.dataset.correctionBound='1';}
-}
-
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded',bindTimerCorrectionControls,{once:true});
-}else{
-  bindTimerCorrectionControls();
-}
+/* Timer correction module moved earlier in Beta26. */
 
 updateFriendsRankingSwitch();

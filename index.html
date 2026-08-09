@@ -342,7 +342,7 @@
 <div class="sync-toast" id="syncToast" role="status"></div>
 
 <dialog id="timeCorrectionDialog" class="time-correction-dialog"><div class="time-correction-card">
-<button type="button" id="closeTimeCorrection" class="time-correction-close">×</button><p class="time-correction-kicker">TIMER CORRECTION</p><h2>学習時間を修正</h2>
+<button type="button" id="closeTimeCorrection" class="time-correction-close" onclick="const d=document.getElementById('timeCorrectionDialog');if(d){try{d.close()}catch(e){d.removeAttribute('open')}}">×</button><p class="time-correction-kicker">TIMER CORRECTION</p><h2>学習時間を修正</h2>
 <label for="correctionDateSelect">修正する学習日</label><select id="correctionDateSelect" class="time-correction-date"></select>
 <div class="time-correction-current"><span>現在の記録</span><strong id="correctionCurrentTime">00時間00分00秒</strong></div>
 <div class="wheel-picker swipe-wheel-picker" id="timeWheelPicker" aria-label="修正後の学習時間">
@@ -362,14 +362,36 @@
 </div>
 <div class="time-correction-after"><span>修正後</span><strong id="correctionAfterTime">00時間00分00秒</strong></div><p class="time-correction-note">現在の記録より長い時間には変更できません。</p><button type="button" id="submitTimeCorrection" class="time-correction-submit">この時間に修正する</button>
 </div></dialog>
-<dialog id="correctionHistoryDialog" class="correction-history-dialog"><div class="correction-history-card"><button type="button" id="closeCorrectionHistory" class="time-correction-close">×</button><p class="time-correction-kicker">CORRECTION HISTORY</p><h2>修正履歴</h2><div id="correctionHistoryList"></div></div></dialog>
+<dialog id="correctionHistoryDialog" class="correction-history-dialog"><div class="correction-history-card"><button type="button" id="closeCorrectionHistory" class="time-correction-close" onclick="const d=document.getElementById('correctionHistoryDialog');if(d){try{d.close()}catch(e){d.removeAttribute('open')}}">×</button><p class="time-correction-kicker">CORRECTION HISTORY</p><h2>修正履歴</h2><div id="correctionHistoryList"></div></div></dialog>
 
+<script>
+/* Beta26: avoid a surprising 00:00:00 while the main app is starting. */
+(()=>{
+  try{
+    const keys=['sjj_state_v9_cloud','sjj_state_v8_1_timer','sjj_state_v8_calendar','sjj_state_v7_cheers','sjj_state_v6_multi','sjj_state_v5_multi'];
+    let raw=null;
+    for(const key of keys){ raw=localStorage.getItem(key); if(raw)break; }
+    if(!raw)return;
+    const s=JSON.parse(raw);
+    const stored=Math.max(0,Number(s.totalSeconds)||0);
+    const derived=Math.max(0,(Number(s.serverTotalMinutes)||0)*60+(Number(s.pendingStudySeconds)||0));
+    let seconds=Math.max(stored,derived);
+    if(s.running && Number(s.activeLastAccountedAt)>0){
+      seconds+=Math.max(0,Math.floor((Date.now()-Number(s.activeLastAccountedAt))/1000));
+    }
+    const h=Math.floor(seconds/3600),m=Math.floor((seconds%3600)/60),sec=Math.floor(seconds%60);
+    const text=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+    const a=document.getElementById('homeTimer'),b=document.getElementById('timerDisplay');
+    if(a)a.textContent=text;if(b)b.textContent=text;
+  }catch(e){}
+})();
+</script>
 <script src="mission-data.js"></script>
-<script src="app.js"></script>
-<script src="mission.js"></script>
+<script src="app.js?v=225b26"></script>
+<script src="mission.js?v=225b26"></script>
 <script>
 (() => {
-  const APP_VERSION = "2.2.5 Beta25";
+  const APP_VERSION = "2.2.5 Beta26";
   document.getElementById("currentAppVersion").textContent = APP_VERSION;
 
   if (!("serviceWorker" in navigator)) {
