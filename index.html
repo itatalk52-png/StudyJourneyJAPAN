@@ -52,10 +52,10 @@
           <button class="mission-launch" data-mission="industrial"><span class="mission-caption">2級問題集ミッション</span><strong>IND. MISSION</strong><small>工業簿記</small></button>
         </div>
         <div class="hero-grid">
-          <div><span>Today</span><strong id="todayMinutes">0 min</strong></div>
+          <div><span>Today</span><strong id="todayMinutes">-- min</strong></div>
           <div class="week-stat">
             <span>This Week</span>
-            <strong id="weekMinutes">0 min</strong>
+            <strong id="weekMinutes">-- min</strong>
             <small class="weekly-rank" id="weeklyRank">今週の勉強時間ランク --位</small>
           </div>
           <div><span>Next Badge</span><strong id="nextBadgeText">あと10分</strong></div>
@@ -391,7 +391,7 @@
 <script src="mission.js?v=225b27"></script>
 <script>
 (() => {
-  const APP_VERSION = "2.2.5 Beta27";
+  const APP_VERSION = "2.2.5 Beta28";
   document.getElementById("currentAppVersion").textContent = APP_VERSION;
 
   if (!("serviceWorker" in navigator)) {

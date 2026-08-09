@@ -33,6 +33,40 @@ function normalizeJourneyId(value=''){return value.trim().toUpperCase().replace(
 function initials(name=''){return [...name.trim()].slice(0,2).join('').toUpperCase()||'SJ';}
 function localDateKey(d=new Date()){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
 function monthKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}
+
+/* Beta28: keep the last known Home Today / This Week values for instant startup display. */
+const HOME_METRICS_CACHE_KEY='sjj_home_metrics_v1';
+let homeMetricsFresh=false;
+function currentWeekStartKey(){return currentWeekRange().start;}
+function readHomeMetricsCache(){
+  try{
+    const cached=JSON.parse(localStorage.getItem(HOME_METRICS_CACHE_KEY)||'null');
+    if(!cached||typeof cached!=='object')return null;
+    const sameUser=!profile?.userId||!cached.userId||cached.userId===profile.userId;
+    if(!sameUser)return null;
+    return cached;
+  }catch(e){return null;}
+}
+function writeHomeMetricsCache(todayMinutes,weeklyMinutes){
+  if(!profile?.userId)return;
+  try{
+    localStorage.setItem(HOME_METRICS_CACHE_KEY,JSON.stringify({
+      userId:profile.userId,
+      todayDate:localDateKey(),
+      todayMinutes:Math.max(0,Math.floor(Number(todayMinutes)||0)),
+      weekStart:currentWeekStartKey(),
+      weeklyMinutes:Math.max(0,Math.floor(Number(weeklyMinutes)||0)),
+      savedAt:Date.now()
+    }));
+  }catch(e){}
+}
+function startupHomeMetricBase(){
+  const cached=readHomeMetricsCache();
+  return {
+    today:cached&&cached.todayDate===localDateKey()?Math.max(0,Number(cached.todayMinutes)||0):null,
+    week:cached&&cached.weekStart===currentWeekStartKey()?Math.max(0,Number(cached.weeklyMinutes)||0):null
+  };
+}
 function currentWeekRange(){
   const now=new Date();
   const offset=(now.getDay()+6)%7;
@@ -497,7 +531,7 @@ function updateMap(){
   document.getElementById('homeMapPrefProgress').textContent=`${prefProgress} / 10`;
   document.getElementById('homeMapCaption').textContent=`現在地：${currentPref}`;
 }
-function renderAll(){const unlocked=unlockedCount(),mins=Math.floor(state.totalSeconds/60),pending=Math.floor((state.pendingStudySeconds||0)/60),todayPending=Math.floor(Number((state.pendingDailySeconds||{})[localDateKey()]||0)/60),todayTotal=(Number(state.todayServerMinutes)||0)+todayPending,weeklyMinutes=(Number(state.serverWeeklyMinutes)||0)+currentWeekPendingMinutes(),studyPoints=(Number(state.serverTotalMinutes)||0)+pending,cheerPoints=Number(state.cheerPoints)||0,medalPoints=Number(state.medalPoints)||0,streakPoints=Number(state.streakPoints)||0,missionPoints=Number(state.missionPoints)||0,totalPoints=studyPoints+cheerPoints+medalPoints+streakPoints+missionPoints,flat=DATA.prefectures.flatMap(p=>p.badges.map(b=>b.name));document.getElementById('homeTimer').textContent=formatTime(state.totalSeconds);document.getElementById('timerDisplay').textContent=formatTime(state.totalSeconds);document.getElementById('todayMinutes').textContent=`${todayTotal} min`;document.getElementById('weekMinutes').textContent=`${weeklyMinutes} min`;
+function renderAll(){const unlocked=unlockedCount(),mins=Math.floor(state.totalSeconds/60),pending=Math.floor((state.pendingStudySeconds||0)/60),todayPending=Math.floor(Number((state.pendingDailySeconds||{})[localDateKey()]||0)/60),startupMetrics=startupHomeMetricBase(),serverTodayBase=homeMetricsFresh?(Number(state.todayServerMinutes)||0):(startupMetrics.today!==null?startupMetrics.today:(Number(state.todayServerMinutes)||0)),serverWeekBase=homeMetricsFresh?(Number(state.serverWeeklyMinutes)||0):(startupMetrics.week!==null?startupMetrics.week:(Number(state.serverWeeklyMinutes)||0)),todayTotal=serverTodayBase+todayPending,weeklyMinutes=serverWeekBase+currentWeekPendingMinutes(),studyPoints=(Number(state.serverTotalMinutes)||0)+pending,cheerPoints=Number(state.cheerPoints)||0,medalPoints=Number(state.medalPoints)||0,streakPoints=Number(state.streakPoints)||0,missionPoints=Number(state.missionPoints)||0,totalPoints=studyPoints+cheerPoints+medalPoints+streakPoints+missionPoints,flat=DATA.prefectures.flatMap(p=>p.badges.map(b=>b.name));document.getElementById('homeTimer').textContent=formatTime(state.totalSeconds);document.getElementById('timerDisplay').textContent=formatTime(state.totalSeconds);document.getElementById('todayMinutes').textContent=`${todayTotal} min`;document.getElementById('weekMinutes').textContent=`${weeklyMinutes} min`;
 const weeklyRankEl=document.getElementById('weeklyRank');
 if(weeklyRankEl&&!weeklyRankEl.dataset.loaded)weeklyRankEl.textContent='今週の勉強時間ランク --位';document.getElementById('totalPoints').textContent=`${formatPoints(totalPoints)} pt`;
 const pointRankEl=document.getElementById('pointRank');
@@ -1108,7 +1142,11 @@ async function loadCalendar(showLoading=true){
     state.currentStreak=Number(data.currentStreak)||0;
     state.todayQualified=!!data.todayQualified;
     state.todayServerMinutes=Number(data.todayMinutes)||0;
-    if(requestedMonth===monthKey(new Date()))await applyAuthoritativeWeeklyMinutesFromDaily(data);
+    if(requestedMonth===monthKey(new Date())){
+      await applyAuthoritativeWeeklyMinutesFromDaily(data);
+      homeMetricsFresh=true;
+      writeHomeMetricsCache(state.todayServerMinutes,state.serverWeeklyMinutes);
+    }
     state.medalPoints=Number(data.medalPoints)||0;
     state.streakPoints=Number(data.streakPoints)||0;
     save();
